@@ -14,6 +14,10 @@ function LandingPage() {
     // Redirect to the learn more page (replace '/learn-more' with your actual route)
     navigate('/signup');
   };
+  const handlepolicyClick = () => {
+    navigate('/policies')
+  };
+  
   return (
     <div style={{backgroundImage:`url(${bg})`, backgroundSize: 'cover'}}>
     <LandingNavbar />
@@ -36,6 +40,9 @@ function LandingPage() {
         </Typography>
         <Button color="inherit" style={{ color:'white', backgroundColor: '#A36E29', marginTop: '20px', padding: '10px'}} onClick={handleletsgetstartedClick}>
           Lets get Started 
+        </Button>
+        <Button color="inherit" style={{ color:'white', backgroundColor: '#A36E29', marginTop: '20px', padding: '10px'}} onClick={handlepolicyClick}>
+          Policies 
         </Button>
       </div>
 

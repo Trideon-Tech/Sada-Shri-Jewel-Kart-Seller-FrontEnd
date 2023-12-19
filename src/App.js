@@ -3,6 +3,7 @@ import LandingPage from './components/LandingPage.jsx'
 import { useNavigate,Routes,Route } from 'react-router-dom';
 import Login from './components/Login.jsx';
 import Signup from './components/Signup.jsx';
+import Policies from './components/Policies.jsx';
 
 function App() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ function App() {
           <Route exact path="/" element={<LandingPage/>}/>
           <Route exact path="/login" element={<Login/>}/>
           <Route exact path="/signup" element={<Signup/>}/>
+          <Route exact path="/policies" element={<Policies/>}/>
           <Route path="*" element={<LandingPage/>}/>
         </Routes>
     </div>

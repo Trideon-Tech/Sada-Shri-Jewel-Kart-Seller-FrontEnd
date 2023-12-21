@@ -1,11 +1,13 @@
 import React from "react";
 import { AppBar, Toolbar, Button } from "@mui/material";
 import { ChevronRight, FormatQuoteOutlined } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import "./landing.styles.scss";
 
 const Landing = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="landing">
       {/* Top Section */}
@@ -43,7 +45,10 @@ const Landing = () => {
           </div>
           <div className="bottom">
             <div className="buttons">
-              <Button className="btn-primary">
+              <Button
+                className="btn-primary"
+                onClick={() => navigate("/register/user")}
+              >
                 <div className="text">Get Started</div>
                 <ChevronRight className="icon" />
               </Button>

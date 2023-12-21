@@ -1,0 +1,39 @@
+.registration-outline-item {
+  width: 20vw;
+  margin-bottom: 5px;
+
+  .contents {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    .number {
+      width: 35px;
+      height: 35px;
+      color: white;
+      border: 3px solid white;
+      border-radius: 100px;
+      text-align: center;
+      font-size: 1.3rem;
+      margin-right: 50px;
+      font-weight: 600;
+    }
+
+    .text {
+      color: white;
+      font-size: 1.3rem;
+    }
+  }
+
+  .dotted-line {
+    height: 25px;
+    width: 0px;
+    border-width: 1.5px;
+    border-color: white;
+    border-style: dashed;
+    border-spacing: 2px;
+    margin-left: calc(35px / 2);
+    margin-top: 3px;
+    margin-bottom: 3px;
+  }
+}

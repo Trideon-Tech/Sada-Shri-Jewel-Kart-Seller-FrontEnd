@@ -1,0 +1,98 @@
+.register {
+  font-family: "Work Sans", sans-serif;
+
+  .appbar {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    background-color: inherit;
+    overflow: hidden;
+
+    .toolbar {
+      position: relative;
+      margin: auto;
+      height: 100px;
+      width: 75vw;
+
+      .logo {
+        height: 50px;
+        margin-right: 0.5rem;
+        vertical-align: middle;
+        cursor: pointer;
+      }
+
+      .btns {
+        margin-left: auto;
+
+        .link {
+          margin-left: 20px;
+          vertical-align: middle;
+          cursor: pointer;
+
+          .btn {
+            font-family: "Work Sans", sans-serif;
+            color: #a36e29;
+            text-transform: none;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+
+        .link-primary {
+          margin-left: 20px;
+          vertical-align: middle;
+          cursor: pointer;
+          padding: 10px 20px;
+          background-color: #a36e29;
+          border-radius: 5px;
+
+          .btn {
+            font-family: "Work Sans", sans-serif;
+            color: white;
+            text-transform: none;
+            margin: auto;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .steps-outline {
+    height: 100vh;
+    background-color: #a36e29;
+    padding-left: 100px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .heading {
+      width: 20vw;
+      color: white;
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+    }
+
+    .helper-text {
+      width: 20vw;
+      color: white;
+      text-decoration: underline;
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-top: 50px;
+    }
+  }
+
+  .inputs {
+    height: 100vh;
+    border: none;
+  }
+}

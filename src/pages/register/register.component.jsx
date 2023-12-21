@@ -4,10 +4,12 @@ import { Link, useParams } from "react-router-dom";
 
 import "./register.styles.scss";
 
-import RegistrationOutlineComponent from "../../component/registration-outline-item/registration-outline-item.component";
+import RegistrationOutlineComponent from "../../components/registration-outline-item/registration-outline-item.component";
+import RegistrationUserDetails from "../../components/registration-user-details/registration-user-details.component";
 
 const Register = () => {
   let { step } = useParams();
+  let selectedIndex = step === "user" ? 1 : step === "company" ? 2 : 3;
 
   return (
     <div className="register">
@@ -38,30 +40,37 @@ const Register = () => {
             number={1}
             text={"User Details"}
             showTrailingLine={true}
+            selectedIndex={selectedIndex}
           />
           <RegistrationOutlineComponent
             number={2}
             text={"Company Details"}
             showTrailingLine={true}
+            selectedIndex={selectedIndex}
           />
           <RegistrationOutlineComponent
             number={3}
             text={"Store Details"}
             showTrailingLine={true}
+            selectedIndex={selectedIndex}
           />
           <RegistrationOutlineComponent
             number={4}
             text={"Pickup Address"}
             showTrailingLine={true}
+            selectedIndex={selectedIndex}
           />
           <RegistrationOutlineComponent
             number={5}
             text={"Bank Accounts"}
             showTrailingLine={false}
+            selectedIndex={selectedIndex}
           />
           <div className="helper-text">Seller Registration Guide</div>
         </Grid>
-        <Grid item xs={8} className="inputs"></Grid>
+        <Grid item xs={8} className="inputs">
+          {step === "user" ? <RegistrationUserDetails /> : <div />}
+        </Grid>
       </Grid>
     </div>
   );

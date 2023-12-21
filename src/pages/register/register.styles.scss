@@ -93,6 +93,11 @@
 
   .inputs {
     height: 100vh;
-    border: none;
+    padding-left: 100px;
+    padding-right: 200px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }

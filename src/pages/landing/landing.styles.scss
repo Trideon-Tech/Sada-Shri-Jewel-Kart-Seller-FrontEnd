@@ -1,0 +1,231 @@
+.landing {
+  font-family: "Work Sans", sans-serif;
+
+  .appbar {
+    background-color: #a36e29;
+    overflow: hidden;
+
+    .toolbar {
+      position: relative;
+      margin: auto;
+      height: 100px;
+      width: 75vw;
+
+      .logo {
+        height: 50px;
+        margin-right: 0.5rem;
+        vertical-align: middle;
+        cursor: pointer;
+      }
+
+      .btns {
+        margin-left: auto;
+
+        .link {
+          margin-left: 20px;
+          vertical-align: middle;
+          cursor: pointer;
+
+          .btn {
+            font-family: "Work Sans", sans-serif;
+            color: white;
+            text-transform: none;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+
+        .link-primary {
+          margin-left: 20px;
+          vertical-align: middle;
+          cursor: pointer;
+          padding: 10px 20px;
+          background-color: white;
+          border-radius: 5px;
+
+          .btn {
+            font-family: "Work Sans", sans-serif;
+            color: #a36e29;
+            text-transform: none;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .content {
+    height: calc(100vh - 160px);
+
+    .backdrop {
+      position: relative;
+      z-index: 0;
+
+      .top {
+        height: 30vh;
+        background-color: #a36e29;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .hero-text {
+          width: 75vw;
+          margin: auto;
+          padding-bottom: 50px;
+          color: white;
+          font-size: 4rem;
+          font-weight: 800;
+          line-height: 5rem;
+        }
+      }
+
+      .bottom {
+        height: calc(70vh - 160px);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        .buttons {
+          height: 120px;
+          width: 75vw;
+
+          display: flex;
+          align-items: center;
+
+          .btn-primary {
+            width: 200px;
+            height: 50px;
+            background-color: #a36e29;
+            margin-right: 50px;
+
+            .text {
+              font-family: "Work Sans", sans-serif;
+              color: white;
+              margin-right: 10px;
+              text-transform: none;
+              font-size: 1.1rem;
+            }
+
+            .icon {
+              color: white;
+              margin-left: 10px;
+            }
+          }
+
+          .btn-secondary {
+            width: 200px;
+            height: 50px;
+            border: 2px solid #a36e29;
+
+            .text {
+              font-family: "Work Sans", sans-serif;
+              color: #a36e29;
+              margin-right: 10px;
+              text-transform: none;
+              font-size: 1.1rem;
+            }
+
+            .icon {
+              color: #a36e29;
+              margin-left: 10px;
+            }
+          }
+        }
+
+        .comments {
+          height: calc(70vh - 280px);
+          width: 75vw;
+
+          display: flex;
+          justify-content: end;
+          align-items: center;
+          flex-direction: column;
+
+          .comment-item {
+            display: flex;
+
+            .comment-text {
+              width: 60vw;
+              text-align: center;
+              margin-left: 20px;
+              margin-right: 20px;
+
+              font-size: 1.15rem;
+              font-style: italic;
+              margin-top: 10px;
+              font-weight: 500;
+            }
+          }
+
+          .comment-author {
+            margin-top: 15px;
+            font-size: 1.1rem;
+            font-weight: 500;
+          }
+
+          .comment-author-title {
+            margin-top: 5px;
+            margin-bottom: 50px;
+            color: gray;
+          }
+        }
+      }
+    }
+
+    .hero {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 25vw;
+      z-index: 1;
+      margin-right: 10vw;
+      margin-top: 6vw;
+    }
+  }
+
+  .footer {
+    height: 60px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    .seperator {
+      height: 2px;
+      width: 75vw;
+      background-color: rgb(195, 195, 195);
+    }
+
+    .items-row {
+      height: 58px;
+      width: 75vw;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .company {
+        font-size: 1.05rem;
+        font-weight: 500;
+      }
+
+      .actions {
+        display: flex;
+
+        .action-item {
+          margin-left: 20px;
+          font-weight: 300;
+        }
+      }
+    }
+  }
+}

@@ -1,22 +1,17 @@
-import './App.css';
-import LandingPage from './components/LandingPage.jsx'
-import { useNavigate,Routes,Route } from 'react-router-dom';
-import Login from './components/Login.jsx';
-import Registration from './components/Registration.jsx'
-import Policies from './components/Policies.jsx';
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+
+import "./App.css";
+
+import Landing from "./pages/landing/landing.component";
 
 function App() {
-  const navigate = useNavigate();
   return (
     <div className="App">
-      {/* <button onClick={() => navigate(-1)}>go back</button> */}
+      <BrowserRouter>
         <Routes>
-          <Route exact path="/" element={<LandingPage/>}/>
-          <Route exact path="/login" element={<Login/>}/>
-          <Route exact path="/register" element={<Registration/>}/>
-          <Route exact path="/policies" element={<Policies/>}/>
-          <Route path="*" element={<LandingPage/>}/>
+          <Route exact path="/" element={<Landing />} />
         </Routes>
+      </BrowserRouter>
     </div>
   );
 }

@@ -6,10 +6,12 @@ import "./register.styles.scss";
 
 import RegistrationOutlineComponent from "../../components/registration-outline-item/registration-outline-item.component";
 import RegistrationUserDetails from "../../components/registration-user-details/registration-user-details.component";
+import RegistrationCompanyDetails from "../../components/registration-company-details/registration-company-details.component";
+import RegistrationStoreDetails from "../../components/registration-store-details/registration-store-details.component";
 
 const Register = () => {
   let { step } = useParams();
-  let selectedIndex = step === "user" ? 1 : step === "company" ? 2 : 3;
+  let selectedIndex = step === "user" ? 1 : step === "company" ? 2 : step === "store" ? 3 : step === "address" ? 4 : 5;
 
   return (
     <div className="register">
@@ -69,7 +71,7 @@ const Register = () => {
           <div className="helper-text">Seller Registration Guide</div>
         </Grid>
         <Grid item xs={8} className="inputs">
-          {step === "user" ? <RegistrationUserDetails /> : <div />}
+          {step === "user" ? <RegistrationUserDetails /> : step === "company" ? <RegistrationCompanyDetails/> : step === "store" ? <RegistrationStoreDetails/> : <div />}
         </Grid>
       </Grid>
     </div>

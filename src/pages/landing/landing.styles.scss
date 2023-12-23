@@ -9,10 +9,10 @@
       position: relative;
       margin: auto;
       height: 100px;
-      width: 75vw;
+      width: 80vw;
 
       .logo {
-        height: 50px;
+        height: 40px;
         margin-right: 0.5rem;
         vertical-align: middle;
         cursor: pointer;
@@ -79,9 +79,9 @@
           margin: auto;
           padding-bottom: 50px;
           color: white;
-          font-size: 4rem;
+          font-size: 3rem;
           font-weight: 800;
-          line-height: 5rem;
+          line-height: 4rem;
         }
       }
 
@@ -158,7 +158,7 @@
               margin-left: 20px;
               margin-right: 20px;
 
-              font-size: 1.15rem;
+              font-size: 1.05rem;
               font-style: italic;
               margin-top: 10px;
               font-weight: 500;
@@ -167,13 +167,14 @@
 
           .comment-author {
             margin-top: 15px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 500;
           }
 
           .comment-author-title {
+            font-size: 0.8rem;
             margin-top: 5px;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             color: gray;
           }
         }

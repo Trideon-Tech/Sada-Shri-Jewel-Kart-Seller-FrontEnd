@@ -18,7 +18,10 @@ const RegistrationUserDetails = () => {
   const [otp, setOtp] = useState();
 
   const onNext = () => {
-    console.log(firstName);
+    const formData = new FormData();
+    formData.append('name', `${firstName+' '+lastName}`);
+    formData.append('mobile', `${mobile}`);
+    // console.log(firstName);
     // if (firstName === "" || typeof firstName === "undefined") {
     //   toast.warn("First Name is required!", generalToastStyle);
     // } else if (lastName === "" || typeof firstName === "undefined") {
@@ -29,10 +32,20 @@ const RegistrationUserDetails = () => {
     //   toast.warn("OTP Verification is mandatory to proceed!");
     // }
     // else {
-    //   axios.post()
-    // }
-
-    navigate("/register/company");
+      axios.post('https://api.sadashrijewelkart.com//v1.0.0/seller/register.php', formData)
+      .then(response => {
+        // Handle the response
+        console.log('Response:', response.data);
+        localStorage.setItem("mobile",mobile);
+        navigate("/register/company");
+      })
+      .catch(error => {
+        // Handle errors
+        console.error('Error:', error);
+      });
+    //}
+    
+    
   };
 
   return (

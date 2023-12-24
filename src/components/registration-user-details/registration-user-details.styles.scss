@@ -19,6 +19,32 @@
     margin-right: 510px;
   }
 
+  .adornment-inactive {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+
+    &:hover {
+      background-color: #ffdbac;
+      border-radius: 100%;
+    }
+  }
+  
+  .adornment-active {
+    color: #a36e29;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+
+    &:hover {
+      background-color: #a36e29;
+      color: white;
+      border-radius: 100%;
+    }
+  }
+
   .actions {
     display: flex;
     justify-content: space-between;

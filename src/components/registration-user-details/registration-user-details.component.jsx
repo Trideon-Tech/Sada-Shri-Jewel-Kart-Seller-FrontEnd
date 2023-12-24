@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, Grid, InputAdornment } from "@mui/material";
+import { Done } from "@mui/icons-material";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
@@ -12,40 +13,64 @@ import InputTextField from "../input-text-field/input-text-field.component";
 
 const RegistrationUserDetails = () => {
   let navigate = useNavigate();
+
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
   const [mobile, setMobile] = useState();
   const [otp, setOtp] = useState();
+  const [otpSent, setOTPSent] = useState(false);
+  const [otpVerified, setOTPVerified] = useState(false);
+  const [sendOTPAdornment, activateSendOTPAdornment] = useState(false);
+  const [verifyOTPAdornment, activateVerifyOTPAdornment] = useState(false);
+
+  const sendOTP = () => {
+    // API to send OTP
+    toast("OTP Sent Successfully!", generalToastStyle);
+    activateSendOTPAdornment(false);
+    setOTPSent(true);
+  };
+
+  const verifyOTP = () => {
+    // API to verify OTP
+    toast("OTP Verified Successfully!", generalToastStyle);
+    activateVerifyOTPAdornment(false);
+    setOTPVerified(true);
+  };
 
   const onNext = () => {
-    const formData = new FormData();
-    formData.append('name', `${firstName+' '+lastName}`);
-    formData.append('mobile', `${mobile}`);
-    // console.log(firstName);
-    // if (firstName === "" || typeof firstName === "undefined") {
-    //   toast.warn("First Name is required!", generalToastStyle);
-    // } else if (lastName === "" || typeof firstName === "undefined") {
-    //   toast.warn("Last Name is required!");
-    // } else if (mobile === "" || typeof firstName === "undefined") {
-    //   toast.warn("Mobie Number is required!", generalToastStyle);
-    // } else if (otp === "" || typeof firstName === "undefined") {
-    //   toast.warn("OTP Verification is mandatory to proceed!");
-    // }
-    // else {
-      axios.post('https://api.sadashrijewelkart.com//v1.0.0/seller/register.php', formData)
-      .then(response => {
-        // Handle the response
-        console.log('Response:', response.data);
-        localStorage.setItem("mobile",mobile);
-        navigate("/register/company");
-      })
-      .catch(error => {
-        // Handle errors
-        console.error('Error:', error);
-      });
-    //}
-    
-    
+    if (firstName === "" || typeof firstName === "undefined") {
+      toast.warn("First Name is required!", generalToastStyle);
+    } else if (lastName === "" || typeof lastName === "undefined") {
+      toast.warn("Last Name is required!", generalToastStyle);
+    } else if (mobile === "" || typeof mobile === "undefined") {
+      toast.warn("Mobie Number is required!", generalToastStyle);
+    } else if (!otpSent) {
+      toast.warn('Click on the "Tick" icon to send OTP!', generalToastStyle);
+    } else if (otp === "" || typeof otp === "undefined") {
+      toast.warn(
+        "OTP Verification is mandatory to proceed!",
+        generalToastStyle
+      );
+    } else if (!otpVerified) {
+      toast.warn('Click on the "Tick" icon to verify OTP!', generalToastStyle);
+    } else {
+      let formData = new FormData();
+      formData.append("name", `${firstName + " " + lastName}`);
+      formData.append("mobile", `${mobile}`);
+
+      axios
+        .post(
+          "https://api.sadashrijewelkart.com/v1.0.0/seller/register.php",
+          formData
+        )
+        .then((response) => {
+          localStorage.setItem("mobile", mobile);
+          navigate("/register/company");
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
   };
 
   return (
@@ -75,15 +100,44 @@ const RegistrationUserDetails = () => {
           <InputTextField
             title={"Mobile"}
             value={mobile}
-            onEdit={(e) => setMobile(e.target.value)}
-            adornment={<InputAdornment position="end"></InputAdornment>}
+            onEdit={(e) => {
+              setMobile(e.target.value);
+              if (e.target.value.length == 10) activateSendOTPAdornment(true);
+              else activateSendOTPAdornment(false);
+            }}
+            adornment={
+              <InputAdornment position="end">
+                <Done
+                  className={
+                    sendOTPAdornment ? "adornment-active" : "adornment-inactive"
+                  }
+                  onClick={sendOTP}
+                />
+              </InputAdornment>
+            }
           />
         </Grid>
         <Grid item xs={6}>
           <InputTextField
             title={"OTP"}
             value={otp}
-            onEdit={(e) => setOtp(e.target.value)}
+            onEdit={(e) => {
+              setOtp(e.target.value);
+              if (e.target.value.length == 6) activateVerifyOTPAdornment(true);
+              else activateVerifyOTPAdornment(false);
+            }}
+            adornment={
+              <InputAdornment position="end">
+                <Done
+                  className={
+                    verifyOTPAdornment
+                      ? "adornment-active"
+                      : "adornment-inactive"
+                  }
+                  onClick={verifyOTP}
+                />
+              </InputAdornment>
+            }
           />
         </Grid>
       </Grid>

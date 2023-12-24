@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Button, Grid, InputAdornment } from "@mui/material";
+import {
+  Button,
+  Grid,
+  InputAdornment,
+  CircularProgress,
+  ThemeProvider,
+  createTheme,
+} from "@mui/material";
 import { Done } from "@mui/icons-material";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,6 +17,14 @@ import "./registration-user-details.styles.scss";
 
 import { generalToastStyle } from "../../utils/toast.styles";
 import InputTextField from "../input-text-field/input-text-field.component";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#ffffff",
+    },
+  },
+});
 
 const RegistrationUserDetails = () => {
   let navigate = useNavigate();
@@ -22,6 +37,7 @@ const RegistrationUserDetails = () => {
   const [otpVerified, setOTPVerified] = useState(false);
   const [sendOTPAdornment, activateSendOTPAdornment] = useState(false);
   const [verifyOTPAdornment, activateVerifyOTPAdornment] = useState(false);
+  const [nextStepLoading, activateNextStepLoading] = useState(false);
 
   const sendOTP = () => {
     // API to send OTP
@@ -54,6 +70,7 @@ const RegistrationUserDetails = () => {
     } else if (!otpVerified) {
       toast.warn('Click on the "Tick" icon to verify OTP!', generalToastStyle);
     } else {
+      activateNextStepLoading(true);
       let formData = new FormData();
       formData.append("name", `${firstName + " " + lastName}`);
       formData.append("mobile", `${mobile}`);
@@ -63,12 +80,15 @@ const RegistrationUserDetails = () => {
           "https://api.sadashrijewelkart.com/v1.0.0/seller/register.php",
           formData
         )
-        .then((response) => {
+        .then((_) => {
           localStorage.setItem("mobile", mobile);
+          activateNextStepLoading(false);
           navigate("/register/company");
         })
         .catch((error) => {
           console.error("Error:", error);
+          activateNextStepLoading(false);
+          toast.warn(error.response.data.message, generalToastStyle);
         });
     }
   };
@@ -102,7 +122,7 @@ const RegistrationUserDetails = () => {
             value={mobile}
             onEdit={(e) => {
               setMobile(e.target.value);
-              if (e.target.value.length == 10) activateSendOTPAdornment(true);
+              if (e.target.value.length === 10) activateSendOTPAdornment(true);
               else activateSendOTPAdornment(false);
             }}
             adornment={
@@ -123,7 +143,7 @@ const RegistrationUserDetails = () => {
             value={otp}
             onEdit={(e) => {
               setOtp(e.target.value);
-              if (e.target.value.length == 6) activateVerifyOTPAdornment(true);
+              if (e.target.value.length === 6) activateVerifyOTPAdornment(true);
               else activateVerifyOTPAdornment(false);
             }}
             adornment={
@@ -147,7 +167,13 @@ const RegistrationUserDetails = () => {
           Prev. Step
         </Button>
         <Button className="btn-primary" onClick={onNext}>
-          Next Step
+          {nextStepLoading ? (
+            <ThemeProvider theme={theme}>
+              <CircularProgress size={"1.1rem"} />
+            </ThemeProvider>
+          ) : (
+            "Next Step"
+          )}
         </Button>
       </div>
     </div>

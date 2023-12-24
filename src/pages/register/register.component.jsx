@@ -8,6 +8,8 @@ import RegistrationOutlineComponent from "../../components/registration-outline-
 import RegistrationUserDetails from "../../components/registration-user-details/registration-user-details.component";
 import RegistrationCompanyDetails from "../../components/registration-company-details/registration-company-details.component";
 import RegistrationStoreDetails from "../../components/registration-store-details/registration-store-details.component";
+import RegistrationAddressDetails from "../../components/registration-address-details/registration-address-details.component";
+import RegistrationBankDetails from "../../components/registration-bank-details/registration-bank-details.component";
 
 const Register = () => {
   let { step } = useParams();
@@ -71,7 +73,7 @@ const Register = () => {
           <div className="helper-text">Seller Registration Guide</div>
         </Grid>
         <Grid item xs={8} className="inputs">
-          {step === "user" ? <RegistrationUserDetails /> : step === "company" ? <RegistrationCompanyDetails/> : step === "store" ? <RegistrationStoreDetails/> : <div />}
+          {step === "user" ? <RegistrationUserDetails /> : step === "company" ? <RegistrationCompanyDetails/> : step === "store" ? <RegistrationStoreDetails/> : step === "address" ? <RegistrationAddressDetails/> : step === "bank"? <RegistrationBankDetails/> : <div />}
         </Grid>
       </Grid>
     </div>

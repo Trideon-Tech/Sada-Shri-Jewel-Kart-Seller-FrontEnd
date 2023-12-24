@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { generalToastStyle } from "../../utils/toast.styles";
 import InputTextField from "../input-text-field/input-text-field.component";
+import './registration-company-details.styles.scss';
 
 const RegistrationCompanyDetails = () => {
     let navigate = useNavigate();
@@ -12,11 +13,12 @@ const RegistrationCompanyDetails = () => {
     const [gstInOtp, setGstInOtp] = useState();
     const [companyTradeName, setCompanyTradeName] = useState();
 
-    useEffect (()=>{
-        console.log(localStorage.getItem("mobile"));
-    },[]);
+    
     
     const onNext = () => {
+      //     const formData = new FormData();
+      //     formData.append('name', `${firstName+' '+lastName}`);
+      // formData.append('mobile', `${mobile}`);
         if (gstIn === "" || typeof gstIn === "undefined") {
             toast.warn("GSTIN is required!", generalToastStyle);
           } else if (gstInOtp === "" || typeof gstInOtp === "undefined") {
@@ -25,24 +27,27 @@ const RegistrationCompanyDetails = () => {
             toast.warn(" Company Trade Name is mandatory to proceed!");
           }
           else {
-            axios.post('https://api.sadashrijewelkart.com/api/seller/register.php', {
+            localStorage.setItem("gstIn",gstIn);
+            localStorage.setItem("companyTradeName",companyTradeName);
+            navigate("/register/store");
+            // axios.post('https://api.sadashrijewelkart.com/api/seller/register.php', {
               // Request body (data to be sent)
-              companyTradeName: companyTradeName,
-              gstIn: gstIn,
-            })
-            .then(response => {
-              // Handle the response
-              console.log('Response:', response.data);
-            })
-            .catch(error => {
-              // Handle errors
-              console.error('Error:', error);
-            });
+              // companyTradeName: companyTradeName,
+              // gstIn: gstIn,
+            // })
+            // .then(response => {
+            //   // Handle the response
+            //   console.log('Response:', response.data);
+            // })
+            // .catch(error => {
+            //   // Handle errors
+            //   console.error('Error:', error);
+            // });
           }
-        navigate("/register/store");
+        
     };
     return (
-        <div className="registration-user-details">
+        <div className="registration-company-details">
          <ToastContainer />
          <div className="step-text">Step 2/5</div>
          <div className="heading">Company Details</div>

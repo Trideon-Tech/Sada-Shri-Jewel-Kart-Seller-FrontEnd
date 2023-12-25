@@ -71,7 +71,7 @@ const RegistrationBankDetails = () => {
         .then((_) => {
           localStorage.clear();
           activateNextStepLoading(false);
-          navigate("/home");
+          navigate("/staging");
         })
         .catch((error) => {
           console.error("Error:", error);

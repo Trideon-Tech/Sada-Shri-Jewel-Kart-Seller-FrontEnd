@@ -89,7 +89,6 @@ const RegistrationStoreDetails = () => {
           }
         )
         .then((response) => {
-          console.log(response.data);
           activateNextStepLoading(false);
           navigate("/register/address");
         })

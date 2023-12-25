@@ -1,41 +1,92 @@
-import { Grid,Button } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
+import {
+  Grid,
+  Button,
+  ThemeProvider,
+  createTheme,
+  CircularProgress,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
-import "./registration-address-details.styles.scss"
+
+import "./registration-address-details.styles.scss";
+
+import { generalToastStyle } from "../../utils/toast.styles";
 import InputTextField from "../input-text-field/input-text-field.component";
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#ffffff",
+    },
+  },
+});
+
 const RegistrationAddressDetails = () => {
-  let registeredMobile= localStorage.getItem("mobile");
   let navigate = useNavigate();
+
+  let registeredMobile = localStorage.getItem("mobile");
+
   const [add1, setAdd1] = useState();
   const [add2, setAdd2] = useState();
   const [city, setCity] = useState();
   const [state, setState] = useState();
   const [pincode, setPincode] = useState();
+  const [nextStepLoading, activateNextStepLoading] = useState(false);
 
   const onNext = () => {
-    const formData = new FormData();
-    formData.append('mobile', registeredMobile);
-    formData.append('add1', add1);
-    formData.append('add2', add2);
-    formData.append('city', city);
-    formData.append('state', state);
-    formData.append('pincode', pincode);
-    formData.append('key','company_address');
+    if (add1 === "" || typeof add1 === "undefined") {
+      toast.warn("Address is required!", generalToastStyle);
+    } else if (city === "" || typeof city === "undefined") {
+      toast.warn("City Name is required!", generalToastStyle);
+    } else if (state === "" || typeof state === "undefined") {
+      toast.warn("State Name is required!", generalToastStyle);
+    } else if (pincode === "" || typeof pincode === "undefined") {
+      toast.warn("Pincode is required!", generalToastStyle);
+    } else {
+      activateNextStepLoading(true);
 
-    axios.post('https://api.sadashrijewelkart.com/v1.0.0/seller/add.php', formData)
-      .then(response => {
-        // Handle the response
-        console.log('Response:', response.data);
-        navigate("/register/bank");
-      })
-      .catch(error => {
-        // Handle errors
-        console.error('Error:', error);
-      });
-    
+      const formData = new FormData();
+      if (add2) {
+        // 2nd line of address is available
+        formData.append("mobile", registeredMobile);
+        formData.append("key", "company_address");
+        formData.append("add_line_1", add1);
+        formData.append("add_line_2", add2);
+        formData.append("city", city);
+        formData.append("state", state);
+        formData.append("pincode", pincode);
+      } else {
+        // 2nd line of address is not available
+        formData.append("mobile", registeredMobile);
+        formData.append("key", "company_address");
+        formData.append("add_line_1", add1);
+        formData.append("city", city);
+        formData.append("state", state);
+        formData.append("pincode", pincode);
+      }
+
+      axios
+        .post(
+          "https://api.sadashrijewelkart.com/v1.0.0/seller/add.php",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((_) => {
+          activateNextStepLoading(false);
+          navigate("/register/bank");
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          activateNextStepLoading(false);
+          toast.warn(error.response.data.message, generalToastStyle);
+        });
+    }
   };
 
   return (
@@ -50,7 +101,6 @@ const RegistrationAddressDetails = () => {
             value={add1}
             onEdit={(e) => {
               setAdd1(e.target.value);
-              console.log(add1);
             }}
           />
         </Grid>
@@ -60,7 +110,6 @@ const RegistrationAddressDetails = () => {
             value={add2}
             onEdit={(e) => {
               setAdd2(e.target.value);
-              console.log(add2);
             }}
           />
         </Grid>
@@ -70,7 +119,6 @@ const RegistrationAddressDetails = () => {
             value={city}
             onEdit={(e) => {
               setCity(e.target.value);
-              console.log(city);
             }}
           />
         </Grid>
@@ -80,7 +128,6 @@ const RegistrationAddressDetails = () => {
             value={state}
             onEdit={(e) => {
               setState(e.target.value);
-              console.log(state);
             }}
           />
         </Grid>
@@ -90,18 +137,27 @@ const RegistrationAddressDetails = () => {
             value={pincode}
             onEdit={(e) => {
               setPincode(e.target.value);
-              console.log(pincode);
             }}
           />
         </Grid>
       </Grid>
+      <div className="step-text">
+        ** You can add multiple pickup addresses once the company's profile is
+        created.
+      </div>
       <div className="divider" />
       <div className="actions">
         <Button className="btn-secondary" disabled={true}>
           Prev. Step
         </Button>
         <Button className="btn-primary" onClick={onNext}>
-          Next Step
+          {nextStepLoading ? (
+            <ThemeProvider theme={theme}>
+              <CircularProgress size={"1.1rem"} />
+            </ThemeProvider>
+          ) : (
+            "Next Step"
+          )}
         </Button>
       </div>
     </div>

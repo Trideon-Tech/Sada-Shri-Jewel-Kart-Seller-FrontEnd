@@ -13,7 +13,16 @@ import RegistrationBankDetails from "../../components/registration-bank-details/
 
 const Register = () => {
   let { step } = useParams();
-  let selectedIndex = step === "user" ? 1 : step === "company" ? 2 : step === "store" ? 3 : step === "address" ? 4 : 5;
+  let selectedIndex =
+    step === "user"
+      ? 1
+      : step === "company"
+      ? 2
+      : step === "store"
+      ? 3
+      : step === "address"
+      ? 4
+      : 5;
 
   return (
     <div className="register">
@@ -73,7 +82,19 @@ const Register = () => {
           <div className="helper-text">Seller Registration Guide</div>
         </Grid>
         <Grid item xs={8} className="inputs">
-          {step === "user" ? <RegistrationUserDetails /> : step === "company" ? <RegistrationCompanyDetails/> : step === "store" ? <RegistrationStoreDetails/> : step === "address" ? <RegistrationAddressDetails/> : step === "bank"? <RegistrationBankDetails/> : <div />}
+          {step === "user" ? (
+            <RegistrationUserDetails />
+          ) : step === "company" ? (
+            <RegistrationCompanyDetails />
+          ) : step === "store" ? (
+            <RegistrationStoreDetails />
+          ) : step === "address" ? (
+            <RegistrationAddressDetails />
+          ) : step === "bank" ? (
+            <RegistrationBankDetails />
+          ) : (
+            <div />
+          )}
         </Grid>
       </Grid>
     </div>

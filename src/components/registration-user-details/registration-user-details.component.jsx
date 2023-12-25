@@ -78,7 +78,12 @@ const RegistrationUserDetails = () => {
       axios
         .post(
           "https://api.sadashrijewelkart.com/v1.0.0/seller/register.php",
-          formData
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         )
         .then((_) => {
           localStorage.setItem("mobile", mobile);

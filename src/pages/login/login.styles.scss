@@ -1,0 +1,142 @@
+.login {
+  font-family: "Work Sans", sans-serif;
+
+  .appbar {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    background-color: inherit;
+    overflow: hidden;
+
+    .toolbar {
+      position: relative;
+      margin: auto;
+      height: 100px;
+      width: 80vw;
+
+      .logo {
+        height: 40px;
+        margin-right: 0.5rem;
+        vertical-align: middle;
+        cursor: pointer;
+      }
+
+      .btns {
+        margin-left: auto;
+
+        .link {
+          margin-left: 20px;
+          vertical-align: middle;
+          cursor: pointer;
+
+          .btn {
+            font-family: "Work Sans", sans-serif;
+            color: white;
+            text-transform: none;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+
+        .link-primary {
+          margin-left: 20px;
+          vertical-align: middle;
+          cursor: pointer;
+          padding: 10px 20px;
+          background-color: white;
+          border-radius: 5px;
+
+          .btn {
+            font-family: "Work Sans", sans-serif;
+            color: #a36e29;
+            text-transform: none;
+            margin: auto;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .actions-div {
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .content {
+        // background-color: pink;
+        width: 80%;
+
+      .heading {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 50px;
+      }
+
+      .adornment-inactive {
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        padding: 8px;
+
+        &:hover {
+          background-color: #ffdbac;
+          border-radius: 100%;
+        }
+      }
+
+      .adornment-active {
+        color: #a36e29;
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        padding: 8px;
+
+        &:hover {
+          background-color: #a36e29;
+          color: white;
+          border-radius: 100%;
+        }
+      }
+
+      .actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        margin-right: 50px;
+
+        .btn-primary {
+          text-transform: none;
+          font-family: "Work Sans", sans-serif;
+          padding: 10px 30px;
+          color: white;
+          background-color: #a36e29;
+        }
+
+        .btn-secondary {
+          text-transform: none;
+          font-family: "Work Sans", sans-serif;
+          padding: 10px 30px;
+          color: #a36e29;
+          border: 1.5px solid #a36e29;
+        }
+      }
+    }
+  }
+
+  .infographics {
+    height: 100vh;
+    background-color: #a36e29;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}

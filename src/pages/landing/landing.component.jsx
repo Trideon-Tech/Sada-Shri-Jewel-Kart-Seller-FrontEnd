@@ -19,7 +19,7 @@ const Landing = () => {
             src={process.env.PUBLIC_URL + "/assets/logo_white.png"}
           />
           <div className="btns">
-            <Link className="link">
+            <Link className="link" to={"/login"}>
               <Button className="btn">Login</Button>
             </Link>
             <Link className="link-primary">

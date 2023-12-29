@@ -10,6 +10,7 @@ import Login from "./pages/login/login.component";
 import Shipping from "./pages/shippingandreturns/shipping.component";
 import PrivacyPolicy from "./pages/Privacy-Policy/privacy.component";
 import TermsandConditions from "./pages/terms-conditions/term.component";
+import ContactUs from "./pages/contact-us/contactUs.component";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/shipping" element={<Shipping />} />
           <Route path="/privacy" element={<PrivacyPolicy/>} />
           <Route path="/term" element={<TermsandConditions/>} />
+          <Route path="/contactus" element={<ContactUs/>} />
         </Routes>
       </BrowserRouter>
     </div>

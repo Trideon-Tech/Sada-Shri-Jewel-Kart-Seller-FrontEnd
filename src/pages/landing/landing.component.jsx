@@ -8,6 +8,22 @@ import "./landing.styles.scss";
 const Landing = () => {
   const navigate = useNavigate();
 
+  const handlePrivacyClick = () =>{
+    navigate("/privacy");
+  };
+
+  const handleShippingClick = () =>{
+    navigate("/shipping");
+  };
+
+  const handleTermClick = () => {
+    navigate("/term");
+  };
+
+  const handleRefundClick = () =>{
+    navigate("/shipping");
+  };
+
   return (
     <div className="landing">
       {/* Top Section */}
@@ -91,10 +107,10 @@ const Landing = () => {
         <div className="items-row">
           <div className="company">Sada Shri Jewel Kart Pvt. Ltd.</div>
           <div className="actions">
-            <div className="action-item">Privacy Policy</div>
-            <div className="action-item">Shipping & Delivery</div>
-            <div className="action-item">Terms & Conditions</div>
-            <div className="action-item">Refund Policy</div>
+            <div onClick={handlePrivacyClick} className="action-item">Privacy Policy</div>
+            <div onClick={handleShippingClick} className="action-item">Shipping & Delivery</div>
+            <div onClick={handleTermClick} className="action-item">Terms & Conditions</div>
+            <div onClick={handleRefundClick} className="action-item">Refund Policy</div>
           </div>
         </div>
       </div>

@@ -1,0 +1,97 @@
+.landing {
+    font-family: "Work Sans", sans-serif;
+  
+    .appbar {
+      background-color: #a36e29;
+      overflow: hidden;
+  
+      .toolbar {
+        position: relative;
+        margin: auto;
+        height: 100px;
+        width: 80vw;
+  
+        .logo {
+          height: 40px;
+          margin-right: 0.5rem;
+          vertical-align: middle;
+          cursor: pointer;
+        }
+  
+        .btns {
+          margin-left: auto;
+  
+          .link {
+            margin-left: 20px;
+            vertical-align: middle;
+            cursor: pointer;
+  
+            .btn {
+              font-family: "Work Sans", sans-serif;
+              color: white;
+              text-transform: none;
+  
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+  
+          .link-primary {
+            margin-left: 20px;
+            vertical-align: middle;
+            cursor: pointer;
+            padding: 10px 20px;
+            background-color: white;
+            border-radius: 5px;
+  
+            .btn {
+              font-family: "Work Sans", sans-serif;
+              color: #a36e29;
+              text-transform: none;
+  
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+      }
+    }
+  
+    .content {
+        height: calc(100vh - 160px);
+      
+          .top {
+            height: 20vh;
+            background-color: #a36e29;
+      
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+      
+            .hero-text {
+              width: 80vw;
+              margin: auto;
+              padding-bottom: 50px;
+              color: white;
+              font-size: 3rem;
+              font-weight: 800;
+              line-height: 4rem;
+            }
+          }
+      
+            .text {
+              width: 100%;
+              display: flex;
+            flex-direction: column;
+            align-items: center;
+              padding-top: 5vh;
+              padding-left: 10vw;
+              padding-right: 10vw;
+              padding-bottom: 5vh;
+            }
+        
+      }
+  
+  }

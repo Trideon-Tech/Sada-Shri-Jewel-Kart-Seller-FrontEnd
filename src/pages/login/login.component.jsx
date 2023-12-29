@@ -9,10 +9,11 @@ import {
   ThemeProvider,
   CircularProgress,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Done } from "@mui/icons-material";
+import Slider from "react-slick";
 
 import "./login.styles.scss";
 
@@ -28,6 +29,7 @@ const theme = createTheme({
 });
 
 const Login = () => {
+  let navigate = useNavigate();
   const [mobile, setMobile] = useState();
   const [otp, setOtp] = useState();
   const [otpSent, setOTPSent] = useState(false);
@@ -52,6 +54,17 @@ const Login = () => {
 
   const onNext = () => {};
 
+  // const settings = {
+  //   dots: true,
+  //   infinite: true,
+  //   speed: 500,
+  //   slidesToShow: 1,
+  //   slidesToScroll: 1,
+  // };
+  const handleLogoClick = () => {
+    navigate("/");
+  };
+  
   return (
     <div className="login">
       <ToastContainer />
@@ -62,6 +75,7 @@ const Login = () => {
             alt="logo"
             className="logo"
             src={process.env.PUBLIC_URL + "/assets/logo_dark.png"}
+            onClick={handleLogoClick}
           />
           <div className="btns">
             <Link className="link" to={"/login"}>
@@ -140,7 +154,21 @@ const Login = () => {
           </div>
         </Grid>
         <Grid item xs={8} className="infographics">
-          Space to display some infogrphics
+        {/* <Slider>
+            <div>
+              <img src="/assets/jwellary(1).jpg" alt="Landscape 1" />
+            </div>
+            <div>
+              <img src="/assets/jwellary(2).jpg" alt="Landscape 2" />
+            </div>
+            <div>
+              <img src="/assets/jwellary(3).jpg" alt="Landscape 3" />
+            </div>
+            <div>
+              <img src="/assets/jwellary(4).jpg" alt="Landscape 4" />
+            </div>
+          </Slider> */}
+          Graphics
         </Grid>
       </Grid>
     </div>

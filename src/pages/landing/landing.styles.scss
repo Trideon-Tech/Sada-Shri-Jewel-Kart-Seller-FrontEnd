@@ -106,7 +106,7 @@
             background-color: #a36e29;
             margin-right: 50px;
 
-            .text {
+            .btn-text {
               font-family: "Work Sans", sans-serif;
               color: white;
               margin-right: 10px;
@@ -125,7 +125,7 @@
             height: 50px;
             border: 2px solid #a36e29;
 
-            .text {
+            .btn-text {
               font-family: "Work Sans", sans-serif;
               color: #a36e29;
               margin-right: 10px;
@@ -225,6 +225,7 @@
         .action-item {
           margin-left: 20px;
           font-weight: 300;
+          cursor: pointer;
         }
       }
     }

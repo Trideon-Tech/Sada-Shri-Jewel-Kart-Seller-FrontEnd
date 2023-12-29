@@ -8,20 +8,8 @@ import "./landing.styles.scss";
 const Landing = () => {
   const navigate = useNavigate();
 
-  const handlePrivacyClick = () =>{
-    navigate("/privacy");
-  };
-
-  const handleShippingClick = () =>{
-    navigate("/shipping");
-  };
-
-  const handleTermClick = () => {
-    navigate("/term");
-  };
-
-  const handleRefundClick = () =>{
-    navigate("/shipping");
+  const handleFooterRedirect = (item) => {
+    navigate(`/${item}`);
   };
 
   return (
@@ -65,11 +53,11 @@ const Landing = () => {
                 className="btn-primary"
                 onClick={() => navigate("/register/user")}
               >
-                <div className="text">Get Started</div>
+                <div className="btn-text">Get Started</div>
                 <ChevronRight className="icon" />
               </Button>
               <Button className="btn-secondary">
-                <div className="text">Know More</div>
+                <div className="btn-text">Know More</div>
                 <ChevronRight className="icon" />
               </Button>
             </div>
@@ -107,10 +95,30 @@ const Landing = () => {
         <div className="items-row">
           <div className="company">Sada Shri Jewel Kart Pvt. Ltd.</div>
           <div className="actions">
-            <div onClick={handlePrivacyClick} className="action-item">Privacy Policy</div>
-            <div onClick={handleShippingClick} className="action-item">Shipping & Delivery</div>
-            <div onClick={handleTermClick} className="action-item">Terms & Conditions</div>
-            <div onClick={handleRefundClick} className="action-item">Refund Policy</div>
+            <div
+              onClick={() => handleFooterRedirect("privacy")}
+              className="action-item"
+            >
+              Privacy Policy
+            </div>
+            <div
+              onClick={() => handleFooterRedirect("shipping")}
+              className="action-item"
+            >
+              Shipping & Delivery
+            </div>
+            <div
+              onClick={() => handleFooterRedirect("term")}
+              className="action-item"
+            >
+              Terms & Conditions
+            </div>
+            <div
+              onClick={() => handleFooterRedirect("shipping")}
+              className="action-item"
+            >
+              Refund Policy
+            </div>
           </div>
         </div>
       </div>

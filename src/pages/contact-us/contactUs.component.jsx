@@ -88,7 +88,7 @@ const ContactUs = () => {
               <Button className="btn">Login</Button>
             </Link>
             <Link className="link-primary">
-              <Button className="btn" to={"/register"}>
+              <Button className="btn" to={"/"}>
                 Register
               </Button>
             </Link>
@@ -164,11 +164,11 @@ const ContactUs = () => {
                     />
                     <div className="divider" />
                     <div className="actions">
-                      <Button className="btn-secondary" disabled={true}>
+                      {/* <Button className="btn-secondary" disabled={true}>
                         Prev. Step
-                      </Button>
+                      </Button> */}
                       <Button className="btn-primary" onClick={onNext}>
-                        "Next Step"
+                        Submit
                       </Button>
                     </div>
                   </form>

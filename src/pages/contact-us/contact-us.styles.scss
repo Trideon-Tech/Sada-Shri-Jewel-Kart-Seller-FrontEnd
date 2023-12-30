@@ -1,0 +1,142 @@
+.landing {
+  font-family: "Work Sans", sans-serif;
+
+  .appbar {
+    background-color: #a36e29;
+    overflow: hidden;
+
+    .toolbar {
+      position: relative;
+      margin: auto;
+      height: 100px;
+      width: 80vw;
+
+      .logo {
+        height: 40px;
+        margin-right: 0.5rem;
+        vertical-align: middle;
+        cursor: pointer;
+      }
+
+      .btns {
+        margin-left: auto;
+
+        .link {
+          margin-left: 20px;
+          vertical-align: middle;
+          cursor: pointer;
+
+          .btn {
+            font-family: "Work Sans", sans-serif;
+            color: white;
+            text-transform: none;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+
+        .link-primary {
+          margin-left: 20px;
+          vertical-align: middle;
+          cursor: pointer;
+          padding: 10px 20px;
+          background-color: white;
+          border-radius: 5px;
+
+          .btn {
+            font-family: "Work Sans", sans-serif;
+            color: #a36e29;
+            text-transform: none;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .contact-us-content {
+    height: calc(100vh - 100px);
+
+    .top {
+      height: 20vh;
+      background-color: #a36e29;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .hero-text {
+        width: 75vw;
+        margin: auto;
+        padding-bottom: 50px;
+        color: white;
+        font-size: 3rem;
+        font-weight: 800;
+        line-height: 4rem;
+      }
+    }
+
+    .text {
+      height: calc(80vh-100px);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 5vh;
+      padding-left: 10vw;
+      padding-right: 10vw;
+      padding-bottom: 5vh;
+
+      .contact-us {
+        .left-block {
+          @media (max-width: 600px) {
+            width: 100%;
+          }
+        }
+
+        .right-block {
+          form {
+
+            .MuiFormControl-root {
+              margin-bottom: 20px;
+            }
+
+            .MuiButton-root {
+              align-self: flex-end;
+            }
+            
+            .divider {
+              width: 100%;
+              height: 2px;
+              background-color: rgb(183, 183, 183);
+              margin-top: 40px;
+              margin-right: 510px;
+            }
+            .actions {
+              display: flex;
+              justify-content: space-between;
+              margin-top: 30px;
+
+              .btn-primary {
+                text-transform: none;
+                font-family: "Work Sans", sans-serif;
+                padding: 10px 60px;
+                color: white;
+                background-color: #a36e29;
+              }
+            }
+          }
+
+          @media (max-width: 600px) {
+            margin-top: 20px;
+          }
+        }
+      }
+    }
+  }
+}

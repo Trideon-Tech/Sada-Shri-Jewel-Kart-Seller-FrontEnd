@@ -35,6 +35,10 @@ const ContactUs = () => {
     navigate("/");
   };
 
+  const handleFooterRedirect = (item) => {
+    navigate(`/${item}`);
+  };
+
   const onNext = () => {
     if (name === "" || typeof name === "undefined") {
       toast.warn("Name is required!", generalToastStyle);
@@ -177,6 +181,38 @@ const ContactUs = () => {
             </Grid>
           </div>
         </div>
+        <div className="footer">
+        <div className="seperator" />
+        <div className="items-row">
+          <div className="company">Sada Shri Jewel Kart Pvt. Ltd.</div>
+          <div className="actions">
+            <div
+              onClick={() => handleFooterRedirect("privacy")}
+              className="action-item"
+            >
+              Privacy Policy
+            </div>
+            <div
+              onClick={() => handleFooterRedirect("shipping")}
+              className="action-item"
+            >
+              Shipping & Delivery
+            </div>
+            <div
+              onClick={() => handleFooterRedirect("term")}
+              className="action-item"
+            >
+              Terms & Conditions
+            </div>
+            <div
+              onClick={() => handleFooterRedirect("shipping")}
+              className="action-item"
+            >
+              Refund Policy
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   );

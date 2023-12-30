@@ -11,6 +11,10 @@ const PrivacyPolicy = () => {
     navigate("/");
   };
 
+  const handleFooterRedirect = (item) => {
+    navigate(`/${item}`);
+  };
+
   return (
     <div className="landing">
       {/* Top Section */}
@@ -241,9 +245,41 @@ const PrivacyPolicy = () => {
               (Grievance and Nodal Officer) <br/>Indiejewel Fashions Private Limited,
               Third Floor, Magnum Vista, <br/>Raghuvanahalli, Bangalore, 560062,
               Bangalore KA, India
-            </li>
+            </li><br/><br/>
           </ul>
         </div>
+        <div className="footer">
+        <div className="seperator" />
+        <div className="items-row">
+          <div className="company">Sada Shri Jewel Kart Pvt. Ltd.</div>
+          <div className="actions">
+            <div
+              onClick={() => handleFooterRedirect("privacy")}
+              className="action-item"
+            >
+              Privacy Policy
+            </div>
+            <div
+              onClick={() => handleFooterRedirect("shipping")}
+              className="action-item"
+            >
+              Shipping & Delivery
+            </div>
+            <div
+              onClick={() => handleFooterRedirect("term")}
+              className="action-item"
+            >
+              Terms & Conditions
+            </div>
+            <div
+              onClick={() => handleFooterRedirect("shipping")}
+              className="action-item"
+            >
+              Refund Policy
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   );

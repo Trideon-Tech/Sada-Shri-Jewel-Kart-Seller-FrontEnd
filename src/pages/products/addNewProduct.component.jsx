@@ -43,6 +43,7 @@ const theme = createTheme({
 const AddNewProduct = () => {
   let navigate = useNavigate();
   let token = localStorage.getItem("token");
+
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState(null);
   const [productName, setProductName] = useState();
@@ -141,9 +142,8 @@ const AddNewProduct = () => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
-
         }
       )
       .then((response) => {
@@ -155,7 +155,7 @@ const AddNewProduct = () => {
           const formData = new FormData();
           formData.append("type", "infographics");
           formData.append("product", productId);
-          formData.append("is_primary", '0');
+          formData.append("is_primary", index === 0 ? true : false);
           formData.append("file_type", "img");
           formData.append("file", image);
           console.log(formData);
@@ -166,7 +166,7 @@ const AddNewProduct = () => {
               {
                 headers: {
                   "Content-Type": "multipart/form-data",
-                  "Authorization": `Bearer ${token}`,
+                  Authorization: `Bearer ${token}`,
                 },
               }
             )
@@ -177,7 +177,7 @@ const AddNewProduct = () => {
           const videoFormData = new FormData();
           videoFormData.append("type", "infographics");
           videoFormData.append("product", productId);
-          videoFormData.append("is_primary", '0');
+          videoFormData.append("is_primary", false);
           videoFormData.append("file_type", "vid");
           videoFormData.append("file", video);
 
@@ -188,7 +188,7 @@ const AddNewProduct = () => {
               {
                 headers: {
                   "Content-Type": "multipart/form-data",
-                  "Authorization": `Bearer ${token}`,
+                  Authorization: `Bearer ${token}`,
                 },
               }
             )
@@ -378,7 +378,10 @@ const AddNewProduct = () => {
                 theme="snow"
                 placeholder="Product Description"
                 value={desc}
-                onChange={(value) => setDesc(value)}
+                onChange={(value) => {
+                  setDesc(value);
+                  console.log(value)
+                }}
               />
             </Grid>
           </Grid>

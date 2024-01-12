@@ -13,7 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Done } from "@mui/icons-material";
-import Slider from "react-slick";
+import axios from "axios";
 
 import "./login.styles.scss";
 
@@ -52,19 +52,46 @@ const Login = () => {
     setOTPVerified(true);
   };
 
-  const onNext = () => {};
+  const onNext = () => {
+    if (mobile === "" || typeof mobile === "undefined") {
+      toast.warn("Mobile Number is required!", generalToastStyle);
+    } else if (otp === "" || typeof otp === "undefined") {
+      toast.warn("OTP is required!", generalToastStyle);
+    } else {
+      activateNextStepLoading(true);
+      axios
+        .get(
+          "https://api.sadashrijewelkart.com/v1.0.0/seller/login.php?mobile=1234567890",
+          {
+            headers: {
+              Authorization:
+                "Bearer CWcyi9M3OIIi17umJNZi5YlXTnHrmsDhYbAP3N0BuZuzNwIQNpRcUvdeiJjPlVxy",
+            },
+          }
+        )
+        .then((response) => {
+          const token = response.data.response.token;
+          const logoUrl = response.data.response.organization.logo;
+          console.log("login successful");
+          localStorage.setItem("logoUrl", JSON.stringify(logoUrl));
+          localStorage.setItem("seller", JSON.stringify(response.data.response));
+          localStorage.setItem("token", token);
 
-  // const settings = {
-  //   dots: true,
-  //   infinite: true,
-  //   speed: 500,
-  //   slidesToShow: 1,
-  //   slidesToScroll: 1,
-  // };
+          navigate("/home/dashboard");
+        })
+        .catch((error) => {
+          console.error("Login failed:", error.message);
+        })
+        .finally(() => {
+          activateNextStepLoading(false);
+        });
+    }
+  };
+
   const handleLogoClick = () => {
     navigate("/");
   };
-  
+
   return (
     <div className="login">
       <ToastContainer />
@@ -154,20 +181,6 @@ const Login = () => {
           </div>
         </Grid>
         <Grid item xs={8} className="infographics">
-        {/* <Slider>
-            <div>
-              <img src="/assets/jwellary(1).jpg" alt="Landscape 1" />
-            </div>
-            <div>
-              <img src="/assets/jwellary(2).jpg" alt="Landscape 2" />
-            </div>
-            <div>
-              <img src="/assets/jwellary(3).jpg" alt="Landscape 3" />
-            </div>
-            <div>
-              <img src="/assets/jwellary(4).jpg" alt="Landscape 4" />
-            </div>
-          </Slider> */}
           Graphics
         </Grid>
       </Grid>

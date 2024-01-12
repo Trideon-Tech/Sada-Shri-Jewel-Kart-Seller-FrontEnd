@@ -1,0 +1,251 @@
+.AddNewProduct {
+    //
+    background-color: rgb(249, 249, 249);
+  
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  
+      .head-txt {
+        padding: 30px 50px;
+        padding-right: 0px;
+        font-size: 1.9rem;
+        font-weight: 500;
+        display: inline-block;
+      }
+  
+      .button1 {
+        margin-right: 0.7vw;
+        color: #a36e29;
+        text-transform: none;
+        font-family: "Work Sans", sans-serif;
+        font-size: 1rem;
+        &:hover {
+          color: #000000;
+          text-decoration: underline;
+        }
+      }
+  
+      .button2 {
+        margin-right: 2vw;
+        width: 200px;
+        height: 50px;
+        background-color: #a36e29;
+        color: white;
+        text-transform: none;
+        font-family: "Work Sans", sans-serif;
+        font-size: 1rem;
+  
+        &:hover {
+          background-color: white;
+          color: #a36e29;
+          border: 1px solid #a36e29;
+        }
+      }
+    }
+  
+    .inputFilePreviewContainer {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    //   height: 60%;
+  
+      .inputFieldsContainer {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 95%; 
+  
+        .imageInputContainer,
+        .videoInputContainer {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+  
+          label {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+          }
+  
+          input[type="file"] {
+            display: none;
+          }
+  
+          .selectButton {
+            background-color: #a36e29;
+            color: #fff;
+            padding: 8px 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+  
+            &:hover {
+              background-color: white;
+              color: #a36e29;
+              border: 1px solid #a36e29;
+            }
+          }
+  
+          .previewContainer {
+            display: flex;
+            gap: 8px;
+  
+            .imagePreview,
+            .videoPreview {
+              position: relative;
+  
+              img,
+              video {
+                max-width: 100%;
+                max-height: 100px;
+                border-radius: 4px;
+                object-fit: cover;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              }
+  
+              .deleteButton {
+                position: absolute;
+                top: 4px;
+                right: 4px;
+                background-color: #ff4d4f;
+                color: #fff;
+                padding: 4px 8px;
+                cursor: pointer;
+                border: none;
+                border-radius: 4px;
+                font-size: 12px;
+                z-index: 1;
+  
+                &:hover {
+                  background-color: #d9363e;
+                }
+              }
+            }
+          }
+        }
+      }
+  
+      .saveButton {
+        background-color: #a36e29;
+        color: #fff;
+        padding: 12px 32px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        align-self: flex-start; // Align to the bottom-left corner
+  
+        &:hover {
+          background-color: #a36e29;
+        }
+      }
+    }
+
+    .detail-paper{
+        margin-left: 3vw;
+        margin-bottom: 20px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 93%;  
+
+        .heading {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+          }
+
+          .quill-container {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            .label {
+                font-weight: 600;
+                margin-bottom: 10px;
+            }
+          
+            .ql-toolbar {
+              border-top-left-radius: 4px;
+              border-top-right-radius: 4px;
+            }
+          
+            .ql-container {
+              border: 1px solid #c4c4c4;
+              border-bottom-left-radius: 4px;
+              border-bottom-right-radius: 4px;
+              height: 200px;
+            }
+          }
+    }
+    .customization-paper{
+        margin-left: 3vw;
+        margin-bottom: 20px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 93%; 
+
+        .heading {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+          }
+        .customization-text{
+            font-size: 1.4rem;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+
+        .button {
+        margin-right: 2vw;
+        margin-bottom: 20px;
+        width: 300px;
+        height: 50px;
+        background-color: #a36e29;
+        color: white;
+        text-transform: none;
+        font-family: "Work Sans", sans-serif;
+        font-size: 1rem;
+  
+        &:hover {
+          background-color: white;
+          color: #a36e29;
+          border: 1px solid #a36e29;
+        }
+      }
+    }
+    // .SimpleModal {
+    //     .modalTitle {
+    //       font-size: 1.5rem;
+    //       font-weight: 600;
+    //       margin-bottom: 10px;
+    //       background-color: #007bff; // Replace with your desired color
+    //       color: #fff;
+    //     }
+      
+    //     .modalContent {
+    //       padding: 20px;
+    //     }
+      
+    //     .closeButton {
+    //       background-color: #007bff; // Replace with your desired color
+    //       color: #fff;
+    //       margin-top: 10px;
+      
+    //       &:hover {
+    //         background-color: #0056b3; // Replace with your desired hover color
+    //       }
+    //     }
+    //   }
+      
+  }
+  

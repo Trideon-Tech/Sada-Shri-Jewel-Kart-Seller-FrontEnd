@@ -1,24 +1,22 @@
 import React from 'react';
-import { Grid, Typography } from '@mui/material';
+import { Divider } from "@mui/material";
+import { useParams } from "react-router-dom";
 import './home.styles.scss';
+import CustomDrawer from '../../components/drawer/drawer.component';
+import Products from '../products/products.component';
+import AddNewProduct from '../products/addNewProduct.component';
 
 function Home() {
+  let { section } = useParams();
   return (
-    <Grid container className="container">
-      <Grid item xs={12}>
-        <img
-          alt="logo"
-          src={process.env.PUBLIC_URL + "/assets/Animation.gif"}
-          className="loading-gif"
-        />
-      </Grid>
-      <Grid item xs={12} className="text-block">
-        <Typography variant="body1">
-          Please wait!! We will update you once the admin approves.
-        </Typography>
-      </Grid>
-    </Grid>
-  )
+    <div className="home-component">
+      <CustomDrawer section={section} />
+      <Divider orientation="vertical" className="divider" />
+      <div className="component">
+        {section === "dashboard" ? <div>hello</div> : section === "products" ? <Products /> : section === "addNewProduct" ? <AddNewProduct/> : <>Hey</>}
+      </div>
+    </div>
+  );
 }
 
 export default Home;

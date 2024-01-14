@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Divider,
@@ -57,19 +57,64 @@ const AddNewProduct = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [secondFieldOptions, setSecondFieldOptions] = useState([]);
+  const [customizationTypes, setCustomizationTypes] = useState([]);
+  const [selectedCustomizationTypeId, setSelectedCustomizationTypeId] =
+    useState("");
+  const [customizationOptions, setCustomizationOptions] = useState([]);
 
-  const optionsMap = {
-    purity: ["Option 1", "Option 2", "Option 3"],
-    size: ["Small", "Medium", "Large"],
-    metal: ["Gold", "Silver", "Platinum"],
-    // Add more options as needed
+  useEffect(() => {
+    // Fetch customization types from the API
+    axios
+      .get(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/field/all.php",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        setCustomizationTypes(response.data.response); // Assuming the API response is an array of objects with id and name properties
+      })
+      .catch((error) => {
+        console.error("Error fetching customization types:", error);
+      });
+  }, []);
+
+  const handleFirstFieldUpdate = (event) => {
+    const selectedTypeId = event.target.value;
+    setSelectedCustomizationTypeId(selectedTypeId);
+
+    // Fetch customization options based on the selected type
+    axios
+      .get(
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedTypeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        setCustomizationOptions(response.data.response); // Assuming the API response is an array of customization options
+      })
+      .catch((error) => {
+        console.error("Error fetching customization options:", error);
+      });
   };
 
-  const handleFirstFieldChange = (event) => {
-    const selected = event.target.value;
-    setSelectedOption(selected);
-    setSecondFieldOptions(optionsMap[selected] || []);
-  };
+  // const optionsMap = {
+  //   purity: ["Option 1", "Option 2", "Option 3"],
+  //   size: ["Small", "Medium", "Large"],
+  //   metal: ["Gold", "Silver", "Platinum"],
+  //   // Add more options as needed
+  // };
+
+  // const handleFirstFieldChange = (event) => {
+  //   const selected = event.target.value;
+  //   setSelectedOption(selected);
+  //   setSecondFieldOptions(optionsMap[selected] || []);
+  // };
 
   const handleOpen = () => {
     setOpen(true);
@@ -79,18 +124,18 @@ const AddNewProduct = () => {
     setOpen(false);
   };
 
-  const handleChipDelete = (index) => {
-    const newSelectedOptions = [...selectedOptions];
-    newSelectedOptions.splice(index, 1);
-    setSelectedOptions(newSelectedOptions);
-  };
-
   const handleSecondFieldChange = (event) => {
     const selectedOption = event.target.value;
     setSelectedOptions((prevSelectedOptions) => [
       ...prevSelectedOptions,
-      selectedOption,
+      { type: selectedCustomizationTypeId, option: selectedOption },
     ]);
+  };
+
+  const handleChipDelete = (index) => {
+    const newSelectedOptions = [...selectedOptions];
+    newSelectedOptions.splice(index, 1);
+    setSelectedOptions(newSelectedOptions);
   };
 
   const handleImageChange = (e) => {
@@ -380,7 +425,7 @@ const AddNewProduct = () => {
                 value={desc}
                 onChange={(value) => {
                   setDesc(value);
-                  console.log(value)
+                  console.log(value);
                 }}
               />
             </Grid>
@@ -438,15 +483,15 @@ const AddNewProduct = () => {
               <TextField
                 select
                 label="Customization Type"
-                value={selectedOption}
-                onChange={handleFirstFieldChange}
+                value={selectedCustomizationTypeId}
+                onChange={handleFirstFieldUpdate}
                 variant="outlined"
                 fullWidth
                 sx={{ marginBottom: "20px", marginTop: "10px" }}
               >
-                {Object.keys(optionsMap).map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
+                {customizationTypes.map((type) => (
+                  <MenuItem key={type.id} value={type.id}>
+                    {type.name}
                   </MenuItem>
                 ))}
               </TextField>
@@ -458,9 +503,9 @@ const AddNewProduct = () => {
                 value=""
                 onChange={handleSecondFieldChange}
               >
-                {secondFieldOptions.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
+                {customizationOptions.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
                   </MenuItem>
                 ))}
               </TextField>
@@ -468,7 +513,7 @@ const AddNewProduct = () => {
                 {selectedOptions.map((option, index) => (
                   <Chip
                     key={index}
-                    label={`${selectedOption}: ${option}`}
+                    label={`${option.type}: ${option.option}`}
                     onDelete={() => handleChipDelete(index)}
                     style={{ marginRight: "5px" }}
                   />

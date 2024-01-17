@@ -19,6 +19,13 @@ import {
   DialogActions,
   ThemeProvider,
   CircularProgress,
+  Checkbox,
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
 } from "@mui/material";
 
 import axios from "axios";
@@ -31,6 +38,7 @@ import "./addNewProduct.styles.scss";
 import { ToastContainer } from "react-toastify";
 import InputTextField from "../../components/input-text-field/input-text-field.component";
 import { useNavigate } from "react-router-dom";
+import { fontWeight } from "@mui/system";
 
 const theme = createTheme({
   palette: {
@@ -43,6 +51,7 @@ const theme = createTheme({
 const AddNewProduct = () => {
   let navigate = useNavigate();
   let token = localStorage.getItem("token");
+  const productId = 1;
 
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState(null);
@@ -56,11 +65,49 @@ const AddNewProduct = () => {
   const [open, setOpen] = useState(false); //for modal
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const [secondFieldOptions, setSecondFieldOptions] = useState([]);
+  //const [secondFieldOptions, setSecondFieldOptions] = useState([]);
   const [customizationTypes, setCustomizationTypes] = useState([]);
   const [selectedCustomizationTypeId, setSelectedCustomizationTypeId] =
     useState("");
   const [customizationOptions, setCustomizationOptions] = useState([]);
+  const [customizationPrice, setCustomizationPrice] = useState([]);
+  const [madeOnOrder, setMadeOnOrder] = useState(
+    Array(selectedOptions.length).fill(false)
+  );
+  // const [customizationTable, setCustomizationTable] = useState([]);
+
+  const handleSaveCustomizations = () => {
+    const customizationDetailsArray = selectedOptions.map((option, index) => ({
+      customizationOption: `${option.type}:${option.option}`,
+      price: customizationPrice[index] || 100,
+      madeOnOrder: madeOnOrder[index] || false,
+    }));
+
+    console.log("Customization Details Array:", customizationDetailsArray);
+    const apiPayload = {
+      product: productId,
+      customizations: customizationDetailsArray,
+    };
+
+    axios
+      .post(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/add.php",
+        apiPayload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, 
+          },
+        }
+      )
+      .then((response) => {
+        console.log("API response:", response.data);
+        
+      })
+      .catch((error) => {
+        console.error("Error saving customizations:", error);
+      });
+  };
 
   useEffect(() => {
     // Fetch customization types from the API
@@ -102,19 +149,6 @@ const AddNewProduct = () => {
         console.error("Error fetching customization options:", error);
       });
   };
-
-  // const optionsMap = {
-  //   purity: ["Option 1", "Option 2", "Option 3"],
-  //   size: ["Small", "Medium", "Large"],
-  //   metal: ["Gold", "Silver", "Platinum"],
-  //   // Add more options as needed
-  // };
-
-  // const handleFirstFieldChange = (event) => {
-  //   const selected = event.target.value;
-  //   setSelectedOption(selected);
-  //   setSecondFieldOptions(optionsMap[selected] || []);
-  // };
 
   const handleOpen = () => {
     setOpen(true);
@@ -192,7 +226,7 @@ const AddNewProduct = () => {
         }
       )
       .then((response) => {
-        const productId = response.data.response.id;
+        productId = response.data.response.id;
 
         const promises = [];
 
@@ -448,12 +482,73 @@ const AddNewProduct = () => {
             {selectedOptions.map((option, index) => (
               <Chip
                 key={index}
-                label={`${selectedOption}: ${option}`}
+                label={`${selectedOption.option}: ${option.option}`}
                 onDelete={() => handleChipDelete(index)}
                 style={{ marginRight: "5px" }}
               />
             ))}
           </div>
+          {selectedOptions === null ? (
+            <></>
+          ) : (
+            <div className="customization-options-table">
+              <div className="heading">Customization Options Table</div>
+              <TableContainer>
+                <Table stickyHeader aria-label="sticky table">
+                  <TableHead sx={{ fontWeight: "bold" }}>
+                    <TableRow>
+                      <TableCell>Index</TableCell>
+                      <TableCell>Customization Option</TableCell>
+                      <TableCell>Price</TableCell>
+                      <TableCell>Made On Order</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {selectedOptions.map((option, index) => (
+                      <TableRow hover key={index}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>{`${option.type}: ${option.option}`}</TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            value={customizationPrice[index] || ""}
+                            onChange={(e) => {
+                              let x = [...customizationPrice];
+                              x[index] = e.target.value;
+                              setCustomizationPrice(x);
+                            }}
+                            startAdornment={
+                              <InputAdornment position="start">
+                                ₹
+                              </InputAdornment>
+                            }
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Checkbox
+                            checked={madeOnOrder[index]}
+                            onChange={(e) => {
+                              let x = [...madeOnOrder];
+                              x[index] = e.target.checked;
+                              setMadeOnOrder(x);
+                            }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Button
+                variant="contained"
+                onClick={handleSaveCustomizations}
+                className="saveButton"
+              >
+                Save Customizations
+              </Button>
+            </div>
+          )}
+
           <Dialog
             open={open}
             onClose={handleClose}

@@ -94,7 +94,7 @@ const Products = () => {
     <div className="Products">
       <div className="head">
         <div className="head-txt">
-          Products <strong>{products.length}</strong>
+          Products <strong>12</strong>
         </div>
 
         <Button className="button" onClick={handleAddNewProduct}>

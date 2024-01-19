@@ -3,13 +3,11 @@ import {
   Button,
   Divider,
   Paper,
-  InputLabel,
   InputAdornment,
   IconButton,
   Grid,
   Chip,
   Input,
-  Typography,
   createTheme,
   Dialog,
   DialogTitle,
@@ -18,7 +16,6 @@ import {
   MenuItem,
   DialogActions,
   ThemeProvider,
-  CircularProgress,
   Checkbox,
   TableContainer,
   Table,
@@ -27,24 +24,30 @@ import {
   TableRow,
   TableCell,
 } from "@mui/material";
-
+import {
+  Add,
+  PhotoCamera,
+  VideoCameraFront,
+  Delete,
+} from "@mui/icons-material";
 import axios from "axios";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
-import VideoCameraFrontIcon from "@mui/icons-material/VideoCameraFront";
-import DeleteIcon from "@mui/icons-material/Delete";
-import "./addNewProduct.styles.scss";
 import { ToastContainer } from "react-toastify";
-import InputTextField from "../../components/input-text-field/input-text-field.component";
 import { useNavigate } from "react-router-dom";
-import { fontWeight } from "@mui/system";
+
+import "./addNewProduct.styles.scss";
+
+import InputTextField from "../../components/input-text-field/input-text-field.component";
 
 const theme = createTheme({
   palette: {
     primary: {
       main: "#a36e29",
     },
+  },
+  typography: {
+    fontFamily: '"Work Sans", sans-serif',
   },
 });
 
@@ -62,18 +65,26 @@ const AddNewProduct = () => {
   const [height, setHeight] = useState();
   const [width, setWidth] = useState();
   const [purity, setPurity] = useState();
-  const [open, setOpen] = useState(false); //for modal
+  const [openCustomizationInputDialog, setOpenCustomizationInputDialog] =
+    useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
   //const [secondFieldOptions, setSecondFieldOptions] = useState([]);
   const [customizationTypes, setCustomizationTypes] = useState([]);
   const [selectedCustomizationTypeId, setSelectedCustomizationTypeId] =
     useState("");
+  const [selectedCustomizationTypeName, setSelectedCustomizationTypeName] =
+    useState("");
   const [customizationOptions, setCustomizationOptions] = useState([]);
   const [customizationPrice, setCustomizationPrice] = useState([]);
   const [madeOnOrder, setMadeOnOrder] = useState(
     Array(selectedOptions.length).fill(false)
   );
+  const [showCustomizationTable, setShowCustomizationTable] = useState(false);
+  const [selectedCustomizationNames, setSelectedCustomizationNames] = useState(
+    {}
+  );
+  const [selectedCustomizations, setSelectedCustomizations] = useState([]);
   // const [customizationTable, setCustomizationTable] = useState([]);
 
   const handleSaveCustomizations = () => {
@@ -96,13 +107,12 @@ const AddNewProduct = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, 
+            Authorization: `Bearer ${token}`,
           },
         }
       )
       .then((response) => {
         console.log("API response:", response.data);
-        
       })
       .catch((error) => {
         console.error("Error saving customizations:", error);
@@ -110,7 +120,6 @@ const AddNewProduct = () => {
   };
 
   useEffect(() => {
-    // Fetch customization types from the API
     axios
       .get(
         "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/field/all.php",
@@ -121,49 +130,109 @@ const AddNewProduct = () => {
         }
       )
       .then((response) => {
-        setCustomizationTypes(response.data.response); // Assuming the API response is an array of objects with id and name properties
+        setCustomizationTypes(response.data.response);
       })
       .catch((error) => {
         console.error("Error fetching customization types:", error);
       });
   }, []);
 
-  const handleFirstFieldUpdate = (event) => {
+  const handleCustomizationTypeSelection = (event) => {
     const selectedTypeId = event.target.value;
-    setSelectedCustomizationTypeId(selectedTypeId);
+    if (selectedTypeId !== -1) {
+      setSelectedCustomizationTypeId(selectedTypeId);
+      console.log(selectedTypeId);
+      console.log(
+        customizationTypes.find((i) => i.id === selectedTypeId)["name"]
+      );
+      setSelectedCustomizationTypeName(
+        customizationTypes.find((i) => i.id === selectedTypeId)["name"]
+      );
 
-    // Fetch customization options based on the selected type
-    axios
-      .get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedTypeId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        setCustomizationOptions(response.data.response); // Assuming the API response is an array of customization options
-      })
-      .catch((error) => {
-        console.error("Error fetching customization options:", error);
-      });
+      axios
+        .get(
+          `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedTypeId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          setCustomizationOptions(response.data.response);
+        })
+        .catch((error) => {
+          console.error("Error fetching customization options:", error);
+        });
+    } else {
+      // Add new customization type and option here
+    }
   };
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleSecondFieldChange = (event) => {
+  const handleCustomizationOptionChange = (event) => {
     const selectedOption = event.target.value;
-    setSelectedOptions((prevSelectedOptions) => [
-      ...prevSelectedOptions,
-      { type: selectedCustomizationTypeId, option: selectedOption },
-    ]);
+    if (selectedOption !== -1) {
+      setSelectedOptions((prevSelectedOptions) => [
+        ...prevSelectedOptions,
+        {
+          type: selectedCustomizationTypeId,
+          option: selectedOption,
+          type_name: selectedCustomizationTypeName,
+          option_name: customizationOptions.find(
+            (i) => i.id === selectedOption
+          )["name"],
+        },
+      ]);
+    } else {
+      // Add new customization option here
+    }
+  };
+
+  const loadCustomizationTable = () => {
+    // creating combinations
+    const typeIds = Array.from(
+      new Set(selectedOptions.map((item) => item.type))
+    );
+    const typeNames = {};
+    selectedOptions.forEach((item) => {
+      typeNames[item.type] = item.type_name;
+    });
+
+    const types = {};
+    typeIds.forEach((typeId) => {
+      types[typeId] = selectedOptions.filter((item) => item.type === typeId);
+    });
+
+    const combinations = [];
+
+    function generateCombinations(currentCombination, remainingTypeIds) {
+      if (remainingTypeIds.length === 0) {
+        const combinationObject = {};
+        currentCombination.forEach((option, index) => {
+          const currentTypeId = typeIds[index];
+          combinationObject[currentTypeId.toLowerCase()] = option;
+        });
+        combinations.push(combinationObject);
+        return;
+      }
+
+      const currentTypeId = remainingTypeIds[0];
+      const currentTypeOptions = types[currentTypeId];
+
+      for (const option of currentTypeOptions) {
+        const nextCombination = [...currentCombination, option.option_name];
+        const nextRemainingTypeIds = remainingTypeIds.slice(1);
+        generateCombinations(nextCombination, nextRemainingTypeIds);
+      }
+    }
+
+    generateCombinations([], typeIds);
+
+    setSelectedCustomizationNames(typeNames);
+    setSelectedCustomizations(combinations);
+
+    setShowCustomizationTable(true);
+    setOpenCustomizationInputDialog(false);
   };
 
   const handleChipDelete = (index) => {
@@ -190,16 +259,6 @@ const AddNewProduct = () => {
 
   const handleDeleteVideo = () => {
     setVideo(null);
-  };
-
-  const handleSave = () => {
-    // Perform API call to save images and video
-    console.log("Images:", images);
-    console.log("Video:", video);
-  };
-
-  const handleCancel = () => {
-    navigate("/home/products");
   };
 
   const handleSubmit = () => {
@@ -293,10 +352,15 @@ const AddNewProduct = () => {
   return (
     <div className="AddNewProduct">
       <ToastContainer />
+
+      {/* Heading */}
       <div className="head">
         <div className="head-txt">Add New Product</div>
         <div className="btns">
-          <Button className="button1" onClick={handleCancel}>
+          <Button
+            className="button1"
+            onClick={() => navigate("/home/products")}
+          >
             Cancel
           </Button>
           <Button className="button2" onClick={handleSubmit}>
@@ -305,6 +369,8 @@ const AddNewProduct = () => {
         </div>
       </div>
       <Divider />
+
+      {/* Image and Video Input */}
       <ThemeProvider theme={theme}>
         <div className="inputFilePreviewContainer">
           <Paper className="inputFieldsContainer">
@@ -328,7 +394,7 @@ const AddNewProduct = () => {
                       className="selectButton"
                       component="span"
                     >
-                      Select Images <PhotoCameraIcon />
+                      <PhotoCamera /> Select Images
                     </Button>
                   </label>
                   <div className="previewContainer">
@@ -342,7 +408,7 @@ const AddNewProduct = () => {
                           className="deleteButton"
                           onClick={() => handleDeleteImage(index)}
                         >
-                          <DeleteIcon />
+                          <Delete />
                         </IconButton>
                       </div>
                     ))}
@@ -368,7 +434,8 @@ const AddNewProduct = () => {
                       className="selectButton"
                       component="span"
                     >
-                      Select Video <VideoCameraFrontIcon />
+                      <VideoCameraFront />
+                      Select Video
                     </Button>
                   </label>
                   {video && (
@@ -383,24 +450,18 @@ const AddNewProduct = () => {
                         className="deleteButton"
                         onClick={handleDeleteVideo}
                       >
-                        <DeleteIcon />
+                        <Delete />
                       </IconButton>
                     </div>
                   )}
                 </div>
               </Grid>
             </Grid>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSave}
-              className="saveButton"
-            >
-              Save
-            </Button>
           </Paper>
         </div>
       </ThemeProvider>
+
+      {/* Product basic details input */}
       <ThemeProvider theme={theme}>
         <Paper elevation={3} className="detail-paper">
           <div className="heading">Product Details</div>
@@ -466,29 +527,37 @@ const AddNewProduct = () => {
           </Grid>
         </Paper>
       </ThemeProvider>
+
+      {/* Customization input */}
       <ThemeProvider theme={theme}>
         <Paper className="customization-paper">
           <div className="heading">Product Customization</div>
           <Divider />
           <div className="customization-text">
             Does your product come in different options, like size, purity or
-            material? <br />
-            Add them here.
+            material? Add them here.
           </div>
-          <Button className="button" onClick={handleOpen}>
-            Add New Customization +
+          <Button
+            className="button"
+            onClick={() => setOpenCustomizationInputDialog(true)}
+          >
+            <Add /> Add New Customization
           </Button>
-          <div>
-            {selectedOptions.map((option, index) => (
-              <Chip
-                key={index}
-                label={`${selectedOption.option}: ${option.option}`}
-                onDelete={() => handleChipDelete(index)}
-                style={{ marginRight: "5px" }}
-              />
-            ))}
-          </div>
-          {selectedOptions === null ? (
+          {selectedOptions === null || !showCustomizationTable ? (
+            <></>
+          ) : (
+            <div>
+              {selectedOptions.map((option, index) => (
+                <Chip
+                  key={index}
+                  label={`${option.type_name}: ${option.option_name}`}
+                  onDelete={() => handleChipDelete(index)}
+                  style={{ marginRight: "5px", marginBottom: "10px" }}
+                />
+              ))}
+            </div>
+          )}
+          {selectedOptions === null || !showCustomizationTable ? (
             <></>
           ) : (
             <div className="customization-options-table">
@@ -498,16 +567,26 @@ const AddNewProduct = () => {
                   <TableHead sx={{ fontWeight: "bold" }}>
                     <TableRow>
                       <TableCell>Index</TableCell>
-                      <TableCell>Customization Option</TableCell>
+                      {Object.keys(selectedCustomizationNames).map(
+                        (key, index) => (
+                          <TableCell key={index}>
+                            {selectedCustomizationNames[key]}
+                          </TableCell>
+                        )
+                      )}
                       <TableCell>Price</TableCell>
                       <TableCell>Made On Order</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {selectedOptions.map((option, index) => (
+                    {selectedCustomizations.map((option, index) => (
                       <TableRow hover key={index}>
                         <TableCell>{index + 1}</TableCell>
-                        <TableCell>{`${option.type}: ${option.option}`}</TableCell>
+                        {Object.keys(selectedCustomizationNames).map(
+                          (key, colIndex) => (
+                            <TableCell key={colIndex}>{option[key]}</TableCell>
+                          )
+                        )}
                         <TableCell>
                           <Input
                             type="number"
@@ -549,9 +628,10 @@ const AddNewProduct = () => {
             </div>
           )}
 
+          {/* Apply customization dialog */}
           <Dialog
-            open={open}
-            onClose={handleClose}
+            open={openCustomizationInputDialog}
+            onClose={() => setOpenCustomizationInputDialog(false)}
             sx={{
               "& .MuiDialogTitle-root": {
                 fontSize: "1.5rem",
@@ -565,65 +645,119 @@ const AddNewProduct = () => {
               },
             }}
           >
-            <DialogTitle>Add Customization</DialogTitle>
-            <Divider />
-            <DialogContent
-              sx={{ display: "flex", flexDirection: "column", gap: "10px" }}
-            >
-              {/* Your modal content goes here */}
-              <p sx={{ marginBottom: "10px" }}>
+            <ThemeProvider theme={theme}>
+              <DialogTitle>Add Customization</DialogTitle>
+              <Divider />
+              <DialogContent
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                  fontFamily: '"Work Sans", sans-serif',
+                }}
+              >
                 You'll be able to manage pricing and inventory for this product
-                customization later on.
-              </p>
-              <TextField
-                select
-                label="Customization Type"
-                value={selectedCustomizationTypeId}
-                onChange={handleFirstFieldUpdate}
-                variant="outlined"
-                fullWidth
-                sx={{ marginBottom: "20px", marginTop: "10px" }}
-              >
-                {customizationTypes.map((type) => (
-                  <MenuItem key={type.id} value={type.id}>
-                    {type.name}
+                customization in the next step.
+                <TextField
+                  select
+                  label="Customization Type"
+                  value={selectedCustomizationTypeId}
+                  onChange={handleCustomizationTypeSelection}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ marginBottom: "20px", marginTop: "10px" }}
+                >
+                  {customizationTypes.map((type) => (
+                    <MenuItem key={type.id} value={type.id}>
+                      {type.name}
+                    </MenuItem>
+                  ))}
+                  <MenuItem key={-1} value={-1}>
+                    <Add /> Add New
                   </MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                label="Customization Options"
-                select
-                variant="outlined"
-                fullWidth
-                value=""
-                onChange={handleSecondFieldChange}
-              >
-                {customizationOptions.map((option) => (
-                  <MenuItem key={option.id} value={option.id}>
-                    {option.name}
+                </TextField>
+                <TextField
+                  label="Customization Options"
+                  select
+                  variant="outlined"
+                  fullWidth
+                  value=""
+                  onChange={handleCustomizationOptionChange}
+                >
+                  {customizationOptions.map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.name}
+                    </MenuItem>
+                  ))}
+                  <MenuItem key={-1} value={-1}>
+                    <Add /> Add New
                   </MenuItem>
-                ))}
-              </TextField>
-              <div>
-                {selectedOptions.map((option, index) => (
-                  <Chip
-                    key={index}
-                    label={`${option.type}: ${option.option}`}
-                    onDelete={() => handleChipDelete(index)}
-                    style={{ marginRight: "5px" }}
-                  />
-                ))}
-              </div>
-            </DialogContent>
-            <DialogActions sx={{ marginBottom: "10px", marginRight: "10px" }}>
-              <Button
-                variant="contained"
-                onClick={handleClose}
-                className="closeButton"
+                </TextField>
+                <div>
+                  {selectedOptions.map((option, index) => (
+                    <Chip
+                      key={index}
+                      label={`${option.type_name}: ${option.option_name}`}
+                      onDelete={() => handleChipDelete(index)}
+                      style={{ marginRight: "5px", marginBottom: "10px" }}
+                    />
+                  ))}
+                </div>
+              </DialogContent>
+              <DialogActions sx={{ marginBottom: "10px", marginRight: "10px" }}>
+                <Button onClick={() => setOpenCustomizationInputDialog(false)}>
+                  Close
+                </Button>
+                <Button variant="contained" onClick={loadCustomizationTable}>
+                  Apply
+                </Button>
+              </DialogActions>
+            </ThemeProvider>
+          </Dialog>
+
+          {/* Add customization field or option dialog */}
+          <Dialog
+            open={false}
+            sx={{
+              "& .MuiDialogTitle-root": {
+                fontSize: "1.5rem",
+                fontWeight: 600,
+                marginBottom: "10px",
+              },
+              "& .MuiDialogContent-root": {
+                fontSize: "1.2rem",
+                fontWeight: 400,
+                marginBottom: "10px",
+              },
+            }}
+          >
+            <ThemeProvider theme={theme}>
+              <DialogTitle>Add New Customization Field</DialogTitle>
+              <Divider />
+              <DialogContent
+                sx={{ display: "flex", flexDirection: "column", gap: "10px" }}
               >
-                Close
-              </Button>
-            </DialogActions>
+                Enter the name of the customization field you want to
+                customization upon.
+                <TextField
+                  label="Customization Type"
+                  value={selectedCustomizationTypeId}
+                  onChange={handleCustomizationTypeSelection}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ marginBottom: "20px", marginTop: "10px" }}
+                />
+              </DialogContent>
+              <DialogActions sx={{ marginBottom: "10px", marginRight: "10px" }}>
+                <Button
+                  variant="contained"
+                  onClick={() => setOpenCustomizationInputDialog(false)}
+                  className="closeButton"
+                >
+                  Apply
+                </Button>
+              </DialogActions>
+            </ThemeProvider>
           </Dialog>
         </Paper>
       </ThemeProvider>

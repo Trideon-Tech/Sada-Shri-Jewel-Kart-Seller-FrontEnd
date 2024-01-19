@@ -14,11 +14,6 @@ import {
   createTheme,
   ThemeProvider,
   CircularProgress,
-  SwipeableDrawer,
-  InputAdornment,
-  TextField,
-  IconButton,
-  Chip,
 } from "@mui/material";
 
 import { Edit, Delete } from "@mui/icons-material";
@@ -45,7 +40,6 @@ const Products = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [productsLoaded, setProductsLoaded] = useState(false);
-
 
   const getCategories = () => {
     axios
@@ -92,6 +86,7 @@ const Products = () => {
 
   return (
     <div className="Products">
+      <ToastContainer />
       <div className="head">
         <div className="head-txt">
           Products <strong>12</strong>
@@ -141,7 +136,11 @@ const Products = () => {
                             <img
                               className="company-img"
                               alt="org"
-                              src={`https://api.sadashrijewelkart.com/assets/${row.image}`}
+                              src={
+                                row.images
+                                  ? `https://api.sadashrijewelkart.com/assets/${row.images[0]["file"]}`
+                                  : process.env.PUBLIC_URL + "/assets/fav.png"
+                              }
                             />
                             {row.name}
                           </TableCell>

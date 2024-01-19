@@ -12,6 +12,7 @@ import PrivacyPolicy from "./pages/Privacy-Policy/privacy.component";
 import TermsandConditions from "./pages/terms-conditions/term.component";
 import ContactUs from "./pages/contact-us/contact-us.component";
 import Profile from "./pages/profile/profile.component";
+import Products from "./pages/products/products.component";
 import AddNewProduct from "./pages/products/addNewProduct.component";
 
 function App() {

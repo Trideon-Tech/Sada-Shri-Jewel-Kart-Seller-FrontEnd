@@ -33,9 +33,10 @@ import {
 import axios from "axios";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-
+import { generalToastStyle } from "../../utils/toast.styles";
 import "./addNewProduct.styles.scss";
 
 import InputTextField from "../../components/input-text-field/input-text-field.component";
@@ -55,6 +56,8 @@ const AddNewProduct = () => {
   let navigate = useNavigate();
   let token = localStorage.getItem("token");
   const productId = 1;
+  let selectedTypeId;
+  let selectedTypeName;
 
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState(null);
@@ -65,10 +68,23 @@ const AddNewProduct = () => {
   const [height, setHeight] = useState();
   const [width, setWidth] = useState();
   const [purity, setPurity] = useState();
+  const [newCustomizationType, setNewCustomizationType] = useState();
+  const [newCustomizationOption, setNewCustomizationOption] = useState();
   const [openCustomizationInputDialog, setOpenCustomizationInputDialog] =
     useState(false);
+  const [
+    openAddNewCustomizationTypeInputDialog,
+    setOpenAddNewCustomizationTypeInputDialog,
+  ] = useState(false);
+  const [
+    openAddNewCustomizationOptionInputDialog,
+    setOpenAddNewCustomizationOptionInputDialog,
+  ] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const [customizationTypeChanged, setCustomizationTypeChanged] =
+    useState(false);
+
   //const [secondFieldOptions, setSecondFieldOptions] = useState([]);
   const [customizationTypes, setCustomizationTypes] = useState([]);
   const [selectedCustomizationTypeId, setSelectedCustomizationTypeId] =
@@ -88,35 +104,74 @@ const AddNewProduct = () => {
   // const [customizationTable, setCustomizationTable] = useState([]);
 
   const handleSaveCustomizations = () => {
-    const customizationDetailsArray = selectedOptions.map((option, index) => ({
-      customizationOption: `${option.type}:${option.option}`,
-      price: customizationPrice[index] || 100,
-      madeOnOrder: madeOnOrder[index] || false,
-    }));
+    // const customizationsPayload = selectedCustomizations.map((combination, index) => {
+    //   const optionsIds = Object.values(combination);
+    //   const optionsString = optionsIds.join(',');
 
-    console.log("Customization Details Array:", customizationDetailsArray);
-    const apiPayload = {
-      product: productId,
-      customizations: customizationDetailsArray,
-    };
+    //   return {
+    //     options: optionsString,
+    //     price: customizationPrice[index] || "0", // Set a default value if price is not provided
+    //     made_on_order: madeOnOrder[index] || false, // Set a default value if made_on_order is not provided
+    //   };
+    // });
 
-    axios
-      .post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/add.php",
-        apiPayload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        console.log("API response:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error saving customizations:", error);
-      });
+    // const payload = {
+    //   product: productId, // Assuming productId is defined elsewhere in your code
+    //   customizations: customizationsPayload,
+    // };
+
+    // const customizationsPayload = selectedCustomizations.map(
+    //   (combination, index) => {
+    //     const optionsIds = Object.values(combination).map((optionName) => {
+    //       const option = customizationOptions.find(
+    //         (opt) => opt.name === optionName
+    //       );
+    //       return option ? option.id : null;
+    //     });
+
+    //     return {
+    //       options: optionsIds.join(","), // Use comma-separated string of IDs
+    //       price: customizationPrice[index] || "0", // Set a default value if price is not provided
+    //       made_on_order: madeOnOrder[index] || false, // Set a default value if made_on_order is not provided
+    //     };
+    //   }
+    // );
+
+    // const payload = {
+    //   product: productId, // Assuming productId is defined elsewhere in your code
+    //   customizations: customizationsPayload,
+    // };
+
+    // console.log(payload);
+    // const customizationDetailsArray = selectedOptions.map((option, index) => ({
+    //   customizationOption: `${option.type}:${option.option}`,
+    //   price: customizationPrice[index] || 100,
+    //   madeOnOrder: madeOnOrder[index] || false,
+    // }));
+
+    // console.log("Customization Details Array:", customizationDetailsArray);
+    // const apiPayload = {
+    //   product: productId,
+    //   customizations: customizationDetailsArray,
+    // };
+
+    // axios
+    //   .post(
+    //     "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/add.php",
+    //     apiPayload,
+    //     {
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     }
+    //   )
+    //   .then((response) => {
+    //     console.log("API response:", response.data);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error saving customizations:", error);
+    //   });
   };
 
   useEffect(() => {
@@ -131,16 +186,22 @@ const AddNewProduct = () => {
       )
       .then((response) => {
         setCustomizationTypes(response.data.response);
+        setCustomizationTypeChanged(false);
       })
       .catch((error) => {
         console.error("Error fetching customization types:", error);
       });
-  }, []);
+  }, [customizationTypeChanged]);
 
   const handleCustomizationTypeSelection = (event) => {
-    const selectedTypeId = event.target.value;
+    selectedTypeId = event.target.value;
+    // selectedTypeName = customizationTypes.find((i) => i.id === selectedTypeId)[
+    //   "name"
+    // ];
+
     if (selectedTypeId !== -1) {
       setSelectedCustomizationTypeId(selectedTypeId);
+      console.log(selectedTypeName);
       console.log(selectedTypeId);
       console.log(
         customizationTypes.find((i) => i.id === selectedTypeId)["name"]
@@ -160,13 +221,79 @@ const AddNewProduct = () => {
         )
         .then((response) => {
           setCustomizationOptions(response.data.response);
+          // setCustomizationOptionChanged(false);
         })
         .catch((error) => {
           console.error("Error fetching customization options:", error);
         });
     } else {
       // Add new customization type and option here
+      setOpenAddNewCustomizationTypeInputDialog(true);
     }
+  };
+
+  const HandleAddNewCustomizationType = () => {
+    const formData = new FormData();
+    formData.append("name", newCustomizationType);
+
+    axios
+      .post(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/field/add.php",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        setOpenAddNewCustomizationTypeInputDialog(false);
+        setCustomizationTypeChanged(true);
+      })
+      .catch((error) => {
+        console.error("Error saving initial product details:", error);
+      });
+  };
+
+  const HandleAddNewCustomizationOption = () => {
+    const formData = new FormData();
+    console.log(selectedTypeId);
+    formData.append("customization_field", selectedTypeId);
+    formData.append("name", newCustomizationOption);
+
+    axios
+      .post(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/add.php",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        setOpenAddNewCustomizationOptionInputDialog(false);
+        axios
+          .get(
+            `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedCustomizationTypeId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((response) => {
+            setCustomizationOptions(response.data.response);
+          })
+          .catch((error) => {
+            console.error("Error fetching customization options:", error);
+          });
+      })
+      .catch((error) => {
+        console.error("Error saving initial product details:", error);
+      });
   };
 
   const handleCustomizationOptionChange = (event) => {
@@ -185,6 +312,7 @@ const AddNewProduct = () => {
       ]);
     } else {
       // Add new customization option here
+      setOpenAddNewCustomizationOptionInputDialog(true);
     }
   };
 
@@ -262,91 +390,256 @@ const AddNewProduct = () => {
   };
 
   const handleSubmit = () => {
-    console.log(token);
-    const initialFormData = new FormData();
-    initialFormData.append("type", "item");
-    initialFormData.append("name", productName);
-    initialFormData.append("description", desc);
-    initialFormData.append("weight", weight);
-    initialFormData.append("price", price);
-    initialFormData.append("height", height);
-    initialFormData.append("width", width);
-    initialFormData.append("purity", purity);
+    if (!selectedCustomizations || selectedCustomizations.length === 0) {
+      if (productName === "" || typeof productName === "undefined") {
+        toast.warn("Product Name is required!", generalToastStyle);
+      } else if (desc === "" || typeof desc === "undefined") {
+        toast.warn("Description is required!", generalToastStyle);
+      } else if (weight === "" || typeof weight === "undefined") {
+        toast.warn("Weight is required!", generalToastStyle);
+      } else if (price === "" || typeof price === "undefined") {
+        toast.warn("Price is required!", generalToastStyle);
+      } else if (height === "" || typeof height === "undefined") {
+        toast.warn("Height is required!", generalToastStyle);
+      } else if (width === "" || typeof width === "undefined") {
+        toast.warn("Width is required!", generalToastStyle);
+      } else if (purity === "" || typeof purity === "undefined") {
+        toast.warn("Purity is required!", generalToastStyle);
+      } else if (images === "" || typeof images === "undefined") {
+        toast.warn("Images are required!", generalToastStyle);
+      } else {
+        console.log(token);
+        const initialFormData = new FormData();
+        initialFormData.append("type", "item");
+        initialFormData.append("name", productName);
+        initialFormData.append("description", desc);
+        initialFormData.append("weight", weight);
+        initialFormData.append("price", price);
+        initialFormData.append("height", height);
+        initialFormData.append("width", width);
+        initialFormData.append("purity", purity);
 
-    axios
-      .post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-        initialFormData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        productId = response.data.response.id;
+        axios
+          .post(
+            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+            initialFormData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((response) => {
+            productId = response.data.response.id;
 
-        const promises = [];
+            const promises = [];
 
-        images.forEach((image, index) => {
-          const formData = new FormData();
-          formData.append("type", "infographics");
-          formData.append("product", productId);
-          formData.append("is_primary", index === 0 ? true : false);
-          formData.append("file_type", "img");
-          formData.append("file", image);
-          console.log(formData);
-          promises.push(
-            axios.post(
-              "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-              formData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            )
-          );
-        });
+            images.forEach((image, index) => {
+              const formData = new FormData();
+              formData.append("type", "infographics");
+              formData.append("product", productId);
+              formData.append("is_primary", index === 0 ? true : false);
+              formData.append("file_type", "img");
+              formData.append("file", image);
+              console.log(formData);
+              promises.push(
+                axios.post(
+                  "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+                  formData,
+                  {
+                    headers: {
+                      "Content-Type": "multipart/form-data",
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                )
+              );
+            });
 
-        if (video) {
-          const videoFormData = new FormData();
-          videoFormData.append("type", "infographics");
-          videoFormData.append("product", productId);
-          videoFormData.append("is_primary", false);
-          videoFormData.append("file_type", "vid");
-          videoFormData.append("file", video);
+            if (video) {
+              const videoFormData = new FormData();
+              videoFormData.append("type", "infographics");
+              videoFormData.append("product", productId);
+              videoFormData.append("is_primary", false);
+              videoFormData.append("file_type", "vid");
+              videoFormData.append("file", video);
 
-          promises.push(
-            axios.post(
-              "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-              videoFormData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            )
-          );
-        }
+              promises.push(
+                axios.post(
+                  "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+                  videoFormData,
+                  {
+                    headers: {
+                      "Content-Type": "multipart/form-data",
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                )
+              );
+            }
 
-        Promise.all(promises)
-          .then((responses) => {
-            console.log(
-              "All images and videos uploaded successfully:",
-              responses
-            );
+            Promise.all(promises)
+              .then((responses) => {
+                console.log(
+                  "All Details, images and videos uploaded successfully:",
+                  responses
+                );
+                navigate("/home/products");
+              })
+              .catch((error) => {
+                console.error("Error uploading images and videos:", error);
+              });
           })
           .catch((error) => {
-            console.error("Error uploading images and videos:", error);
+            console.error("Error saving initial product details:", error);
           });
-      })
-      .catch((error) => {
-        console.error("Error saving initial product details:", error);
-      });
+      }
+    } else {
+      if (productName === "" || typeof productName === "undefined") {
+        toast.warn("Product Name is required!", generalToastStyle);
+      } else if (desc === "" || typeof desc === "undefined") {
+        toast.warn("Description is required!", generalToastStyle);
+      } else if (weight === "" || typeof weight === "undefined") {
+        toast.warn("Weight is required!", generalToastStyle);
+      } else if (price === "" || typeof price === "undefined") {
+        toast.warn("Price is required!", generalToastStyle);
+      } else if (height === "" || typeof height === "undefined") {
+        toast.warn("Height is required!", generalToastStyle);
+      } else if (width === "" || typeof width === "undefined") {
+        toast.warn("Width is required!", generalToastStyle);
+      } else if (purity === "" || typeof purity === "undefined") {
+        toast.warn("Purity is required!", generalToastStyle);
+      } else if (images === "" || typeof images === "undefined") {
+        toast.warn("Images are required!", generalToastStyle);
+      } else {
+        console.log(token);
+        const initialFormData = new FormData();
+        initialFormData.append("type", "item");
+        initialFormData.append("name", productName);
+        initialFormData.append("description", desc);
+        initialFormData.append("weight", weight);
+        initialFormData.append("price", price);
+        initialFormData.append("height", height);
+        initialFormData.append("width", width);
+        initialFormData.append("purity", purity);
+
+        axios
+          .post(
+            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+            initialFormData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((response) => {
+            productId = response.data.response.id;
+
+            const promises = [];
+
+            images.forEach((image, index) => {
+              const formData = new FormData();
+              formData.append("type", "infographics");
+              formData.append("product", productId);
+              formData.append("is_primary", index === 0 ? true : false);
+              formData.append("file_type", "img");
+              formData.append("file", image);
+              console.log(formData);
+              promises.push(
+                axios.post(
+                  "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+                  formData,
+                  {
+                    headers: {
+                      "Content-Type": "multipart/form-data",
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                )
+              );
+            });
+
+            if (video) {
+              const videoFormData = new FormData();
+              videoFormData.append("type", "infographics");
+              videoFormData.append("product", productId);
+              videoFormData.append("is_primary", false);
+              videoFormData.append("file_type", "vid");
+              videoFormData.append("file", video);
+
+              promises.push(
+                axios.post(
+                  "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+                  videoFormData,
+                  {
+                    headers: {
+                      "Content-Type": "multipart/form-data",
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                )
+              );
+            }
+
+            if (selectedCustomizations) {
+              const customizationsPayload = selectedCustomizations.map(
+                (combination, index) => {
+                  const optionsIds = Object.values(combination).map(
+                    (optionName) => {
+                      const option = customizationOptions.find(
+                        (opt) => opt.name === optionName
+                      );
+                      return option ? option.id : null;
+                    }
+                  );
+
+                  return {
+                    options: optionsIds.join(","), // Use comma-separated string of IDs
+                    price: customizationPrice[index] || "0", // Set a default value if price is not provided
+                    made_on_order: madeOnOrder[index] || false, // Set a default value if made_on_order is not provided
+                  };
+                }
+              );
+
+              const payload = {
+                product: productId, // Assuming productId is defined elsewhere in your code
+                customizations: customizationsPayload,
+              };
+
+              promises.push(
+                axios.post(
+                  "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/add.php",
+                  payload,
+                  {
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                )
+              );
+            }
+
+            Promise.all(promises)
+              .then((responses) => {
+                console.log(
+                  "All Details, images and videos uploaded successfully:",
+                  responses
+                );
+                navigate("/home/products");
+              })
+              .catch((error) => {
+                console.error("Error uploading images and videos:", error);
+              });
+          })
+          .catch((error) => {
+            console.error("Error saving initial product details:", error);
+          });
+      }
+    }
   };
 
   return (
@@ -632,6 +925,7 @@ const AddNewProduct = () => {
           <Dialog
             open={openCustomizationInputDialog}
             onClose={() => setOpenCustomizationInputDialog(false)}
+            disableEscapeKeyDown
             sx={{
               "& .MuiDialogTitle-root": {
                 fontSize: "1.5rem",
@@ -715,9 +1009,11 @@ const AddNewProduct = () => {
             </ThemeProvider>
           </Dialog>
 
-          {/* Add customization field or option dialog */}
+          {/* Add customization field  dialog */}
           <Dialog
-            open={false}
+            open={openAddNewCustomizationTypeInputDialog}
+            onClose={() => setOpenAddNewCustomizationTypeInputDialog(false)}
+            disableEscapeKeyDown
             sx={{
               "& .MuiDialogTitle-root": {
                 fontSize: "1.5rem",
@@ -732,29 +1028,88 @@ const AddNewProduct = () => {
             }}
           >
             <ThemeProvider theme={theme}>
-              <DialogTitle>Add New Customization Field</DialogTitle>
+              <DialogTitle>Add New Customization Type</DialogTitle>
               <Divider />
               <DialogContent
                 sx={{ display: "flex", flexDirection: "column", gap: "10px" }}
               >
-                Enter the name of the customization field you want to
-                customization upon.
-                <TextField
-                  label="Customization Type"
-                  value={selectedCustomizationTypeId}
-                  onChange={handleCustomizationTypeSelection}
-                  variant="outlined"
-                  fullWidth
+                Enter the name of the customization type you want to add to
+                customize type list.
+                <br />
+                <InputTextField
+                  title={"New Customization Type"}
+                  value={newCustomizationType}
+                  onEdit={(e) => setNewCustomizationType(e.target.value)}
                   sx={{ marginBottom: "20px", marginTop: "10px" }}
                 />
               </DialogContent>
               <DialogActions sx={{ marginBottom: "10px", marginRight: "10px" }}>
                 <Button
+                  onClick={() =>
+                    setOpenAddNewCustomizationTypeInputDialog(false)
+                  }
+                >
+                  Close
+                </Button>
+                <Button
                   variant="contained"
-                  onClick={() => setOpenCustomizationInputDialog(false)}
+                  onClick={HandleAddNewCustomizationType}
                   className="closeButton"
                 >
-                  Apply
+                  Add
+                </Button>
+              </DialogActions>
+            </ThemeProvider>
+          </Dialog>
+
+          {/* Add customization option dialog */}
+          <Dialog
+            open={openAddNewCustomizationOptionInputDialog}
+            onClose={() => setOpenAddNewCustomizationOptionInputDialog(false)}
+            disableEscapeKeyDown
+            sx={{
+              "& .MuiDialogTitle-root": {
+                fontSize: "1.5rem",
+                fontWeight: 600,
+                marginBottom: "10px",
+              },
+              "& .MuiDialogContent-root": {
+                fontSize: "1.2rem",
+                fontWeight: 400,
+                marginBottom: "10px",
+              },
+            }}
+          >
+            <ThemeProvider theme={theme}>
+              <DialogTitle>Add New Customization Option</DialogTitle>
+              <Divider />
+              <DialogContent
+                sx={{ display: "flex", flexDirection: "column", gap: "10px" }}
+              >
+                Enter the name of the customization option you want to add for
+                the customize type "{selectedCustomizationTypeName}".
+                <br />
+                <InputTextField
+                  title={"New Customization Option"}
+                  value={newCustomizationOption}
+                  onEdit={(e) => setNewCustomizationOption(e.target.value)}
+                  sx={{ marginBottom: "20px", marginTop: "10px" }}
+                />
+              </DialogContent>
+              <DialogActions sx={{ marginBottom: "10px", marginRight: "10px" }}>
+                <Button
+                  onClick={() =>
+                    setOpenAddNewCustomizationOptionInputDialog(false)
+                  }
+                >
+                  Close
+                </Button>
+                <Button
+                  variant="contained"
+                  className="closeButton"
+                  onClick={HandleAddNewCustomizationOption}
+                >
+                  Add
                 </Button>
               </DialogActions>
             </ThemeProvider>

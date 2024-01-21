@@ -55,9 +55,7 @@ const theme = createTheme({
 const AddNewProduct = () => {
   let navigate = useNavigate();
   let token = localStorage.getItem("token");
-  const productId = 1;
-  let selectedTypeId;
-  let selectedTypeName;
+  var productId = 1;
 
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState(null);
@@ -80,101 +78,33 @@ const AddNewProduct = () => {
     openAddNewCustomizationOptionInputDialog,
     setOpenAddNewCustomizationOptionInputDialog,
   ] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const [customizationTypeChanged, setCustomizationTypeChanged] =
-    useState(false);
-
-  //const [secondFieldOptions, setSecondFieldOptions] = useState([]);
   const [customizationTypes, setCustomizationTypes] = useState([]);
   const [selectedCustomizationTypeId, setSelectedCustomizationTypeId] =
     useState("");
   const [selectedCustomizationTypeName, setSelectedCustomizationTypeName] =
     useState("");
   const [customizationOptions, setCustomizationOptions] = useState([]);
-  const [customizationPrice, setCustomizationPrice] = useState([]);
-  const [madeOnOrder, setMadeOnOrder] = useState(
-    Array(selectedOptions.length).fill(false)
-  );
   const [showCustomizationTable, setShowCustomizationTable] = useState(false);
   const [selectedCustomizationNames, setSelectedCustomizationNames] = useState(
     {}
   );
   const [selectedCustomizations, setSelectedCustomizations] = useState([]);
-  // const [customizationTable, setCustomizationTable] = useState([]);
-
-  const handleSaveCustomizations = () => {
-    // const customizationsPayload = selectedCustomizations.map((combination, index) => {
-    //   const optionsIds = Object.values(combination);
-    //   const optionsString = optionsIds.join(',');
-
-    //   return {
-    //     options: optionsString,
-    //     price: customizationPrice[index] || "0", // Set a default value if price is not provided
-    //     made_on_order: madeOnOrder[index] || false, // Set a default value if made_on_order is not provided
-    //   };
-    // });
-
-    // const payload = {
-    //   product: productId, // Assuming productId is defined elsewhere in your code
-    //   customizations: customizationsPayload,
-    // };
-
-    // const customizationsPayload = selectedCustomizations.map(
-    //   (combination, index) => {
-    //     const optionsIds = Object.values(combination).map((optionName) => {
-    //       const option = customizationOptions.find(
-    //         (opt) => opt.name === optionName
-    //       );
-    //       return option ? option.id : null;
-    //     });
-
-    //     return {
-    //       options: optionsIds.join(","), // Use comma-separated string of IDs
-    //       price: customizationPrice[index] || "0", // Set a default value if price is not provided
-    //       made_on_order: madeOnOrder[index] || false, // Set a default value if made_on_order is not provided
-    //     };
-    //   }
-    // );
-
-    // const payload = {
-    //   product: productId, // Assuming productId is defined elsewhere in your code
-    //   customizations: customizationsPayload,
-    // };
-
-    // console.log(payload);
-    // const customizationDetailsArray = selectedOptions.map((option, index) => ({
-    //   customizationOption: `${option.type}:${option.option}`,
-    //   price: customizationPrice[index] || 100,
-    //   madeOnOrder: madeOnOrder[index] || false,
-    // }));
-
-    // console.log("Customization Details Array:", customizationDetailsArray);
-    // const apiPayload = {
-    //   product: productId,
-    //   customizations: customizationDetailsArray,
-    // };
-
-    // axios
-    //   .post(
-    //     "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/add.php",
-    //     apiPayload,
-    //     {
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //     }
-    //   )
-    //   .then((response) => {
-    //     console.log("API response:", response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error saving customizations:", error);
-    //   });
-  };
 
   useEffect(() => {
+    getAllCustomizationFields();
+
+    if (selectedCustomizationTypeId !== null) {
+      setSelectedCustomizationTypeName(
+        customizationTypes.find((i) => i.id === selectedCustomizationTypeId)
+          ?.name
+      );
+
+      getAllCustomizationOptionsPerField();
+    }
+  }, [selectedCustomizationTypeId]);
+
+  const getAllCustomizationFields = () => {
     axios
       .get(
         "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/field/all.php",
@@ -186,53 +116,41 @@ const AddNewProduct = () => {
       )
       .then((response) => {
         setCustomizationTypes(response.data.response);
-        setCustomizationTypeChanged(false);
       })
       .catch((error) => {
         console.error("Error fetching customization types:", error);
       });
-  }, [customizationTypeChanged]);
+  };
+
+  const getAllCustomizationOptionsPerField = () => {
+    axios
+      .get(
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedCustomizationTypeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        setCustomizationOptions(response.data.response);
+      })
+      .catch((error) => {
+        console.error("Error fetching customization options:", error);
+      });
+  };
 
   const handleCustomizationTypeSelection = (event) => {
-    selectedTypeId = event.target.value;
-    // selectedTypeName = customizationTypes.find((i) => i.id === selectedTypeId)[
-    //   "name"
-    // ];
+    let selectedTypeId = event.target.value;
 
     if (selectedTypeId !== -1) {
       setSelectedCustomizationTypeId(selectedTypeId);
-      console.log(selectedTypeName);
-      console.log(selectedTypeId);
-      console.log(
-        customizationTypes.find((i) => i.id === selectedTypeId)["name"]
-      );
-      setSelectedCustomizationTypeName(
-        customizationTypes.find((i) => i.id === selectedTypeId)["name"]
-      );
-
-      axios
-        .get(
-          `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedTypeId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        .then((response) => {
-          setCustomizationOptions(response.data.response);
-          // setCustomizationOptionChanged(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching customization options:", error);
-        });
     } else {
-      // Add new customization type and option here
       setOpenAddNewCustomizationTypeInputDialog(true);
     }
   };
 
-  const HandleAddNewCustomizationType = () => {
+  const handleAddNewCustomizationType = () => {
     const formData = new FormData();
     formData.append("name", newCustomizationType);
 
@@ -246,20 +164,18 @@ const AddNewProduct = () => {
           },
         }
       )
-      .then((response) => {
-        console.log(response.data);
+      .then((_) => {
         setOpenAddNewCustomizationTypeInputDialog(false);
-        setCustomizationTypeChanged(true);
+        getAllCustomizationFields();
       })
       .catch((error) => {
         console.error("Error saving initial product details:", error);
       });
   };
 
-  const HandleAddNewCustomizationOption = () => {
+  const handleAddNewCustomizationOption = () => {
     const formData = new FormData();
-    console.log(selectedTypeId);
-    formData.append("customization_field", selectedTypeId);
+    formData.append("customization_field", selectedCustomizationTypeId);
     formData.append("name", newCustomizationOption);
 
     axios
@@ -272,24 +188,9 @@ const AddNewProduct = () => {
           },
         }
       )
-      .then((response) => {
-        console.log(response.data);
+      .then((_) => {
         setOpenAddNewCustomizationOptionInputDialog(false);
-        axios
-          .get(
-            `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedCustomizationTypeId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-          .then((response) => {
-            setCustomizationOptions(response.data.response);
-          })
-          .catch((error) => {
-            console.error("Error fetching customization options:", error);
-          });
+        getAllCustomizationOptionsPerField();
       })
       .catch((error) => {
         console.error("Error saving initial product details:", error);
@@ -356,8 +257,34 @@ const AddNewProduct = () => {
 
     generateCombinations([], typeIds);
 
+    const customizationsList = [];
+
+    for (let i = 0; i < combinations.length; i++) {
+      const customizationIds = [];
+
+      for (const typeId in typeNames) {
+        const optionName = combinations[i][typeId];
+        const optionId = selectedOptions.find(
+          (i) => i.option_name === optionName
+        )["option"];
+
+        customizationIds.push(optionId);
+      }
+
+      const customizationIdsString = customizationIds.join(",");
+
+      customizationsList.push({
+        customization: combinations[i],
+        customization_ids: customizationIdsString,
+        price,
+        madeOnOrder: true,
+      });
+    }
+
+    console.log(customizationsList);
+
     setSelectedCustomizationNames(typeNames);
-    setSelectedCustomizations(combinations);
+    setSelectedCustomizations(customizationsList);
 
     setShowCustomizationTable(true);
     setOpenCustomizationInputDialog(false);
@@ -385,10 +312,6 @@ const AddNewProduct = () => {
     setImages(newImages);
   };
 
-  const handleDeleteVideo = () => {
-    setVideo(null);
-  };
-
   const handleSubmit = () => {
     if (!selectedCustomizations || selectedCustomizations.length === 0) {
       if (productName === "" || typeof productName === "undefined") {
@@ -408,7 +331,6 @@ const AddNewProduct = () => {
       } else if (images === "" || typeof images === "undefined") {
         toast.warn("Images are required!", generalToastStyle);
       } else {
-        console.log(token);
         const initialFormData = new FormData();
         initialFormData.append("type", "item");
         initialFormData.append("name", productName);
@@ -523,6 +445,8 @@ const AddNewProduct = () => {
         initialFormData.append("height", height);
         initialFormData.append("width", width);
         initialFormData.append("purity", purity);
+        initialFormData.append("category", 1);
+        initialFormData.append("sub_category", 1);
 
         axios
           .post(
@@ -587,25 +511,18 @@ const AddNewProduct = () => {
             if (selectedCustomizations) {
               const customizationsPayload = selectedCustomizations.map(
                 (combination, index) => {
-                  const optionsIds = Object.values(combination).map(
-                    (optionName) => {
-                      const option = customizationOptions.find(
-                        (opt) => opt.name === optionName
-                      );
-                      return option ? option.id : null;
-                    }
-                  );
-
                   return {
-                    options: optionsIds.join(","), // Use comma-separated string of IDs
-                    price: customizationPrice[index] || "0", // Set a default value if price is not provided
-                    made_on_order: madeOnOrder[index] || false, // Set a default value if made_on_order is not provided
+                    options: combination["customization_ids"],
+                    price: combination["price"],
+                    made_on_order: combination["madeOnOrder"] || false,
                   };
                 }
               );
 
+              console.log("customizationplayload : " + customizationsPayload);
+
               const payload = {
-                product: productId, // Assuming productId is defined elsewhere in your code
+                product: productId,
                 customizations: customizationsPayload,
               };
 
@@ -741,7 +658,7 @@ const AddNewProduct = () => {
                       </video>
                       <IconButton
                         className="deleteButton"
-                        onClick={handleDeleteVideo}
+                        onClick={() => setVideo(null)}
                       >
                         <Delete />
                       </IconButton>
@@ -877,17 +794,20 @@ const AddNewProduct = () => {
                         <TableCell>{index + 1}</TableCell>
                         {Object.keys(selectedCustomizationNames).map(
                           (key, colIndex) => (
-                            <TableCell key={colIndex}>{option[key]}</TableCell>
+                            <TableCell key={colIndex}>
+                              {option["customization"][key]}
+                            </TableCell>
                           )
                         )}
                         <TableCell>
                           <Input
                             type="number"
-                            value={customizationPrice[index] || ""}
+                            value={option["price"]}
                             onChange={(e) => {
-                              let x = [...customizationPrice];
-                              x[index] = e.target.value;
-                              setCustomizationPrice(x);
+                              let x = [...selectedCustomizations];
+                              selectedCustomizations[index]["price"] =
+                                e.target.value;
+                              setSelectedCustomizations(x);
                             }}
                             startAdornment={
                               <InputAdornment position="start">
@@ -898,11 +818,12 @@ const AddNewProduct = () => {
                         </TableCell>
                         <TableCell>
                           <Checkbox
-                            checked={madeOnOrder[index]}
+                            checked={option["madeOnOrder"]}
                             onChange={(e) => {
-                              let x = [...madeOnOrder];
-                              x[index] = e.target.checked;
-                              setMadeOnOrder(x);
+                              let x = [...selectedCustomizations];
+                              selectedCustomizations[index]["madeOnOrder"] =
+                                e.target.checked;
+                              setSelectedCustomizations(x);
                             }}
                           />
                         </TableCell>
@@ -911,13 +832,6 @@ const AddNewProduct = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-              <Button
-                variant="contained"
-                onClick={handleSaveCustomizations}
-                className="saveButton"
-              >
-                Save Customizations
-              </Button>
             </div>
           )}
 
@@ -978,11 +892,12 @@ const AddNewProduct = () => {
                   value=""
                   onChange={handleCustomizationOptionChange}
                 >
-                  {customizationOptions.map((option) => (
-                    <MenuItem key={option.id} value={option.id}>
-                      {option.name}
-                    </MenuItem>
-                  ))}
+                  {customizationOptions &&
+                    customizationOptions.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.name}
+                      </MenuItem>
+                    ))}
                   <MenuItem key={-1} value={-1}>
                     <Add /> Add New
                   </MenuItem>
@@ -1053,7 +968,7 @@ const AddNewProduct = () => {
                 </Button>
                 <Button
                   variant="contained"
-                  onClick={HandleAddNewCustomizationType}
+                  onClick={handleAddNewCustomizationType}
                   className="closeButton"
                 >
                   Add
@@ -1107,7 +1022,7 @@ const AddNewProduct = () => {
                 <Button
                   variant="contained"
                   className="closeButton"
-                  onClick={HandleAddNewCustomizationOption}
+                  onClick={handleAddNewCustomizationOption}
                 >
                   Add
                 </Button>

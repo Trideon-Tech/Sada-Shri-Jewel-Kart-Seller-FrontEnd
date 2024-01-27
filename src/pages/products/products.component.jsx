@@ -89,7 +89,7 @@ const Products = () => {
       <ToastContainer />
       <div className="head">
         <div className="head-txt">
-          Products <strong>12</strong>
+          Products
         </div>
 
         <Button className="button" onClick={handleAddNewProduct}>
@@ -113,7 +113,7 @@ const Products = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell>Name</TableCell>
-                    <TableCell>SKU</TableCell>
+                    <TableCell>Total Variants</TableCell>
                     <TableCell>Price</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>

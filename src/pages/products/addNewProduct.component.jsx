@@ -8,6 +8,7 @@ import {
   Grid,
   Chip,
   Input,
+  FormControl,
   createTheme,
   Dialog,
   DialogTitle,
@@ -16,6 +17,8 @@ import {
   MenuItem,
   DialogActions,
   ThemeProvider,
+  Select,
+  InputLabel,
   Checkbox,
   TableContainer,
   Table,
@@ -80,6 +83,9 @@ const AddNewProduct = () => {
   ] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [customizationTypes, setCustomizationTypes] = useState([]);
+  const [categoriesData, setCategoriesData] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
   const [selectedCustomizationTypeId, setSelectedCustomizationTypeId] =
     useState("");
   const [selectedCustomizationTypeName, setSelectedCustomizationTypeName] =
@@ -90,6 +96,25 @@ const AddNewProduct = () => {
     {}
   );
   const [selectedCustomizations, setSelectedCustomizations] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php?type=category",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        const categories = response.data.response || [];
+        setCategoriesData(categories);
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  }, []);
 
   useEffect(() => {
     getAllCustomizationFields();
@@ -340,6 +365,8 @@ const AddNewProduct = () => {
         initialFormData.append("height", height);
         initialFormData.append("width", width);
         initialFormData.append("purity", purity);
+        initialFormData.append("category",selectedCategory);
+        initialFormData.append("sub_category",selectedSubcategory);
 
         axios
           .post(
@@ -559,6 +586,14 @@ const AddNewProduct = () => {
     }
   };
 
+  const handleCategoryChange = (e) => {
+    const categoryId = e.target.value;
+    setSelectedCategory(categoryId); // Change #3
+    // Reset subcategory when changing category
+    setSelectedSubcategory(''); // Change #4
+    console.log(selectedCategory);
+  };
+
   return (
     <div className="AddNewProduct">
       <ToastContainer />
@@ -679,7 +714,7 @@ const AddNewProduct = () => {
           <Grid container spacing={0}>
             <Grid item xs={6}>
               <InputTextField
-                title={"Product Name"}
+                title={"Name"}
                 value={productName}
                 onEdit={(e) => {
                   setProductName(e.target.value);
@@ -688,42 +723,88 @@ const AddNewProduct = () => {
             </Grid>
             <Grid item xs={6}>
               <InputTextField
-                title={"Product Price"}
+                title={"Price"}
                 value={price}
                 onEdit={(e) => setPrice(e.target.value)}
+                adornmentType="rupees"
               />
             </Grid>
             <Grid item xs={6}>
               <InputTextField
-                title={"Product Weight"}
+                title={"Weight"}
                 value={weight}
                 onEdit={(e) => setWeight(e.target.value)}
+                adornmentType="grams"
               />
             </Grid>
             <Grid item xs={6}>
               <InputTextField
-                title={"Product Height"}
+                title={"Height"}
                 value={height}
                 onEdit={(e) => setHeight(e.target.value)}
+                adornmentType="mm"
               />
             </Grid>
             <Grid item xs={6}>
               <InputTextField
-                title={"Product Width"}
+                title={"Width"}
                 value={width}
                 onEdit={(e) => setWidth(e.target.value)}
+                adornmentType="inch"
               />
             </Grid>
             <Grid item xs={6}>
               <InputTextField
-                title={"Product Purity"}
+                title={"Purity"}
                 value={purity}
                 onEdit={(e) => setPurity(e.target.value)}
+                adornmentType="kt"
               />
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Category</div>
+              <FormControl fullWidth>
+                <Select
+                  value={selectedCategory}
+                  onChange={handleCategoryChange}
+                >
+                  {categoriesData.map((category) => (
+                    <MenuItem key={category.id} value={category.id}>
+                      {category.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Sub-Category</div>
+              <FormControl fullWidth>
+                <Select
+                  value={selectedSubcategory}
+                  onChange={(e) => setSelectedSubcategory(e.target.value)}
+                >
+                  {selectedCategory &&
+                    categoriesData
+                      .find((category) => category.id === selectedCategory)
+                      ?.sub_categories.map((subcategory) => (
+                        <MenuItem key={subcategory.id} value={subcategory.id}>
+                          {subcategory.name}
+                        </MenuItem>
+                      ))}
+                </Select>
+              </FormControl>
             </Grid>
 
             <Grid item xs={12} className="quill-container">
-              <div className="label">Product Description</div>
+              <div className="label">Description</div>
               <ReactQuill
                 theme="snow"
                 placeholder="Product Description"

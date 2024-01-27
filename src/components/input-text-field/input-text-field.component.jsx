@@ -1,5 +1,5 @@
 import React from "react";
-import { createTheme, ThemeProvider, OutlinedInput } from "@mui/material";
+import { createTheme, ThemeProvider, OutlinedInput, InputAdornment } from "@mui/material";
 
 import "./input-text-field.styles.scss";
 
@@ -14,7 +14,21 @@ const theme = createTheme({
   },
 });
 
-const InputTextField = ({ title, value, onEdit, adornment }) => {
+const InputTextField = ({ title, value, onEdit, adornmentType }) => {
+  let adornment = null;
+
+  // Determine adornment based on adornmentType
+  if (adornmentType === 'rupees') {
+    adornment = <InputAdornment position="start">₹</InputAdornment>;
+  } else if (adornmentType === 'grams') {
+    adornment = <InputAdornment position="end">gm</InputAdornment>;
+  } else if (adornmentType === 'mm') {
+    adornment = <InputAdornment position="end">mm</InputAdornment>;
+  } else if (adornmentType === 'inch') {
+    adornment = <InputAdornment position="end">inch</InputAdornment>;
+  } else if (adornmentType === 'kt') {
+    adornment = <InputAdornment position="end">kt</InputAdornment>;
+  }
   return (
     <div className="input-text-field">
       <div className="label">{title}</div>
@@ -23,7 +37,8 @@ const InputTextField = ({ title, value, onEdit, adornment }) => {
           className="field"
           value={value}
           onChange={onEdit}
-          endAdornment={adornment}
+          startAdornment={adornmentType === 'rupees' ? adornment : null}
+          endAdornment={adornmentType !== 'rupees' ? adornment : null}
         />
       </ThemeProvider>
     </div>

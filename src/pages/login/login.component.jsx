@@ -77,7 +77,7 @@ const Login = () => {
           localStorage.setItem("seller", JSON.stringify(response.data.response));
           localStorage.setItem("token", token);
 
-          navigate("/home/dashboard");
+          navigate("/dashboard");
         })
         .catch((error) => {
           console.error("Login failed:", error.message);

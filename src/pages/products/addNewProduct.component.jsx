@@ -604,7 +604,7 @@ const AddNewProduct = () => {
         <div className="btns">
           <Button
             className="button1"
-            onClick={() => navigate("/home/products")}
+            onClick={() => navigate("/products")}
           >
             Cancel
           </Button>
@@ -820,6 +820,7 @@ const AddNewProduct = () => {
       </ThemeProvider>
 
       {/* Customization input */}
+      <div className="product-customization-wrapper">
       <ThemeProvider theme={theme}>
         <Paper className="customization-paper">
           <div className="heading">Product Customization</div>
@@ -1112,6 +1113,7 @@ const AddNewProduct = () => {
           </Dialog>
         </Paper>
       </ThemeProvider>
+      </div>
     </div>
   );
 };

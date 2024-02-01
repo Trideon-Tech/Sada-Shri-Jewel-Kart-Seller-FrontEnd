@@ -27,7 +27,7 @@ const InputTextField = ({ title, value, onEdit, adornmentType }) => {
   } else if (adornmentType === 'inch') {
     adornment = <InputAdornment position="end">inch</InputAdornment>;
   } else if (adornmentType === 'kt') {
-    adornment = <InputAdornment position="end">kt</InputAdornment>;
+    adornment = <InputAdornment position="end">KT</InputAdornment>;
   }
   return (
     <div className="input-text-field">

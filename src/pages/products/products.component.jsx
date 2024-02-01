@@ -6,6 +6,7 @@ import {
   Paper,
   TableContainer,
   Table,
+  Typography,
   TableHead,
   TableBody,
   TableRow,
@@ -77,7 +78,7 @@ const Products = () => {
   };
 
   const handleAddNewProduct = () => {
-    navigate("/home/addNewProduct");
+    navigate("/products/add");
   };
 
   useEffect(() => {
@@ -88,9 +89,7 @@ const Products = () => {
     <div className="Products">
       <ToastContainer />
       <div className="head">
-        <div className="head-txt">
-          Products
-        </div>
+        <div className="head-txt">Products</div>
 
         <Button className="button" onClick={handleAddNewProduct}>
           Add New Product +
@@ -107,7 +106,7 @@ const Products = () => {
                 height: "100%",
               }}
             />
-          ) : (
+          ) : products && products.length > 0 ? (
             <TableContainer>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
@@ -165,6 +164,25 @@ const Products = () => {
                 onRowsPerPageChange={handleChangeRowsPerPage}
               />
             </TableContainer>
+          ) : (
+            <Paper
+              style={{
+                height: "50vh",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <img
+                src="https://cdn.dribbble.com/users/1753953/screenshots/3818675/animasi-emptystate.gif"
+                alt="No products added"
+                style={{ width: "150px", marginBottom: "16px" }}
+              />
+              <Typography variant="h4" style={{ fontWeight: "bold" }}>
+                No Products Added
+              </Typography>
+            </Paper>
           )}
         </Paper>
       </ThemeProvider>

@@ -190,9 +190,11 @@
             }
           }
     }
+    .product-customization-wrapper{
+      padding-bottom: 50px;
+      
     .customization-paper{
         margin-left: 3vw;
-        margin-bottom: 20px;
         padding: 16px;
         display: flex;
         flex-direction: column;
@@ -227,10 +229,7 @@
           border: 1px solid #a36e29;
         }
       }
-      .saveButton{
-        margin-top: 20px;
-      }
     }
-      
+  }
   }
   

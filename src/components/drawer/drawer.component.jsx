@@ -49,7 +49,7 @@ const CustomDrawer = ({ section }) => {
           icon={<Dashboard />}
           section={section}
           clickAction={() => {
-            if (section !== "dashboard") navigate("/home/dashboard");
+            if (section !== "dashboard") navigate("/dashboard");
           }}
         />
         <DrawerItem
@@ -58,7 +58,7 @@ const CustomDrawer = ({ section }) => {
           icon={<ListAlt />}
           section={section}
           clickAction={() => {
-            if (section !== "products") navigate("/home/products");
+            if (section !== "products") navigate("/products");
           }}
         />
       </div>

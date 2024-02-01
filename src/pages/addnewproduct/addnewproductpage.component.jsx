@@ -1,21 +1,22 @@
 import React from 'react';
 import { Divider } from "@mui/material";
 import { useParams } from "react-router-dom";
-import './home.styles.scss';
+import './addnewproductpage.styles.scss';
 import CustomDrawer from '../../components/drawer/drawer.component';
+import Products from '../products/products.component';
+import AddNewProduct from '../products/addNewProduct.component';
 
-
-function Home() {
+function AddProductPage() {
   let { section } = useParams();
   return (
-    <div className="home-component">
-      <CustomDrawer section={"dasboard"} />
+    <div className="addproduct-component">
+      <CustomDrawer section={"products/add"} />
       <Divider orientation="vertical" className="divider" />
       <div className="component">
-        <div>Dashboard </div>
+        <AddNewProduct/>
       </div>
     </div>
   );
 }
 
-export default Home;
+export default AddProductPage;

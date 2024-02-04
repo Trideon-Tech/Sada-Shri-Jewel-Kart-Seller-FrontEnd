@@ -14,20 +14,20 @@ const theme = createTheme({
   },
 });
 
-const InputTextField = ({ title, value, onEdit, adornmentType }) => {
-  let adornment = null;
+const InputTextField = ({ title, value, onEdit, adornmentType, adornment }) => {
+  let customizeAdornment = null;
 
   // Determine adornment based on adornmentType
   if (adornmentType === 'rupees') {
-    adornment = <InputAdornment position="start">₹</InputAdornment>;
+    customizeAdornment = <InputAdornment position="start">₹</InputAdornment>;
   } else if (adornmentType === 'grams') {
-    adornment = <InputAdornment position="end">gm</InputAdornment>;
+    customizeAdornment = <InputAdornment position="end">gm</InputAdornment>;
   } else if (adornmentType === 'mm') {
-    adornment = <InputAdornment position="end">mm</InputAdornment>;
+    customizeAdornment = <InputAdornment position="end">mm</InputAdornment>;
   } else if (adornmentType === 'inch') {
-    adornment = <InputAdornment position="end">inch</InputAdornment>;
+    customizeAdornment = <InputAdornment position="end">inch</InputAdornment>;
   } else if (adornmentType === 'kt') {
-    adornment = <InputAdornment position="end">KT</InputAdornment>;
+    customizeAdornment = <InputAdornment position="end">KT</InputAdornment>;
   }
   return (
     <div className="input-text-field">
@@ -37,8 +37,8 @@ const InputTextField = ({ title, value, onEdit, adornmentType }) => {
           className="field"
           value={value}
           onChange={onEdit}
-          startAdornment={adornmentType === 'rupees' ? adornment : null}
-          endAdornment={adornmentType !== 'rupees' ? adornment : null}
+          startAdornment={adornmentType === 'rupees' ? customizeAdornment : null}
+          endAdornment={ adornment ? adornment : adornmentType !== 'rupees' ? customizeAdornment : null}
         />
       </ThemeProvider>
     </div>

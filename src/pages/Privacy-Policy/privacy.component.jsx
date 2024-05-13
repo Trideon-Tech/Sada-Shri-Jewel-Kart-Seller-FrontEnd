@@ -1,10 +1,19 @@
 import React from "react";
-import { AppBar, Toolbar, Button } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Typography,
+  Grid,
+  Divider,
+} from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import "./privacy.styles.scss";
 
 const PrivacyPolicy = () => {
+  const matches = useMediaQuery("(min-width:600px)");
   let navigate = useNavigate();
 
   const handleLogoClick = () => {
@@ -19,34 +28,81 @@ const PrivacyPolicy = () => {
     <div className="landing">
       {/* Top Section */}
       <AppBar elevation={0} position="static" className="appbar">
-        <Toolbar variant="dense" className="toolbar">
+        <Toolbar
+          style={{
+            margin: matches ? "auto" : "0px",
+            width: matches ? "80vw" : "100vw",
+          }}
+          variant="dense"
+          className="toolbar"
+        >
           <img
             alt="logo"
             className="logo"
             src={process.env.PUBLIC_URL + "/assets/logo_white.png"}
             onClick={handleLogoClick}
           />
-          <div className="btns">
-            <Link className="link" to={"/login"}>
-              <Button className="btn">Login</Button>
-            </Link>
-            <Link className="link-primary">
-              <Button className="btn">Contact Us</Button>
-            </Link>
-          </div>
+          {matches ? (
+            <div className="btns">
+              <Link className="link" to={"/login"}>
+                <Button className="btn">Login</Button>
+              </Link>
+              <Link className="link-primary">
+                <Button className="btn">Contact Us</Button>
+              </Link>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+
+                width: "max-content",
+                marginLeft: "auto",
+              }}
+            >
+              <Link className="link" to={"/login"}>
+                <Button style={{ backgroundColor: "white", color: "#a36e29" }}>
+                  Login
+                </Button>
+              </Link>
+              <Link className="link-primary">
+                <Button
+                  className="btn"
+                  style={{
+                    marginLeft: "10px",
+                    backgroundColor: "white",
+                    color: "#a36e29",
+                  }}
+                >
+                  Contact Us
+                </Button>
+              </Link>
+            </div>
+          )}
         </Toolbar>
       </AppBar>
       {/* Middle Section */}
       <div className="content">
-        <div className="top">
+        <div className="top" style={{ height: matches ? "20%" : "10%" }}>
           <div
             style={{
               height: "100%",
             }}
           />
-          <div className="hero-text">Privacy Policy</div>
+          <div
+            className="hero-text"
+            style={{
+              fontSize: matches ? "3rem" : "1.5rem ",
+              paddingBottom: matches ? "50px" : "5px",
+            }}
+          >
+            Privacy Policy
+          </div>
         </div>
-        <div className="text">
+        <div
+          className="text"
+          style={{ paddingBottom: matches ? "10vh" : "100px" }}
+        >
           {/* <h2><strong>Shipping & Handling</strong></h2> */}
           <p>
             <strong>Privacy policy</strong>
@@ -241,45 +297,88 @@ const PrivacyPolicy = () => {
               questions, or if you would like to make a complaint, please
               contact our grievance and nodal officer Mr. ______________________
               by e-mail at care@sadashrijewelkart.com or by mail using the
-              details provided below: <br/>SADĀSHRĪ JEWELKART ______________________
-              (Grievance and Nodal Officer) <br/>Indiejewel Fashions Private Limited,
-              Third Floor, Magnum Vista, <br/>Raghuvanahalli, Bangalore, 560062,
-              Bangalore KA, India
-            </li><br/><br/>
+              details provided below: <br />
+              SADĀSHRĪ JEWELKART ______________________ (Grievance and Nodal
+              Officer) <br />
+              Indiejewel Fashions Private Limited, Third Floor, Magnum Vista,{" "}
+              <br />
+              Raghuvanahalli, Bangalore, 560062, Bangalore KA, India
+            </li>
+            <br />
+            <br />
           </ul>
         </div>
-        <div className="footer">
-        <div className="seperator" />
-        <div className="items-row">
-          <div className="company">Sada Shri Jewel Kart Pvt. Ltd.</div>
-          <div className="actions">
-            <div
-              onClick={() => handleFooterRedirect("privacy")}
-              className="action-item"
-            >
-              Privacy Policy
-            </div>
-            <div
-              onClick={() => handleFooterRedirect("shipping")}
-              className="action-item"
-            >
-              Shipping & Delivery
-            </div>
-            <div
-              onClick={() => handleFooterRedirect("term")}
-              className="action-item"
-            >
-              Terms & Conditions
-            </div>
-            <div
-              onClick={() => handleFooterRedirect("shipping")}
-              className="action-item"
-            >
-              Refund Policy
+        {matches ? (
+          <div className="footer">
+            <div className="seperator" />
+            <div className="items-row">
+              <div className="company">Sada Shri Jewel Kart Pvt. Ltd.</div>
+              <div className="actions">
+                <div
+                  onClick={() => handleFooterRedirect("privacy")}
+                  className="action-item"
+                >
+                  Privacy Policy
+                </div>
+                <div
+                  onClick={() => handleFooterRedirect("shipping")}
+                  className="action-item"
+                >
+                  Shipping & Delivery
+                </div>
+                <div
+                  onClick={() => handleFooterRedirect("term")}
+                  className="action-item"
+                >
+                  Terms & Conditions
+                </div>
+                <div
+                  onClick={() => handleFooterRedirect("shipping")}
+                  className="action-item"
+                >
+                  Refund Policy
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        ) : (
+          <div
+            style={{
+              position: "fixed",
+              bottom: "0px",
+              width: "100%",
+              backgroundColor: "white",
+              height: "100px",
+            }}
+          >
+            <Divider />
+            <Typography style={{ fontWeight: "bold", textAlign: "center" }}>
+              Sada Shri Jewel Kart Pvt. Ltd.
+            </Typography>
+            <Grid container spacing={1} style={{ textAlign: "center" }}>
+              <Grid item xs={6}>
+                <Typography onClick={() => handleFooterRedirect("privacy")}>
+                  Privacy Policy
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography onClick={() => handleFooterRedirect("shipping")}>
+                  Shipping & Delivery
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography onClick={() => handleFooterRedirect("term")}>
+                  Terms & Conditions
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography onClick={() => handleFooterRedirect("shipping")}>
+                  Refund Policy
+                </Typography>
+              </Grid>
+            </Grid>
+          </div>
+        )}
       </div>
     </div>
   );

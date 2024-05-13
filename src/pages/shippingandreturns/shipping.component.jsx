@@ -1,10 +1,19 @@
 import React from "react";
-import { AppBar, Toolbar, Button } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Typography,
+  Grid,
+  Divider,
+} from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import "./shipping.styles.scss";
 
 const Shipping = () => {
+  const matches = useMediaQuery("(min-width:600px)");
   let navigate = useNavigate();
 
   const handleLogoClick = () => {
@@ -14,43 +23,91 @@ const Shipping = () => {
   const handleFooterRedirect = (item) => {
     navigate(`/${item}`);
   };
-  
+
   return (
     <div className="landing">
       {/* Top Section */}
       <AppBar elevation={0} position="static" className="appbar">
-        <Toolbar variant="dense" className="toolbar">
+        <Toolbar
+          style={{
+            margin: matches ? "auto" : "0px",
+            width: matches ? "80vw" : "100vw",
+          }}
+          variant="dense"
+          className="toolbar"
+        >
           <img
             alt="logo"
             className="logo"
             src={process.env.PUBLIC_URL + "/assets/logo_white.png"}
             onClick={handleLogoClick}
           />
-          <div className="btns">
-            <Link className="link" to={"/login"}>
-              <Button className="btn">Login</Button>
-            </Link>
-            <Link className="link-primary">
-              <Button className="btn">Contact Us</Button>
-            </Link>
-          </div>
+          {matches ? (
+            <div className="btns">
+              <Link className="link" to={"/login"}>
+                <Button className="btn">Login</Button>
+              </Link>
+              <Link className="link-primary">
+                <Button className="btn">Contact Us</Button>
+              </Link>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+
+                width: "max-content",
+                marginLeft: "auto",
+              }}
+            >
+              <Link className="link" to={"/login"}>
+                <Button style={{ backgroundColor: "white", color: "#a36e29" }}>
+                  Login
+                </Button>
+              </Link>
+              <Link className="link-primary">
+                <Button
+                  className="btn"
+                  style={{
+                    marginLeft: "10px",
+                    backgroundColor: "white",
+                    color: "#a36e29",
+                  }}
+                >
+                  Contact Us
+                </Button>
+              </Link>
+            </div>
+          )}
         </Toolbar>
       </AppBar>
       {/* Middle Section */}
       <div className="content">
-        <div className="top">
+        <div className="top" style={{ height: matches ? "20%" : "10%" }}>
           <div
             style={{
               height: "100%",
             }}
           />
-          <div className="hero-text">Shipping and Returns</div>
+          <div
+            className="hero-text"
+            style={{
+              fontSize: matches ? "3rem" : "1.5rem ",
+              paddingBottom: matches ? "50px" : "5px",
+            }}
+          >
+            Shipping and Returns
+          </div>
         </div>
-        <div className="text">
+        <div
+          className="text"
+          style={{ paddingBottom: matches ? "10vh" : "100px" }}
+        >
           {/* <h2><strong>Shipping & Handling</strong></h2> */}
           <p>
             <strong>Shipping:</strong>
-          </p><br/>
+          </p>
+          <br />
           <ul>
             <li>
               • <strong>Shipping Time:</strong> Orders are usually processed and
@@ -58,25 +115,30 @@ const Shipping = () => {
               longer to process. If your order has both personalised and
               non-personalised items, the order will be split, and the
               non-personalised items will be delivered beforehand.
-            </li><br/>
+            </li>
+            <br />
             <li>
               • <strong>Shipping Charges:</strong> We offer free shipping on all
               orders over Rs. 449. Please note that we do not offer free
               shipping on international orders and returns.
-            </li><br/>
+            </li>
+            <br />
             <li>
               • <strong>Tracking:</strong> You will receive tracking details
               over WhatsApp, email and SMS, once the order is shipped.
-            </li><br/>
+            </li>
+            <br />
             <li>
               • In case you’re ordering other items along with personalised or
               Gold jewellery, your order might arrive in parts.
-            </li><br/>
+            </li>
+            <br />
           </ul>
-            <br/>
+          <br />
           <p>
             <strong>Returns:</strong>
-          </p><br/>
+          </p>
+          <br />
           <ul>
             <li>
               • <strong>Return Policy:</strong> We offer a 30-day return policy
@@ -91,7 +153,8 @@ const Shipping = () => {
               policies of your source of purchase shall apply. Any shipping
               charges (if paid) at the time of placing the order are non
               refundable in case of returns.
-            </li><br/>
+            </li>
+            <br />
             <li>
               • In case of missing items in return orders, i.e., where the
               customer claims to have returned multiple products but actual
@@ -99,19 +162,22 @@ const Shipping = () => {
               deduct an amount up to the full MRP of the missing product from
               the refund amount. This shall extend to promotional products,
               including but not limited to free gifts and silver coins.
-            </li><br/>
+            </li>
+            <br />
             <li>
               • <strong>Return Policy:</strong> In case you have requested the
               return of any of your products, the refund of the same shall be
               initiated once we receive the product back in our warehouse.
-            </li><br/>
+            </li>
+            <br />
             <li>
               • <strong>Replacement & Exchange:</strong> You can also avail
               replacement or exchange of your order as per your requirements.
               The conditions remain the same as those applicable to returns. The
               replacement will only be shipped after the initial return has been
               picked up or delivered (in the case of Gold items).
-            </li><br/>
+            </li>
+            <br />
             <li>
               • <strong>Return Process: </strong>You can initiate a return
               request from our website or app. Alternatively, you can reach out
@@ -123,7 +189,8 @@ const Shipping = () => {
               partner may, at their discretion, cancel the reverse pick-up. In
               all such cases, the process will have to be re-initiated again,
               and the overall timeline will increase.
-            </li><br/>
+            </li>
+            <br />
             <li>
               • Further, please note that while most pin codes are forward and
               reverse serviceable, in rare cases, some pin codes may only be
@@ -132,7 +199,8 @@ const Shipping = () => {
               courier service, such as India Post and reimburse all reasonable
               shipping costs (up to Rs 70) incurred by you for processing such
               returns.
-            </li><br/>
+            </li>
+            <br />
             <li>
               • In case the charges exceed Rs. 70, all charges (return shipping,
               duties, taxes, fees, etc.) in excess of Rs. 70 will be adjusted
@@ -140,7 +208,8 @@ const Shipping = () => {
               codes, the customer is responsible for returning the jewellery to
               our warehouse and will receive Rs.70 towards shipping charges with
               their refund.
-            </li><br/>
+            </li>
+            <br />
             <li>
               • In the unlikely event that you receive an empty parcel or a
               missing product, we would request you to reach out to our customer
@@ -150,7 +219,8 @@ const Shipping = () => {
               insufficient evidence or visible signs of tampering with the
               packet may result in your claim not being honoured. In all such
               cases, the brand reserves the right to take the final decision.
-            </li><br/>
+            </li>
+            <br />
             <li>
               • For more detailed TnCs, please refer to our{" "}
               <a
@@ -165,38 +235,77 @@ const Shipping = () => {
           </ul>
           <p></p>
         </div>
-        <div className="footer">
-        <div className="seperator" />
-        <div className="items-row">
-          <div className="company">Sada Shri Jewel Kart Pvt. Ltd.</div>
-          <div className="actions">
-            <div
-              onClick={() => handleFooterRedirect("privacy")}
-              className="action-item"
-            >
-              Privacy Policy
-            </div>
-            <div
-              onClick={() => handleFooterRedirect("shipping")}
-              className="action-item"
-            >
-              Shipping & Delivery
-            </div>
-            <div
-              onClick={() => handleFooterRedirect("term")}
-              className="action-item"
-            >
-              Terms & Conditions
-            </div>
-            <div
-              onClick={() => handleFooterRedirect("shipping")}
-              className="action-item"
-            >
-              Refund Policy
+        {matches ? (
+          <div className="footer">
+            <div className="seperator" />
+            <div className="items-row">
+              <div className="company">Sada Shri Jewel Kart Pvt. Ltd.</div>
+              <div className="actions">
+                <div
+                  onClick={() => handleFooterRedirect("privacy")}
+                  className="action-item"
+                >
+                  Privacy Policy
+                </div>
+                <div
+                  onClick={() => handleFooterRedirect("shipping")}
+                  className="action-item"
+                >
+                  Shipping & Delivery
+                </div>
+                <div
+                  onClick={() => handleFooterRedirect("term")}
+                  className="action-item"
+                >
+                  Terms & Conditions
+                </div>
+                <div
+                  onClick={() => handleFooterRedirect("shipping")}
+                  className="action-item"
+                >
+                  Refund Policy
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        ) : (
+          <div
+            style={{
+              position: "fixed",
+              bottom: "0px",
+              width: "100%",
+              backgroundColor: "white",
+              height: "100px",
+            }}
+          >
+            <Divider />
+            <Typography style={{ fontWeight: "bold", textAlign: "center" }}>
+              Sada Shri Jewel Kart Pvt. Ltd.
+            </Typography>
+            <Grid container spacing={1} style={{ textAlign: "center" }}>
+              <Grid item xs={6}>
+                <Typography onClick={() => handleFooterRedirect("privacy")}>
+                  Privacy Policy
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography onClick={() => handleFooterRedirect("shipping")}>
+                  Shipping & Delivery
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography onClick={() => handleFooterRedirect("term")}>
+                  Terms & Conditions
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography onClick={() => handleFooterRedirect("shipping")}>
+                  Refund Policy
+                </Typography>
+              </Grid>
+            </Grid>
+          </div>
+        )}
       </div>
     </div>
   );

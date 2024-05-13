@@ -6,10 +6,13 @@ import {
   Typography,
   Grid,
   Divider,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import "./term.styles.scss";
+import MenuIcon from "@mui/icons-material/Menu";
 import { Box, display, height, width } from "@mui/system";
 
 const TermsandConditions = () => {
@@ -23,7 +26,14 @@ const TermsandConditions = () => {
   const handleFooterRedirect = (item) => {
     navigate(`/${item}`);
   };
-
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
   return (
     <div className="landing">
       {/* Top Section */}
@@ -52,31 +62,25 @@ const TermsandConditions = () => {
               </Link>
             </div>
           ) : (
-            <div
-              style={{
-                display: "flex",
+            <div style={{ marginLeft: "auto" }}>
+              <MenuIcon onClick={handleClick} style={{ fontSize: "2rem" }} />
+              <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  "aria-labelledby": "basic-button",
+                }}
+              >
+                <Link className="link" to={"/login"}>
+                  <MenuItem onClick={handleClose}>Login</MenuItem>
+                </Link>
 
-                width: "max-content",
-                marginLeft: "auto",
-              }}
-            >
-              <Link className="link" to={"/login"}>
-                <Button style={{ backgroundColor: "white", color: "#a36e29" }}>
-                  Login
-                </Button>
-              </Link>
-              <Link className="link-primary">
-                <Button
-                  className="btn"
-                  style={{
-                    marginLeft: "10px",
-                    backgroundColor: "white",
-                    color: "#a36e29",
-                  }}
-                >
-                  Contact Us
-                </Button>
-              </Link>
+                <Link className="link">
+                  <MenuItem onClick={handleClose}>Contact Us</MenuItem>
+                </Link>
+              </Menu>
             </div>
           )}
         </Toolbar>
@@ -655,10 +659,20 @@ const TermsandConditions = () => {
             }}
           >
             <Divider />
-            <Typography style={{ fontWeight: "bold", textAlign: "center" }}>
+            <Typography
+              style={{
+                fontWeight: "bold",
+                textAlign: "center",
+                marginTop: "10px",
+              }}
+            >
               Sada Shri Jewel Kart Pvt. Ltd.
             </Typography>
-            <Grid container spacing={1} style={{ textAlign: "center" }}>
+            <Grid
+              container
+              spacing={1}
+              style={{ textAlign: "left", paddingLeft: "10%", color: "gray" }}
+            >
               <Grid item xs={6}>
                 <Typography onClick={() => handleFooterRedirect("privacy")}>
                   Privacy Policy

@@ -1,10 +1,19 @@
 import React from "react";
-import { AppBar, Toolbar, Button } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Typography,
+  Grid,
+  Divider,
+} from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-
+import useMediaQuery from "@mui/material/useMediaQuery";
 import "./term.styles.scss";
+import { Box, display, height, width } from "@mui/system";
 
 const TermsandConditions = () => {
+  const matches = useMediaQuery("(min-width:600px)");
   let navigate = useNavigate();
 
   const handleLogoClick = () => {
@@ -19,43 +28,91 @@ const TermsandConditions = () => {
     <div className="landing">
       {/* Top Section */}
       <AppBar elevation={0} position="static" className="appbar">
-        <Toolbar variant="dense" className="toolbar">
+        <Toolbar
+          variant="dense"
+          className="toolbar"
+          style={{
+            margin: matches ? "auto" : "0px",
+            width: matches ? "80vw" : "100vw",
+          }}
+        >
           <img
             alt="logo"
             className="logo"
             src={process.env.PUBLIC_URL + "/assets/logo_white.png"}
             onClick={handleLogoClick}
           />
-          <div className="btns">
-            <Link className="link" to={"/login"}>
-              <Button className="btn">Login</Button>
-            </Link>
-            <Link className="link-primary">
-              <Button className="btn">Contact Us</Button>
-            </Link>
-          </div>
+          {matches ? (
+            <div className="btns">
+              <Link className="link" to={"/login"}>
+                <Button className="btn">Login</Button>
+              </Link>
+              <Link className="link-primary">
+                <Button className="btn">Contact Us</Button>
+              </Link>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+
+                width: "max-content",
+                marginLeft: "auto",
+              }}
+            >
+              <Link className="link" to={"/login"}>
+                <Button style={{ backgroundColor: "white", color: "#a36e29" }}>
+                  Login
+                </Button>
+              </Link>
+              <Link className="link-primary">
+                <Button
+                  className="btn"
+                  style={{
+                    marginLeft: "10px",
+                    backgroundColor: "white",
+                    color: "#a36e29",
+                  }}
+                >
+                  Contact Us
+                </Button>
+              </Link>
+            </div>
+          )}
         </Toolbar>
       </AppBar>
       {/* Middle Section */}
       <div className="content">
-        <div className="top">
+        <div className="top" style={{ height: matches ? "20%" : "10%" }}>
           <div
             style={{
               height: "100%",
             }}
           />
-          <div className="hero-text">Term and Conditions</div>
+          <div
+            className="hero-text"
+            style={{
+              fontSize: matches ? "3rem" : "1.5rem ",
+              paddingBottom: matches ? "50px" : "5px",
+            }}
+          >
+            Term and Conditions
+          </div>
         </div>
-        <div className="text">
+        <div
+          className="text"
+          style={{ paddingBottom: matches ? "10vh" : "100px" }}
+        >
           {/* <h2><strong>Shipping & Handling</strong></h2> */}
           <p>
             <strong>Terms of service:</strong>
           </p>
           <ul>
-          <li>
-            <strong>Overview</strong><br />
-          </li>
-          
+            <li>
+              <strong>Overview</strong>
+              <br />
+            </li>
+
             <li>
               This website is operated by SADĀSHRĪ JEWELKART. Throughout the
               site, the terms “we”, “us” and “our” refer to SADĀSHRĪ JEWELKART.
@@ -87,41 +144,45 @@ const TermsandConditions = () => {
               constitutes acceptance of those changes. Our store is hosted on
               __________________ Inc. They provide us with the online e-commerce
               platform that allows us to sell our products and services to you.
-            </li><br />
+            </li>
+            <br />
             <li>
-              <strong>SECTION 1 - ONLINE STORE TERMS</strong><br /> By agreeing to
-              these Terms of Service, you represent that you are at least the
-              age of majority in your state or province of residence, or that
-              you are the age of majority in your state or province of residence
-              and you have given us your consent to allow any of your minor
-              dependents to use this site. You may not use our products for any
-              illegal or unauthorized purpose nor may you, in the use of the
-              Service, violate any laws in your jurisdiction (including but not
-              limited to copyright laws). You must not transmit any worms or
-              viruses or any code of a destructive nature. A breach or violation
-              of any of the Terms will result in an immediate termination of
-              your Services.
-            </li><br />
+              <strong>SECTION 1 - ONLINE STORE TERMS</strong>
+              <br /> By agreeing to these Terms of Service, you represent that
+              you are at least the age of majority in your state or province of
+              residence, or that you are the age of majority in your state or
+              province of residence and you have given us your consent to allow
+              any of your minor dependents to use this site. You may not use our
+              products for any illegal or unauthorized purpose nor may you, in
+              the use of the Service, violate any laws in your jurisdiction
+              (including but not limited to copyright laws). You must not
+              transmit any worms or viruses or any code of a destructive nature.
+              A breach or violation of any of the Terms will result in an
+              immediate termination of your Services.
+            </li>
+            <br />
             <li>
-              <strong>SECTION 2 - GENERAL CONDITIONS</strong><br /> We reserve the
-              right to refuse service to anyone for any reason at any time. You
-              understand that your content (not including credit card
-              information), may be transferred unencrypted and involve (a)
-              transmissions over various networks; and (b) changes to conform
-              and adapt to technical requirements of connecting networks or
-              devices. Credit card information is always encrypted during
-              transfer over networks. You agree not to reproduce, duplicate,
-              copy, sell, resell or exploit any portion of the Service, use of
-              the Service, or access to the Service or any contact on the
-              website through which the service is provided, without express
-              written permission by us. The headings used in this agreement are
-              included for convenience only and will not limit or otherwise
-              affect these Terms.
-            </li><br />
+              <strong>SECTION 2 - GENERAL CONDITIONS</strong>
+              <br /> We reserve the right to refuse service to anyone for any
+              reason at any time. You understand that your content (not
+              including credit card information), may be transferred unencrypted
+              and involve (a) transmissions over various networks; and (b)
+              changes to conform and adapt to technical requirements of
+              connecting networks or devices. Credit card information is always
+              encrypted during transfer over networks. You agree not to
+              reproduce, duplicate, copy, sell, resell or exploit any portion of
+              the Service, use of the Service, or access to the Service or any
+              contact on the website through which the service is provided,
+              without express written permission by us. The headings used in
+              this agreement are included for convenience only and will not
+              limit or otherwise affect these Terms.
+            </li>
+            <br />
             <li>
               <strong>
                 SECTION 3 - ACCURACY, COMPLETENESS AND TIMELINESS OF INFORMATION
-              </strong><br />
+              </strong>
+              <br />
               We are not responsible if information made available on this site
               is not accurate, complete or current. The material on this site is
               provided for general information only and should not be relied
@@ -134,20 +195,24 @@ const TermsandConditions = () => {
               modify the contents of this site at any time, but we have no
               obligation to update any information on our site. You agree that
               it is your responsibility to monitor changes to our site.
-            </li><br />
+            </li>
+            <br />
             <li>
               <strong>
                 SECTION 4 - MODIFICATIONS TO THE SERVICE AND PRICES
-              </strong><br />
+              </strong>
+              <br />
               Prices for our products are subject to change without notice. We
               reserve the right at any time to modify or discontinue the Service
               (or any part or content thereof) without notice at any time. We
               shall not be liable to you or to any third-party for any
               modification, price change, suspension or discontinuance of the
               Service.
-            </li><br />
+            </li>
+            <br />
             <li>
-              <strong>SECTION 5 - PRODUCTS OR SERVICES (if applicable)</strong><br />
+              <strong>SECTION 5 - PRODUCTS OR SERVICES (if applicable)</strong>
+              <br />
               Certain products or services may be available exclusively online
               through the website. These products or services may have limited
               quantities and are subject to return or exchange only according to
@@ -167,11 +232,13 @@ const TermsandConditions = () => {
               services, information, or other material purchased or obtained by
               you will meet your expectations, or that any errors in the Service
               will be corrected.
-            </li><br />
+            </li>
+            <br />
             <li>
               <strong>
                 SECTION 6 - ACCURACY OF BILLING AND ACCOUNT INFORMATION
-              </strong><br />
+              </strong>
+              <br />
               We reserve the right to refuse any order you place with us. We
               may, in our sole discretion, limit or cancel quantities purchased
               per person, per household or per order. These restrictions may
@@ -189,9 +256,11 @@ const TermsandConditions = () => {
               credit card numbers and expiration dates, so that we can complete
               your transactions and contact you as needed. For more detail,
               please review our Returns Policy.
-            </li><br />
+            </li>
+            <br />
             <li>
-              <strong>SECTION 7 - OPTIONAL TOOLS</strong><br />
+              <strong>SECTION 7 - OPTIONAL TOOLS</strong>
+              <br />
               We may provide you with access to third-party tools over which we
               neither monitor nor have any control nor input. You acknowledge
               and agree that we provide access to such tools ”as is” and “as
@@ -206,9 +275,11 @@ const TermsandConditions = () => {
               services and/or features through the website (including, the
               release of new tools and resources). Such new features and/or
               services shall also be subject to these Terms of Service.
-            </li><br />
+            </li>
+            <br />
             <li>
-              <strong>SECTION 8 - THIRD-PARTY LINKS</strong><br />
+              <strong>SECTION 8 - THIRD-PARTY LINKS</strong>
+              <br />
               Certain content, products and services available via our Service
               may include materials from third-parties. Third-party links on
               this site may direct you to third-party websites that are not
@@ -224,11 +295,13 @@ const TermsandConditions = () => {
               them before you engage in any transaction. Complaints, claims,
               concerns, or questions regarding third-party products should be
               directed to the third-party.
-            </li><br />
+            </li>
+            <br />
             <li>
               <strong>
                 SECTION 9 - USER COMMENTS, FEEDBACK AND OTHER SUBMISSIONS
-              </strong><br />
+              </strong>
+              <br />
               If, at our request, you send certain specific submissions (for
               example contest entries) or without a request from us you send
               creative ideas, suggestions, proposals, plans, or other materials,
@@ -255,14 +328,18 @@ const TermsandConditions = () => {
               comments. You are solely responsible for any comments you make and
               their accuracy. We take no responsibility and assume no liability
               for any comments posted by you or any third-party.
-            </li><br />
+            </li>
+            <br />
             <li>
-              <strong>SECTION 10 - PERSONAL INFORMATION</strong><br />
+              <strong>SECTION 10 - PERSONAL INFORMATION</strong>
+              <br />
               Your submission of personal information through the store is
               governed by our Privacy Policy. To view our Privacy Policy.
-            </li><br />
+            </li>
+            <br />
             <li>
-              <strong>SECTION 11 - ERRORS, INACCURACIES AND OMISSIONS</strong><br />
+              <strong>SECTION 11 - ERRORS, INACCURACIES AND OMISSIONS</strong>
+              <br />
               Occasionally there may be information on our site or in the
               Service that contains typographical errors, inaccuracies or
               omissions that may relate to product descriptions, pricing,
@@ -278,9 +355,11 @@ const TermsandConditions = () => {
               refresh date applied in the Service or on any related website,
               should be taken to indicate that all information in the Service or
               on any related website has been modified or updated.
-            </li><br />
+            </li>
+            <br />
             <li>
-              <strong>SECTION 12 - PROHIBITED USES</strong><br />
+              <strong>SECTION 12 - PROHIBITED USES</strong>
+              <br />
               In addition to other prohibitions as set forth in the Terms of
               Service, you are prohibited from using the site or its content:
               (a) for any unlawful purpose; (b) to solicit others to perform or
@@ -303,11 +382,13 @@ const TermsandConditions = () => {
               the Internet. We reserve the right to terminate your use of the
               Service or any related website for violating any of the prohibited
               uses.
-            </li><br />
+            </li>
+            <br />
             <li>
               <strong>
                 SECTION 13 - DISCLAIMER OF WARRANTIES; LIMITATION OF LIABILITY
-              </strong><br />
+              </strong>
+              <br />
               We do not guarantee, represent or warrant that your use of our
               service will be uninterrupted, timely, secure or error-free. Only
               warranties explicitly set out in the relevant product page shall
@@ -343,9 +424,11 @@ const TermsandConditions = () => {
               liability for consequential or incidental damages, in such states
               or jurisdictions, our liability shall be limited to the maximum
               extent permitted by law.
-            </li><br />
+            </li>
+            <br />
             <li>
-              <strong>SECTION 14 - INDEMNIFICATION</strong><br />
+              <strong>SECTION 14 - INDEMNIFICATION</strong>
+              <br />
               You agree to indemnify, defend and hold harmless SADĀSHRĪ
               JEWELKART and our parent, subsidiaries, affiliates, partners,
               officers, directors, agents, contractors, licensors, service
@@ -355,9 +438,11 @@ const TermsandConditions = () => {
               of these Terms of Service or the documents they incorporate by
               reference, or your violation of any law or the rights of a
               third-party.
-            </li><br />
+            </li>
+            <br />
             <li>
-              <strong>SECTION 15 - SEVERABILITY</strong><br />
+              <strong>SECTION 15 - SEVERABILITY</strong>
+              <br />
               In the event that any provision of these Terms of Service is
               determined to be unlawful, void or unenforceable, such provision
               shall nonetheless be enforceable to the fullest extent permitted
@@ -368,7 +453,8 @@ const TermsandConditions = () => {
             </li>
             <br />
             <li>
-              <strong>SECTION 16 - TERMINATION</strong><br />
+              <strong>SECTION 16 - TERMINATION</strong>
+              <br />
               The obligations and liabilities of the parties incurred prior to
               the termination date shall survive the termination of this
               agreement for all purposes. These Terms of Service are effective
@@ -384,7 +470,8 @@ const TermsandConditions = () => {
             </li>
             <br />
             <li>
-              <strong>SECTION 17 - ENTIRE AGREEMENT</strong><br />
+              <strong>SECTION 17 - ENTIRE AGREEMENT</strong>
+              <br />
               The failure of us to exercise or enforce any right or provision of
               these Terms of Service shall not constitute a waiver of such right
               or provision. These Terms of Service and any policies or operating
@@ -399,7 +486,8 @@ const TermsandConditions = () => {
             </li>
             <br />
             <li>
-              <strong>SECTION 18 - GOVERNING LAW</strong><br />
+              <strong>SECTION 18 - GOVERNING LAW</strong>
+              <br />
               These Terms of Service and any separate agreements whereby we
               provide you Services shall be governed by and construed in
               accordance with the laws of India without regard to its conflict
@@ -408,7 +496,8 @@ const TermsandConditions = () => {
             </li>
             <br />
             <li>
-              <strong>SECTION 19 - CHANGES TO TERMS OF SERVICE</strong><br />
+              <strong>SECTION 19 - CHANGES TO TERMS OF SERVICE</strong>
+              <br />
               You can review the most current version of the Terms of Service at
               any time at this page. We reserve the right, at our sole
               discretion, to update, change or replace any part of these Terms
@@ -420,7 +509,8 @@ const TermsandConditions = () => {
             </li>
             <br />
             <li>
-              <strong>SECTION 20 - CONTACT INFORMATION</strong><br />
+              <strong>SECTION 20 - CONTACT INFORMATION</strong>
+              <br />
               Questions about the Terms of Service should be sent to us at
               care@sadashrijewelkart.com. Our address is Third Floor, Magnum
               Vista, Raghuvanahalli, Bangalore 560062.
@@ -429,7 +519,8 @@ const TermsandConditions = () => {
             <li>
               <strong>
                 SECTION 21 - ADDITIONAL TERMS AND CONDITIONS FOR GOLD JEWELLERY
-              </strong><br />
+              </strong>
+              <br />
               1. 1. 30-day returns: You can return your item for upto 30 days
               from the date of delivery, no questions asked against a full
               refund subject to a successful inspection of the items (which may
@@ -511,44 +602,86 @@ const TermsandConditions = () => {
             </li>
             <br />
             <li>
-              <strong>Our Address:</strong><br />
-              SADĀSHRĪ JEWELKART 3rd floor, Magnum Vista, Raghuvanahalli<br />
-              Bangalore - 560062 Karnataka Opp KSIT college <br />(Landmark: Above Bata Showroom)
+              <strong>Our Address:</strong>
+              <br />
+              SADĀSHRĪ JEWELKART 3rd floor, Magnum Vista, Raghuvanahalli
+              <br />
+              Bangalore - 560062 Karnataka Opp KSIT college <br />
+              (Landmark: Above Bata Showroom)
             </li>
           </ul>
         </div>
-        <div className="footer">
-        <div className="seperator" />
-        <div className="items-row">
-          <div className="company">Sada Shri Jewel Kart Pvt. Ltd.</div>
-          <div className="actions">
-            <div
-              onClick={() => handleFooterRedirect("privacy")}
-              className="action-item"
-            >
-              Privacy Policy
-            </div>
-            <div
-              onClick={() => handleFooterRedirect("shipping")}
-              className="action-item"
-            >
-              Shipping & Delivery
-            </div>
-            <div
-              onClick={() => handleFooterRedirect("term")}
-              className="action-item"
-            >
-              Terms & Conditions
-            </div>
-            <div
-              onClick={() => handleFooterRedirect("shipping")}
-              className="action-item"
-            >
-              Refund Policy
+        {matches ? (
+          <div className="footer">
+            <div className="seperator" />
+            <div className="items-row">
+              <div className="company">Sada Shri Jewel Kart Pvt. Ltd.</div>
+              <div className="actions">
+                <div
+                  onClick={() => handleFooterRedirect("privacy")}
+                  className="action-item"
+                >
+                  Privacy Policy
+                </div>
+                <div
+                  onClick={() => handleFooterRedirect("shipping")}
+                  className="action-item"
+                >
+                  Shipping & Delivery
+                </div>
+                <div
+                  onClick={() => handleFooterRedirect("term")}
+                  className="action-item"
+                >
+                  Terms & Conditions
+                </div>
+                <div
+                  onClick={() => handleFooterRedirect("shipping")}
+                  className="action-item"
+                >
+                  Refund Policy
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        ) : (
+          <div
+            style={{
+              position: "fixed",
+              bottom: "0px",
+              width: "100%",
+              backgroundColor: "white",
+              height: "100px",
+            }}
+          >
+            <Divider />
+            <Typography style={{ fontWeight: "bold", textAlign: "center" }}>
+              Sada Shri Jewel Kart Pvt. Ltd.
+            </Typography>
+            <Grid container spacing={1} style={{ textAlign: "center" }}>
+              <Grid item xs={6}>
+                <Typography onClick={() => handleFooterRedirect("privacy")}>
+                  Privacy Policy
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography onClick={() => handleFooterRedirect("shipping")}>
+                  Shipping & Delivery
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography onClick={() => handleFooterRedirect("term")}>
+                  Terms & Conditions
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography onClick={() => handleFooterRedirect("shipping")}>
+                  Refund Policy
+                </Typography>
+              </Grid>
+            </Grid>
+          </div>
+        )}
       </div>
     </div>
   );

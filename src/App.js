@@ -13,6 +13,9 @@ import TermsandConditions from "./pages/terms-conditions/term.component";
 import ContactUs from "./pages/contact-us/contact-us.component";
 import Profile from "./pages/profile/profile.component";
 import ProductPage from "./pages/productspage/productpage.component";
+
+import OrdersPage from "./pages/orders/ordersPage.component";
+import OrderDetailsComponent from "./pages/orderDetails/orderDetails.component";
 import AddProductPage from "./pages/addnewproduct/addnewproductpage.component";
 
 function App() {
@@ -23,8 +26,8 @@ function App() {
           <Route exact path="/" element={<Landing />} />
           <Route path="/register/:step" element={<Register />} />
           <Route path="/dashboard" element={<Home />} />
-          <Route path="/products" element={<ProductPage/>} />
-          <Route path="/products/add" element= {<AddProductPage/>} />
+          <Route path="/products" element={<ProductPage />} />
+          <Route path="/products/add" element={<AddProductPage />} />
           <Route path="/staging" element={<Staging />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
@@ -32,6 +35,8 @@ function App() {
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/term" element={<TermsandConditions />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/order-detail/:id" element={<OrderDetailsComponent />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -74,8 +74,12 @@ const Login = () => {
           const logoUrl = response.data.response.organization.logo;
           console.log("login successful");
           localStorage.setItem("logoUrl", JSON.stringify(logoUrl));
-          localStorage.setItem("seller", JSON.stringify(response.data.response));
+          localStorage.setItem(
+            "seller",
+            JSON.stringify(response.data.response)
+          );
           localStorage.setItem("token", token);
+          localStorage.setItem("seller_id", response.data.response);
 
           navigate("/dashboard");
         })

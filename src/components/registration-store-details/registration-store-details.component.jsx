@@ -176,7 +176,11 @@ const RegistrationStoreDetails = () => {
       </Grid>
       <div className="divider" />
       <div className="actions">
-        <Button className="btn-secondary" disabled={true}>
+        <Button
+          className="btn-secondary"
+          disabled={false}
+          onClick={() => navigate("/register/company")}
+        >
           Prev. Step
         </Button>
         <Button className="btn-primary" onClick={onNext}>

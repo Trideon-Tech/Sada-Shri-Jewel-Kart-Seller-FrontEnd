@@ -1,8 +1,17 @@
 import { React, useState, useEffect } from "react";
 import { Divider } from "@mui/material";
-import { Dashboard, Business, List, Shop, ListAlt } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import {
+  Dashboard,
+  Business,
+  List,
+  Shop,
+  Category,
+  ListAlt,
+} from "@mui/icons-material";
 
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import "./drawer.styles.scss";
 
 import DrawerItem from "./item/item.component";
@@ -21,6 +30,21 @@ const CustomDrawer = ({ section }) => {
     }
   }, []);
 
+  const isSubcategorySelected =
+    section === "categories" ||
+    section === "products" ||
+    section === "reviews" ||
+    section === "orders";
+  const [showSubCategories, setShowSubCategories] = useState(
+    isSubcategorySelected
+  );
+
+  const handleCategoriesClick = () => {
+    setShowSubCategories(!showSubCategories);
+    if (section !== "categories") {
+      navigate("/categories");
+    }
+  };
   const handleProfileEdit = () => {
     navigate("/profile");
   };
@@ -41,7 +65,9 @@ const CustomDrawer = ({ section }) => {
         <div className="drawer-content">
           <img alt="profile" className="profile" src={imageUrl} />
           <div className="name">{seller["name"]}</div>
-          <div className="edit-option" onClick={handleProfileEdit}>Edit</div>
+          <div className="edit-option" onClick={handleProfileEdit}>
+            Edit
+          </div>
         </div>
         <DrawerItem
           title="Dashboard"
@@ -53,6 +79,18 @@ const CustomDrawer = ({ section }) => {
           }}
         />
         <DrawerItem
+          title="Shops"
+          value="shops"
+          icon={<Shop />}
+          arrowicon={
+            showSubCategories ? <ExpandLessIcon /> : <ChevronRightIcon />
+          }
+          section={section}
+          clickAction={handleCategoriesClick}
+          hassubcategory={true}
+          isSelected={isSubcategorySelected}
+        />
+        <DrawerItem
           title="Products"
           value="products"
           icon={<ListAlt />}
@@ -60,6 +98,18 @@ const CustomDrawer = ({ section }) => {
           clickAction={() => {
             if (section !== "products") navigate("/products");
           }}
+        />
+
+        <DrawerItem
+          title="Orders"
+          value="orders"
+          icon={<Category />}
+          section={section}
+          clickAction={() => {
+            if (section !== "orders") navigate("/orders");
+          }}
+          isaSubcategory={true}
+          isSelected={section === "orders"}
         />
       </div>
     </div>

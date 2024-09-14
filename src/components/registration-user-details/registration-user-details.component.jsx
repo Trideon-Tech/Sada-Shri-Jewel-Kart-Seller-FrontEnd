@@ -39,18 +39,116 @@ const RegistrationUserDetails = () => {
   const [verifyOTPAdornment, activateVerifyOTPAdornment] = useState(false);
   const [nextStepLoading, activateNextStepLoading] = useState(false);
 
+  // const sendOTP = () => {
+  //   // API to send OTP
+  //   toast("OTP Sent Successfully!", generalToastStyle);
+  //   activateSendOTPAdornment(false);
+  //   setOTPSent(true);
+  // };
+
+  // const verifyOTP = () => {
+  //   // API to verify OTP
+  //   toast("OTP Verified Successfully!", generalToastStyle);
+  //   activateVerifyOTPAdornment(false);
+  //   setOTPVerified(true);
+  // };
+
   const sendOTP = () => {
     // API to send OTP
+    console.log("otp", otp);
+    sendOTPHandler();
     toast("OTP Sent Successfully!", generalToastStyle);
     activateSendOTPAdornment(false);
     setOTPSent(true);
   };
 
   const verifyOTP = () => {
+    console.log("otp", otp);
+    verifyOTPHandler();
     // API to verify OTP
     toast("OTP Verified Successfully!", generalToastStyle);
     activateVerifyOTPAdornment(false);
-    setOTPVerified(true);
+    // setOTPVerified(true);
+  };
+
+  const sendOTPHandler = () => {
+    const formData = new FormData();
+    // setotpSent(true);
+    formData.append("type", "generate_otp");
+    formData.append("mobile", `91${mobile}`);
+
+    //call API for OTP verification
+    axios
+      .post("https://api.sadashrijewelkart.com/v1.0.0/user/otp.php", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        console.log(response);
+        if (response.data.success === 1) {
+          // setotpSent(false);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  const verifyOTPHandler = () => {
+    const formData = new FormData();
+    // setotpSent(true);
+    formData.append("type", "verify_otp");
+    formData.append("mobile", `91${mobile}`);
+    formData.append("otp", otp);
+
+    //call API for OTP verification
+    axios
+      .get(
+        `https://api.sadashrijewelkart.com/v1.0.0/user/otp.php?type=verify_otp&otp=${otp}&mobile=${`91${mobile}`}`,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((response) => {
+        console.log("userdata=====================================", response);
+        if (
+          response.data.success === 1 &&
+          response?.data?.response?.user_details
+        ) {
+          setOTPVerified(true);
+          if (response.data.response.user_details.user_exists) {
+            localStorage.setItem(
+              "user_id",
+              response.data.response.user_details.user_details.id
+            );
+            localStorage.setItem(
+              "token",
+              response.data.response.user_details.user_details.token
+            );
+            localStorage.setItem(
+              "user_name",
+              response.data.response.user_details.user_details.name
+            );
+            localStorage.setItem(
+              "user_email",
+              response.data.response.user_details.user_details.email
+            );
+            localStorage.setItem(
+              "user_data",
+              response.data.response.user_details.user_details
+            );
+            // navigate("/");
+          } else {
+            // navigate("/user-details");
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   const onNext = () => {

@@ -24,7 +24,10 @@ import {
   ImageList,
   Grid,
   Checkbox,
+  Modal,
+  Card,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import "react-toastify/dist/ReactToastify.css";
 import {
   Search,
@@ -39,13 +42,17 @@ import {
   CheckBox,
 } from "@mui/icons-material";
 import axios from "axios";
-
+import Tab, { tabClasses } from "@mui/joy/Tab";
 import "./orders.styles.scss";
 
 import InputTextField from "../input-text-field/input-text-field.component";
 import { generalToastStyle } from "../../utils/toast.styles";
 import MetricBoxComponent from "./metricBox.component";
 import { useNavigate } from "react-router-dom";
+import { TabList, Tabs } from "@mui/joy";
+import { borderRadius } from "@mui/system";
+import SettlementModal from "./settlementModel.component";
+import PaymentModal from "./paymentModel.component";
 
 const theme = createTheme({
   palette: {
@@ -55,6 +62,20 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: '"Work Sans", sans-serif',
+  },
+
+  background: {
+    paper: "#a36e29",
+  },
+  text: {
+    primary: "#a36e29",
+    secondary: "#a36e29",
+  },
+  action: {
+    active: "#a36e29",
+  },
+  success: {
+    dark: "#a36e29",
   },
 });
 
@@ -90,6 +111,10 @@ const OrdersComponent = ({ row }) => {
   const [ordersList, setOrdersList] = useState([]);
   const [orderStats, setOrderStats] = useState({});
 
+  const [paymentList, setPaymentList] = useState([]);
+  const [settlementList, setSettlementList] = useState([]);
+  const [refundList, setRefundList] = useState([]);
+
   useEffect(() => {
     (async () => {
       const token = localStorage.getItem("token");
@@ -105,8 +130,31 @@ const OrdersComponent = ({ row }) => {
       );
 
       console.log("sdsd", data.response);
-      setOrdersList(data.response.order_list);
-      setOrderStats(data.response.dashboard_details);
+      setOrdersList(
+        data?.response?.order_list?.filter(
+          (item) => item?.shipment_status === "ORDER_CREATED"
+        )
+      );
+
+      setPaymentList(
+        data?.response?.order_list?.filter(
+          (item) => item?.shipment_status === "ORDER_CREATED"
+        )
+      );
+
+      setSettlementList(
+        data?.response?.order_list?.filter(
+          (item) => item?.shipment_status === "SETTLEMENT_LIST"
+        )
+      );
+
+      setRefundList(
+        data?.response?.order_list?.filter(
+          (item) => item?.shipment_status === "REFUND_LIST"
+        )
+      );
+
+      setOrderStats(data?.response?.dashboard_details);
     })();
   }, []);
 
@@ -118,7 +166,7 @@ const OrdersComponent = ({ row }) => {
   const [page, setPage] = useState(0);
 
   const [rowsPerPage, setRowsPerPage] = useState(25);
-  const [showDrawer, setShowDrawer] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(true);
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
@@ -129,6 +177,9 @@ const OrdersComponent = ({ row }) => {
     setPage(0);
   };
 
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  const [modalOpen, setModalOpen] = useState(false);
   return (
     <div className="category-component">
       <ToastContainer />
@@ -154,6 +205,10 @@ const OrdersComponent = ({ row }) => {
 
       <div className="secondary-div">
         <div className="secondary-content"></div>
+      </div>
+
+      <div>
+        <PaymentModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
       </div>
       <Grid
         container
@@ -193,6 +248,86 @@ const OrdersComponent = ({ row }) => {
           />
         </Grid>
       </Grid>
+      <Divider />
+
+      <Box
+        sx={{ width: "max-content", marginLeft: "auto", marginRight: "auto" }}
+      >
+        <Tabs
+          aria-label="tabs"
+          defaultValue={0}
+          onChange={(event, value) => {
+            setSelectedTab(value);
+            if (value === 0) {
+              setOrdersList(paymentList);
+            }
+            if (value === 1) {
+              setOrdersList(settlementList);
+            }
+            if (value === 3) {
+              setOrdersList(refundList);
+            }
+          }}
+          sx={{
+            bgcolor: "transparent",
+            borderColor: "green",
+          }}
+        >
+          <TabList
+            disableUnderline
+            sx={{
+              p: 0.5,
+
+              gap: 0.5,
+              borderRadius: "xl",
+              bgcolor: "background.level1",
+              [`& .${tabClasses.root}[aria-selected="true"]`]: {
+                boxShadow: "sm",
+                bgcolor: "background.surface",
+                border: "2px solid brown",
+              },
+            }}
+          >
+            <Tab
+              value={0}
+              disableIndicator
+              style={{
+                minWidth: "300px",
+                padding: "20px",
+                border:
+                  selectedTab === 0 ? "2px solid brown" : "0px solid green",
+              }}
+            >
+              Payment
+            </Tab>
+            <Tab
+              value={1}
+              disableIndicator
+              style={{
+                minWidth: "300px",
+                padding: "20px",
+                border:
+                  selectedTab === 1 ? "2px solid brown" : "0px solid green",
+              }}
+            >
+              Settlement
+            </Tab>
+            <Tab
+              value={2}
+              disableIndicator
+              style={{
+                minWidth: "300px",
+                padding: "20px",
+                border:
+                  selectedTab === 2 ? "2px solid brown" : "0px solid green",
+              }}
+            >
+              Refund
+            </Tab>
+          </TabList>
+        </Tabs>
+      </Box>
+
       <Divider />
 
       <ThemeProvider theme={theme}>
@@ -351,3 +486,210 @@ const itemData = [
 ];
 
 export default OrdersComponent;
+
+// <div
+//                 style={{
+//                   width: "50%",
+//                   height: "100%",
+//                   flex: "none",
+//                   backgroundColor: "green",
+//                 }}
+//               >
+//                 <div
+//                   style={{
+//                     width: "50%",
+//                     display: "flex",
+//                   }}
+//                 >
+//                   <div
+//                     style={{
+//                       width: "100%",
+//                       display: "flex",
+//                       justifyContent: "space-between",
+//                       alignItems: "center",
+//                     }}
+//                   >
+//                     <p
+//                       style={{
+//                         width: "200px",
+//                         fontWeight: 800,
+//                         color: "gray",
+//                         fontSize: "1.1rem",
+//                       }}
+//                     >
+//                       Type
+//                     </p>
+//                     <p
+//                       style={{
+//                         width: "75%",
+//                         fontWeight: 800,
+//                         fontSize: "1.1rem",
+//                       }}
+//                     >
+//                       Normal Settlement
+//                     </p>
+//                   </div>
+//                 </div>
+//                 <div style={{ width: "50%", display: "flex" }}>
+//                   <div
+//                     style={{
+//                       width: "100%",
+//                       display: "flex",
+//                       justifyContent: "space-between",
+//                       alignItems: "center",
+//                     }}
+//                   >
+// <p
+//   style={{
+//     width: "200px",
+//     fontWeight: 800,
+//     color: "gray",
+//     fontSize: "1.1rem",
+//   }}
+// >
+//   Period
+// </p>
+// <p
+//   style={{
+//     width: "75%",
+//     fontWeight: 800,
+//     fontSize: "1.1rem",
+//   }}
+// >
+//   02/10/2024 at 4:15pm
+// </p>
+//                   </div>
+//                 </div>
+//                 <div style={{ width: "50%", display: "flex" }}>
+//                   <div
+//                     style={{
+//                       width: "100%",
+//                       display: "flex",
+//                       justifyContent: "space-between",
+//                       alignItems: "center",
+//                     }}
+//                   >
+//                     <p
+//                       style={{
+//                         width: "200px",
+//                         fontWeight: 800,
+//                         color: "gray",
+//                         fontSize: "1.1rem",
+//                       }}
+//                     >
+//                       Account
+//                     </p>
+//                     <p
+//                       style={{
+//                         width: "75%",
+//                         fontWeight: 800,
+//                         fontSize: "1.1rem",
+//                       }}
+//                     >
+//                       *********SSFDF
+//                     </p>
+//                   </div>
+//                 </div>
+//               </div>
+//               <div
+//                 style={{
+//                   width: "50%",
+//                   backgroundColor: "green",
+//                 }}
+//               >
+//                 <div
+//                   style={{
+//                     width: "50%",
+//                     display: "flex",
+//                   }}
+//                 >
+//                   <div
+//                     style={{
+//                       width: "100%",
+//                       display: "flex",
+//                       justifyContent: "space-between",
+//                       alignItems: "center",
+//                     }}
+//                   >
+//                     <p
+//                       style={{
+//                         width: "200px",
+//                         fontWeight: 800,
+//                         color: "gray",
+//                         fontSize: "1.1rem",
+//                       }}
+//                     >
+//                       Type
+//                     </p>
+//                     <p
+//                       style={{
+//                         width: "75%",
+//                         fontWeight: 800,
+//                         fontSize: "1.1rem",
+//                       }}
+//                     >
+//                       Normal Settlement
+//                     </p>
+//                   </div>
+//                 </div>
+//                 <div style={{ width: "50%", display: "flex" }}>
+//                   <div
+//                     style={{
+//                       width: "100%",
+//                       display: "flex",
+//                       justifyContent: "space-between",
+//                       alignItems: "center",
+//                     }}
+//                   >
+//                     <p
+//                       style={{
+//                         width: "200px",
+//                         fontWeight: 800,
+//                         color: "gray",
+//                         fontSize: "1.1rem",
+//                       }}
+//                     >
+//                       Period
+//                     </p>
+//                     <p
+//                       style={{
+//                         width: "75%",
+//                         fontWeight: 800,
+//                         fontSize: "1.1rem",
+//                       }}
+//                     >
+//                       02/10/2024 at 4:15pm
+//                     </p>
+//                   </div>
+//                 </div>
+//                 <div style={{ width: "50%", display: "flex" }}>
+//                   <div
+//                     style={{
+//                       width: "100%",
+//                       display: "flex",
+//                       justifyContent: "space-between",
+//                       alignItems: "center",
+//                     }}
+//                   >
+//                     <p
+//                       style={{
+//                         width: "200px",
+//                         fontWeight: 800,
+//                         color: "gray",
+//                         fontSize: "1.1rem",
+//                       }}
+//                     >
+//                       Account
+//                     </p>
+//                     <p
+//                       style={{
+//                         width: "75%",
+//                         fontWeight: 800,
+//                         fontSize: "1.1rem",
+//                       }}
+//                     >
+//                       *********SSFDF
+//                     </p>
+//                   </div>
+//                 </div>
+//               </div>

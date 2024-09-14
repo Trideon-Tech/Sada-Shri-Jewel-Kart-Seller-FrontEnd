@@ -27,10 +27,6 @@ import {
   TableRow,
   TableCell,
 } from "@mui/material";
-// import Select from "@mui/joy/Select";
-// import Option from "@mui/joy/Option";
-// import { Box, Chip } from "@mui/joy";
-
 import {
   Add,
   PhotoCamera,
@@ -47,7 +43,6 @@ import { generalToastStyle } from "../../utils/toast.styles";
 import "./addNewProduct.styles.scss";
 
 import InputTextField from "../../components/input-text-field/input-text-field.component";
-import MaterialSelector from "./materialSelector.component";
 
 const theme = createTheme({
   palette: {
@@ -60,7 +55,7 @@ const theme = createTheme({
   },
 });
 
-const AddNewProduct = () => {
+const EditProduct = () => {
   let navigate = useNavigate();
   let token = localStorage.getItem("token");
   var productId = 1;
@@ -101,28 +96,6 @@ const AddNewProduct = () => {
     {}
   );
   const [selectedCustomizations, setSelectedCustomizations] = useState([]);
-
-  const [availableCustomizations, setAvailableCustomizations] = useState([]);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    axios
-      .get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/all.php?type=product_add_template",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        const categories = response.data.response || [];
-        // setCategoriesData(categories);
-      })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
-      });
-  }, []);
 
   useEffect(() => {
     axios
@@ -175,22 +148,21 @@ const AddNewProduct = () => {
   };
 
   const getAllCustomizationOptionsPerField = () => {
-    if (selectedCustomizationTypeId)
-      axios
-        .get(
-          `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedCustomizationTypeId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        .then((response) => {
-          setCustomizationOptions(response.data.response);
-        })
-        .catch((error) => {
-          console.error("Error fetching customization options:", error);
-        });
+    axios
+      .get(
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedCustomizationTypeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        setCustomizationOptions(response.data.response);
+      })
+      .catch((error) => {
+        console.error("Error fetching customization options:", error);
+      });
   };
 
   const handleCustomizationTypeSelection = (event) => {
@@ -854,22 +826,12 @@ const AddNewProduct = () => {
               Does your product come in different options, like size, purity or
               material? Add them here.
             </div>
-
-            <div
-              style={{
-                width: "100%",
-                height: "max-content",
-                minHeight: "300px",
-              }}
-            >
-              <MaterialSelector />
-            </div>
-            {/* <Button
+            <Button
               className="button"
               onClick={() => setOpenCustomizationInputDialog(true)}
             >
               <Add /> Add New Customization
-            </Button> */}
+            </Button>
             {selectedOptions === null || !showCustomizationTable ? (
               <></>
             ) : (
@@ -1161,4 +1123,4 @@ const AddNewProduct = () => {
   );
 };
 
-export default AddNewProduct;
+export default EditProduct;

@@ -10,16 +10,15 @@ import TextField from "@mui/material/TextField";
 import { Divider, InputAdornment, OutlinedInput } from "@mui/material";
 import { padding } from "@mui/system";
 
-const PlatinumCustomizations = ({ handlePurityUpdate }) => {
+const PlatinumCustomizations = ({
+  handlePurityUpdate,
+  customizationOptions,
+}) => {
   const [purity, setPurity] = React.useState([]);
   const handleChange = (event) => {
     setPurity(event.target.value);
   };
-  const platinumPurity = [
-    "999 Plat 999 Pt",
-    "Plat 950 Pt 950",
-    "950 Plat 50 Ruth 950 Pt 50 Ru",
-  ];
+  const platinumPurity = customizationOptions["Platinum Purity"];
 
   React.useEffect(() => {
     handlePurityUpdate(purity);
@@ -58,7 +57,7 @@ const PlatinumCustomizations = ({ handlePurityUpdate }) => {
           alignItems: "center",
         }}
       >
-        <div style={{ width: "45%" }}>
+        {/* <div style={{ width: "45%" }}>
           <InputLabel id="demo-simple-select-label">Height</InputLabel>
           <OutlinedInput
             fullWidth
@@ -75,7 +74,7 @@ const PlatinumCustomizations = ({ handlePurityUpdate }) => {
             variant="outlined"
             endAdornment={<InputAdornment position="end">mm</InputAdornment>}
           />
-        </div>
+        </div> */}
       </div>
       {/* <div
         style={{

@@ -104,6 +104,8 @@ const AddNewProduct = () => {
 
   const [availableCustomizations, setAvailableCustomizations] = useState([]);
 
+  const [combinationsValues, setCombinationValues] = React.useState([]);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     axios
@@ -363,6 +365,111 @@ const AddNewProduct = () => {
     const newImages = [...images];
     newImages.splice(index, 1);
     setImages(newImages);
+  };
+
+  const handleProductSave = async () => {
+    if (productName === "" || typeof productName === "undefined") {
+      toast.warn("Product Name is required!", generalToastStyle);
+    } else if (desc === "" || typeof desc === "undefined") {
+      toast.warn("Description is required!", generalToastStyle);
+    } else if (weight === "" || typeof weight === "undefined") {
+      toast.warn("Weight is required!", generalToastStyle);
+    } else if (price === "" || typeof price === "undefined") {
+      toast.warn("Price is required!", generalToastStyle);
+    } else if (height === "" || typeof height === "undefined") {
+      toast.warn("Height is required!", generalToastStyle);
+    } else if (width === "" || typeof width === "undefined") {
+      toast.warn("Width is required!", generalToastStyle);
+    } else if (purity === "" || typeof purity === "undefined") {
+      toast.warn("Purity is required!", generalToastStyle);
+    } else {
+      axios
+        .post(
+          "https://api.sadashrijewelkart.com/v1.0.0/seller/product/addProduct.php",
+          {
+            type: "item",
+            name: productName,
+            description: desc,
+            category: selectedCategory,
+            sub_category: selectedSubcategory,
+            price: price,
+            weight: weight,
+            height: height,
+            width: width,
+            customization: combinationsValues,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          productId = response.data.response.id;
+
+          const promises = [];
+
+          images.forEach((image, index) => {
+            const formData = new FormData();
+            formData.append("type", "infographics");
+            formData.append("product", productId);
+            formData.append("is_primary", index === 0 ? true : false);
+            formData.append("file_type", "img");
+            formData.append("file", image);
+            console.log(formData);
+            promises.push(
+              axios.post(
+                "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+                formData,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                }
+              )
+            );
+          });
+
+          if (video) {
+            const videoFormData = new FormData();
+            videoFormData.append("type", "infographics");
+            videoFormData.append("product", productId);
+            videoFormData.append("is_primary", false);
+            videoFormData.append("file_type", "vid");
+            videoFormData.append("file", video);
+
+            promises.push(
+              axios.post(
+                "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+                videoFormData,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                }
+              )
+            );
+          }
+
+          Promise.all(promises)
+            .then((responses) => {
+              console.log(
+                "All Details, images and videos uploaded successfully:",
+                responses
+              );
+              navigate("/products");
+            })
+            .catch((error) => {
+              console.error("Error uploading images and videos:", error);
+            });
+        })
+        .catch((error) => {
+          console.error("Error saving initial product details:", error);
+        });
+    }
   };
 
   const handleSubmit = () => {
@@ -633,7 +740,7 @@ const AddNewProduct = () => {
           <Button className="button1" onClick={() => navigate("/products")}>
             Cancel
           </Button>
-          <Button className="button2" onClick={handleSubmit}>
+          <Button className="button2" onClick={handleProductSave}>
             Save
           </Button>
         </div>
@@ -862,7 +969,11 @@ const AddNewProduct = () => {
                 minHeight: "300px",
               }}
             >
-              <MaterialSelector />
+              <MaterialSelector
+                saveProductCustomization={handleProductSave}
+                combinationsValues={combinationsValues}
+                setCombinationValues={setCombinationValues}
+              />
             </div>
             {/* <Button
               className="button"

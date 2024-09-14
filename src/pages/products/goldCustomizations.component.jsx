@@ -10,20 +10,19 @@ import TextField from "@mui/material/TextField";
 import { Divider, InputAdornment, OutlinedInput } from "@mui/material";
 import { padding } from "@mui/system";
 
-const GoldCustomizations = ({ handlePurityUpdate, handleTypeUpdate }) => {
+const GoldCustomizations = ({
+  handlePurityUpdate,
+  handleTypeUpdate,
+  customizationOptions,
+}) => {
   const [age, setAge] = React.useState("");
 
   const [carat, setCarat] = React.useState([]);
   const [type, setType] = React.useState([]);
 
-  const caratList = [
-    "24K Gold Purity - 100% Gold",
-    "22K Gold Purity - 91.67% Gold",
-    "18K Gold Purity - 75% Gold",
-    "14K Gold Purity - 58.3% Gold",
-  ];
+  const caratList = customizationOptions["Gold Purity"];
 
-  const goldTypeList = ["Yellow Gold", "Rose Gold", "White Gold"];
+  const goldTypeList = customizationOptions["Gold Type"];
 
   React.useEffect(() => {
     handleTypeUpdate(type);
@@ -76,7 +75,7 @@ const GoldCustomizations = ({ handlePurityUpdate, handleTypeUpdate }) => {
           alignItems: "center",
         }}
       >
-        <div style={{ width: "45%" }}>
+        {/* <div style={{ width: "45%" }}>
           <InputLabel id="demo-simple-select-label">Height</InputLabel>
           <OutlinedInput
             fullWidth
@@ -93,7 +92,7 @@ const GoldCustomizations = ({ handlePurityUpdate, handleTypeUpdate }) => {
             variant="outlined"
             endAdornment={<InputAdornment position="end">mm</InputAdornment>}
           />
-        </div>
+        </div> */}
       </div>
       {/* <div
         style={{

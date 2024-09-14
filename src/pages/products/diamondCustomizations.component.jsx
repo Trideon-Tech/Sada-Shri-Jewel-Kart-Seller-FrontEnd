@@ -14,20 +14,15 @@ const DiamondCustomizations = ({
   handlePurityUpdate,
   handleCutUpdate,
   handleColorUpdate,
+  customizationOptions,
 }) => {
   const [carat, setCarat] = React.useState([]);
   const [cut, setCut] = React.useState([]);
   const [color, setColor] = React.useState([]);
 
-  const caratList = ["4.0CT", "3.25CT", "2.0CT", "1.0CT", "0.5CT"];
-  const cutList = ["Ideal Cut", "Shallow Cut", "Deep Cut"];
-  const colorList = [
-    "Colorless",
-    "Near Colorless",
-    "Slightly Tinted",
-    "Very Light Yellow",
-    "Light Yellow To Brown",
-  ];
+  const caratList = customizationOptions["Carat"];
+  const cutList = customizationOptions["Cut"];
+  const colorList = customizationOptions["Diamond Color"];
 
   React.useEffect(() => {
     handlePurityUpdate(carat);

@@ -10,12 +10,12 @@ import TextField from "@mui/material/TextField";
 import { Divider, InputAdornment, OutlinedInput } from "@mui/material";
 import { padding } from "@mui/system";
 
-const SilverCustomizations = ({ handlePurityUpdate }) => {
+const SilverCustomizations = ({ handlePurityUpdate, customizationOptions }) => {
   const [purity, setPurity] = React.useState([]);
   const handleChange = (event) => {
     setPurity(event.target.value);
   };
-  const bisHallMarks = ["945 Silver", "891 Silver"];
+  const bisHallMarks = customizationOptions["BIS Hallmark"];
 
   React.useEffect(() => {
     handlePurityUpdate(purity);
@@ -53,7 +53,7 @@ const SilverCustomizations = ({ handlePurityUpdate }) => {
           alignItems: "center",
         }}
       >
-        <div style={{ width: "45%" }}>
+        {/* <div style={{ width: "45%" }}>
           <InputLabel id="demo-simple-select-label">Height</InputLabel>
           <OutlinedInput
             fullWidth
@@ -70,7 +70,7 @@ const SilverCustomizations = ({ handlePurityUpdate }) => {
             variant="outlined"
             endAdornment={<InputAdornment position="end">mm</InputAdornment>}
           />
-        </div>
+        </div> */}
       </div>
       <div
         style={{

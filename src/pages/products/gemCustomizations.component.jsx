@@ -10,20 +10,23 @@ import TextField from "@mui/material/TextField";
 import { Divider, InputAdornment, OutlinedInput } from "@mui/material";
 import { padding } from "@mui/system";
 
-const GemCustomizations = () => {
-  const [carat, setCarat] = React.useState([]);
-  const [cut, setCut] = React.useState([]);
-  const [color, setColor] = React.useState([]);
+const GemCustomizations = ({
+  customizationOptions,
+  handleNameUpdate,
+  handleQuantityUpdate,
+}) => {
+  const [gemName, setGemName] = React.useState([]);
+  const [gemQuantity, setGemQuantity] = React.useState([]);
 
-  const caratList = ["4.0CT", "3.25CT", "2.0CT", "1.0CT", "0.5CT"];
   const cutList = ["Ideal Cut", "Shallow Cut", "Deep Cut"];
-  const colorList = [
-    "Colorless",
-    "Near Colorless",
-    "Slightly Tinted",
-    "Very Light Yellow",
-    "Light Yellow To Brown",
-  ];
+
+  const nameList = customizationOptions["Name"];
+  const numberList = customizationOptions["Quantity"];
+
+  React.useEffect(() => {
+    handleNameUpdate(gemName);
+    handleQuantityUpdate(gemQuantity);
+  }, [gemName, gemQuantity]);
 
   return (
     <Paper style={{ width: "100%", height: "100%" }}>
@@ -32,51 +35,38 @@ const GemCustomizations = () => {
       </p>
       <Divider fullWidth />
       <div style={{ margin: "20px" }}>
-        <InputLabel id="demo-simple-select-label">Carat</InputLabel>
+        <InputLabel id="demo-simple-select-label">Gemstone Name</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={carat}
+          value={gemName}
           multiple
           fullWidth
-          label="Carat"
-          onChange={(event) => setCarat(event.target.value)}
+          label="Name"
+          onChange={(event) => setGemName(event.target.value)}
         >
-          {caratList.map((carat) => (
-            <MenuItem value={carat}>{carat}</MenuItem>
+          {nameList.map((name) => (
+            <MenuItem value={name}>{name}</MenuItem>
           ))}
         </Select>
       </div>
       <div style={{ margin: "20px" }}>
-        <InputLabel id="demo-simple-select-label">Cut</InputLabel>
+        <InputLabel id="demo-simple-select-label">Quantity</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={cut}
+          value={gemQuantity}
+          multiple
           fullWidth
-          label="Cut"
-          onChange={(event) => setCut(event.target.value)}
+          label="Quantity"
+          onChange={(event) => setGemQuantity(event.target.value)}
         >
-          {cutList.map((carat) => (
-            <MenuItem value={carat}>{carat}</MenuItem>
+          {numberList.map((num) => (
+            <MenuItem value={num}>{num}</MenuItem>
           ))}
         </Select>
       </div>
-      <div style={{ margin: "20px" }}>
-        <InputLabel id="demo-simple-select-label">Diamond Color</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={color}
-          fullWidth
-          label="Diamond Color"
-          onChange={(event) => setColor(event.target.value)}
-        >
-          {colorList.map((type) => (
-            <MenuItem value={type}>{type}</MenuItem>
-          ))}
-        </Select>
-      </div>
+
       <div
         style={{
           width: "calc(100% - 40px)",
@@ -86,7 +76,7 @@ const GemCustomizations = () => {
           alignItems: "center",
         }}
       >
-        <div style={{ width: "45%" }}>
+        {/* <div style={{ width: "45%" }}>
           <InputLabel id="demo-simple-select-label">Height</InputLabel>
           <OutlinedInput
             fullWidth
@@ -103,7 +93,7 @@ const GemCustomizations = () => {
             variant="outlined"
             endAdornment={<InputAdornment position="end">mm</InputAdornment>}
           />
-        </div>
+        </div> */}
       </div>
       <div
         style={{
@@ -114,7 +104,7 @@ const GemCustomizations = () => {
           alignItems: "center",
         }}
       >
-        <div style={{ width: "45%" }}>
+        {/* <div style={{ width: "45%" }}>
           <InputLabel id="demo-simple-select-label">Fixed Price</InputLabel>
           <OutlinedInput
             fullWidth
@@ -122,7 +112,7 @@ const GemCustomizations = () => {
             variant="outlined"
             startAdornment={<InputAdornment position="end">INR</InputAdornment>}
           />
-        </div>
+        </div> */}
       </div>
     </Paper>
   );

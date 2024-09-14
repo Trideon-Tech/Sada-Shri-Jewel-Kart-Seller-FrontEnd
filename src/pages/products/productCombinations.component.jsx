@@ -35,6 +35,8 @@ const ProductCombinations = ({
   platinum,
   diamond,
   gem,
+  combinationsValues,
+  setCombinationValues,
 }) => {
   const isGold = gold || false;
   const isSilver = silver || false;
@@ -42,7 +44,7 @@ const ProductCombinations = ({
   const isDiamond = diamond || false;
   const isGem = gem || false;
 
-  const [combinationsValues, setCombinationValues] = React.useState([]);
+  // const [combinationsValues, setCombinationValues] = React.useState([]);
 
   //   const tableHeaders = [
   //     "goldPurity",
@@ -184,6 +186,11 @@ const ProductCombinations = ({
                   Fixed Price ( Diamond )&nbsp;(Rs)
                 </TableCell>
               ) : null}
+              {isGem ? (
+                <TableCell align="right">
+                  Fixed Price ( Gemstone )&nbsp;(Rs)
+                </TableCell>
+              ) : null}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -215,31 +222,7 @@ const ProductCombinations = ({
                       }
                     />
                   </TableCell>
-                ) : // <TableCell align="right">
-                //   <TextField
-                //     id="standard-select-currency"
-                //     select
-                //     variant="outlined"
-                //     fullWidth
-                //     defaultValue={"Rs"}
-                // onChange={(event) => {
-                //   updateCombinationInputs(
-                //     row.key,
-                //     GOLD_MAKING_CHARGES,
-                //     event.target.value,
-                //     true,
-                //     false
-                //   );
-                // }}
-                //   >
-                //     {["Rs", "%"].map((option) => (
-                //       <MenuItem key={option} value={option}>
-                //         {option}
-                //       </MenuItem>
-                //     ))}
-                //   </TextField>
-                // </TableCell>
-                null}
+                ) : null}
                 {isGold ? (
                   <TableCell align="right">
                     <OutlinedInput
@@ -359,6 +342,26 @@ const ProductCombinations = ({
                         updateCombinationInputs(
                           row.key,
                           DIAMOND_MAKING_CHARGES,
+                          event.target.value,
+                          true,
+                          false
+                        );
+                      }}
+                    />
+                  </TableCell>
+                ) : null}
+                {isGem ? (
+                  <TableCell align="right">
+                    <OutlinedInput
+                      id="outlined-basic"
+                      variant="outlined"
+                      startAdornment={
+                        <InputAdornment position="start">Rs</InputAdornment>
+                      }
+                      onChange={(event) => {
+                        updateCombinationInputs(
+                          row.key,
+                          GEMSTONE_MAKING_CHARGES,
                           event.target.value,
                           true,
                           false

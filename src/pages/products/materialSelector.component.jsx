@@ -43,7 +43,11 @@ function generateCombinations(inputArray) {
   return objArr;
 }
 
-const MaterialSelector = () => {
+const MaterialSelector = ({
+  saveProductCustomization,
+  combinationsValues,
+  setCombinationValues,
+}) => {
   const [selected, setSelected] = React.useState([]);
   const [goldSelected, setGoldSelected] = React.useState(false);
   const [silverSelected, setSilverSelected] = React.useState(false);
@@ -72,7 +76,13 @@ const MaterialSelector = () => {
   const [diamondCut, setDiamondCut] = React.useState([]);
   const [diamondColor, setDiamondColor] = React.useState([]);
 
+  //gemstone
+  const [gemNames, setGemNames] = React.useState([]);
+  const [gemQuantity, setGemQuantitiy] = React.useState([]);
+
   const [sizeCustomizations, setSizeCustomizations] = React.useState([]);
+
+  const [customizationOptions, setCustomizationOptions] = React.useState([]);
 
   React.useEffect(() => {
     getAllCustomizationOptionsPerField();
@@ -137,6 +147,20 @@ const MaterialSelector = () => {
       tableDataArr.push(diamondColor);
     }
 
+    //gemstone
+    if (gemNames.length > 0 && gemSelected) {
+      tableHeaderArr.push("Gemstone Name");
+      tableDataArr.push(gemNames);
+    }
+
+    if (gemQuantity.length > 0 && gemSelected) {
+      tableHeaderArr.push("Gemstone Quantity");
+      tableDataArr.push(gemQuantity);
+    }
+
+    console.log(gemNames, "gemNames");
+    console.log(gemQuantity, "gemQuantity");
+
     //size
     if (selectedSizes.length > 0) {
       console.log(sizeCustomizations);
@@ -159,8 +183,44 @@ const MaterialSelector = () => {
     diamondPurity,
     diamondCut,
     diamondColor,
+    gemNames,
+    gemQuantity,
     selectedSizes,
   ]);
+
+  React.useEffect(() => {
+    const token = localStorage.getItem("token");
+    axios
+      .get(
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/all.php?type=product_add_template`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        const result = response?.data?.response;
+        const formattedObject = {};
+        for (let item of result) {
+          formattedObject[item.name] = {};
+          for (let field of item.customization_fields) {
+            const optionList = field?.property_value?.map(
+              (fieldItem) => fieldItem.name
+            );
+            formattedObject[item.name][field.name] = optionList;
+          }
+        }
+        console.log(
+          "formattedObject===============================>",
+          formattedObject
+        );
+        setCustomizationOptions(formattedObject);
+      })
+      .catch((error) => {
+        console.error("Error fetching customization options:", error);
+      });
+  }, []);
 
   React.useEffect(() => {
     const arr = [];
@@ -169,13 +229,22 @@ const MaterialSelector = () => {
         <GoldCustomizations
           handlePurityUpdate={setGoldPurity}
           handleTypeUpdate={setGoldType}
+          customizationOptions={customizationOptions["Gold"]}
         />
       );
     if (silverSelected)
-      arr.push(<SilverCustomizations handlePurityUpdate={setSilverPurity} />);
+      arr.push(
+        <SilverCustomizations
+          handlePurityUpdate={setSilverPurity}
+          customizationOptions={customizationOptions["Silver"]}
+        />
+      );
     if (platinumSelected)
       arr.push(
-        <PlatinumCustomizations handlePurityUpdate={setPlatinumPurity} />
+        <PlatinumCustomizations
+          handlePurityUpdate={setPlatinumPurity}
+          customizationOptions={customizationOptions["Platinum"]}
+        />
       );
     if (diamondSelected)
       arr.push(
@@ -183,9 +252,17 @@ const MaterialSelector = () => {
           handlePurityUpdate={setDiamondPurity}
           handleCutUpdate={setDiamondCut}
           handleColorUpdate={setDiamondColor}
+          customizationOptions={customizationOptions["Diamond"]}
         />
       );
-    if (gemSelected) arr.push(<GemCustomizations />);
+    if (gemSelected)
+      arr.push(
+        <GemCustomizations
+          customizationOptions={customizationOptions["Gemstone"]}
+          handleNameUpdate={setGemNames}
+          handleQuantityUpdate={setGemQuantitiy}
+        />
+      );
 
     setCustomizations(arr);
   }, [
@@ -202,6 +279,24 @@ const MaterialSelector = () => {
   const handleDelete = () => {
     console.info("You clicked the delete icon.");
   };
+
+  // const saveProductCustomization = async () => {
+  //   const { data } = await axios.post(
+  //     "https://api.sadashrijewelkart.com/v1.0.0/seller/product/addProduct.php",
+  //     {
+  //       type: "item",
+  //       name: "Rose Gold Necklace",
+  //       description: "<p>So, <strong><em><u>heyy yes!</u></em></strong></p>",
+  //       category: 14,
+  //       sub_category: 17,
+  //       price: 200000,
+  //       weight: 100,
+  //       height: 10,
+  //       width: 200,
+  //       customization: combinationsValues,
+  //     }
+  //   );
+  // };
 
   return (
     <div style={{ width: "100%", height: "max-content" }}>
@@ -277,7 +372,7 @@ const MaterialSelector = () => {
             console.log("selected size", event.target.value);
           }}
         >
-          {sizeCustomizations.map((item) => (
+          {sizeCustomizations?.map((item) => (
             <MenuItem value={item.name}>{item.name}</MenuItem>
           ))}
         </Select>
@@ -299,6 +394,8 @@ const MaterialSelector = () => {
             platinum={platinumSelected}
             diamond={diamondSelected}
             gem={gemSelected}
+            combinationsValues={combinationsValues}
+            setCombinationValues={setCombinationValues}
           />
         ) : null}
       </Grid>

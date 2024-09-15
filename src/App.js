@@ -17,6 +17,7 @@ import ProductPage from "./pages/productspage/productpage.component";
 import OrdersPage from "./pages/orders/ordersPage.component";
 import OrderDetailsComponent from "./pages/orderDetails/orderDetails.component";
 import AddProductPage from "./pages/addnewproduct/addnewproductpage.component";
+import EditProductPage from "./pages/editProduct/editProductpage.component";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/dashboard" element={<Home />} />
           <Route path="/products" element={<ProductPage />} />
           <Route path="/products/add" element={<AddProductPage />} />
+          <Route path="/products/edit/:id" element={<EditProductPage />} />
           <Route path="/staging" element={<Staging />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />

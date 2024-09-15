@@ -44,6 +44,7 @@ function generateCombinations(inputArray) {
 }
 
 const MaterialSelector = ({
+  readOnly,
   saveProductCustomization,
   combinationsValues,
   setCombinationValues,
@@ -224,6 +225,10 @@ const MaterialSelector = ({
 
   React.useEffect(() => {
     const arr = [];
+    if (readOnly !== undefined && readOnly === false) {
+      return;
+    }
+
     if (goldSelected)
       arr.push(
         <GoldCustomizations
@@ -300,54 +305,58 @@ const MaterialSelector = ({
 
   return (
     <div style={{ width: "100%", height: "max-content" }}>
-      <p style={{ fontSize: "1.2rem" }}>Select Materials</p>
-      <Stack
-        direction="row"
-        spacing={3}
-        style={{
-          backgroundColor: "#efefef",
-          padding: "30px",
-          borderRadius: "20px",
-          marginBottom: "20px",
-        }}
-      >
-        <Chip
-          label="Gold"
-          onClick={() => setGoldSelected(!goldSelected)}
-          onDelete={handleDelete}
-          deleteIcon={<WaterDropIcon style={{ color: "#FFE900" }} />}
-          variant={goldSelected ? "contained" : "outlined"}
-        />
-        <Chip
-          label="Silver"
-          onClick={() => setSilverSelected(!silverSelected)}
-          onDelete={handleDelete}
-          deleteIcon={<WaterDropIcon style={{ color: "#C0C0C0" }} />}
-          variant={silverSelected ? "contained" : "outlined"}
-        />
-        <Chip
-          label="Platinum"
-          onClick={() => setPlatinumSelected(!platinumSelected)}
-          onDelete={handleDelete}
-          deleteIcon={<WaterDropIcon style={{ color: "white" }} />}
-          variant={platinumSelected ? "contained" : "outlined"}
-        />
-        <Divider orientation="vertical" flexItem />
-        <Chip
-          label="Diamond"
-          onClick={() => setDiamondSelected(!diamondSelected)}
-          onDelete={handleDelete}
-          deleteIcon={<DiamondIcon style={{ color: "white" }} />}
-          variant={diamondSelected ? "contained" : "outlined"}
-        />
-        <Chip
-          label="Gemstone"
-          onClick={() => setGemSelected(!gemSelected)}
-          onDelete={handleDelete}
-          deleteIcon={<FavoriteIcon style={{ color: "green" }} />}
-          variant={gemSelected ? "contained" : "outlined"}
-        />
-      </Stack>
+      {readOnly === undefined || readOnly === false ? (
+        <p style={{ fontSize: "1.2rem" }}>Select Materials</p>
+      ) : null}
+      {readOnly === undefined || readOnly === false ? (
+        <Stack
+          direction="row"
+          spacing={3}
+          style={{
+            backgroundColor: "#efefef",
+            padding: "30px",
+            borderRadius: "20px",
+            marginBottom: "20px",
+          }}
+        >
+          <Chip
+            label="Gold"
+            onClick={() => setGoldSelected(!goldSelected)}
+            onDelete={handleDelete}
+            deleteIcon={<WaterDropIcon style={{ color: "#FFE900" }} />}
+            variant={goldSelected ? "contained" : "outlined"}
+          />
+          <Chip
+            label="Silver"
+            onClick={() => setSilverSelected(!silverSelected)}
+            onDelete={handleDelete}
+            deleteIcon={<WaterDropIcon style={{ color: "#C0C0C0" }} />}
+            variant={silverSelected ? "contained" : "outlined"}
+          />
+          <Chip
+            label="Platinum"
+            onClick={() => setPlatinumSelected(!platinumSelected)}
+            onDelete={handleDelete}
+            deleteIcon={<WaterDropIcon style={{ color: "white" }} />}
+            variant={platinumSelected ? "contained" : "outlined"}
+          />
+          <Divider orientation="vertical" flexItem />
+          <Chip
+            label="Diamond"
+            onClick={() => setDiamondSelected(!diamondSelected)}
+            onDelete={handleDelete}
+            deleteIcon={<DiamondIcon style={{ color: "white" }} />}
+            variant={diamondSelected ? "contained" : "outlined"}
+          />
+          <Chip
+            label="Gemstone"
+            onClick={() => setGemSelected(!gemSelected)}
+            onDelete={handleDelete}
+            deleteIcon={<FavoriteIcon style={{ color: "green" }} />}
+            variant={gemSelected ? "contained" : "outlined"}
+          />
+        </Stack>
+      ) : null}
       <p style={{ fontSize: "1.2rem" }}>Select Size</p>
 
       <Stack

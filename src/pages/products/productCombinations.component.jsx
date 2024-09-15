@@ -151,7 +151,7 @@ const ProductCombinations = ({
               ))}
               {isGold ? (
                 <TableCell align="right">
-                  Making Charge ( Gold )&nbsp;(Rs)
+                  Making Charge ( Gold )&nbsp;(%)
                 </TableCell>
               ) : null}
               {isGold ? (
@@ -162,7 +162,7 @@ const ProductCombinations = ({
 
               {isSilver ? (
                 <TableCell align="right">
-                  Making Charge ( Silver )&nbsp;(Rs)
+                  Making Charge ( Silver )&nbsp;(%)
                 </TableCell>
               ) : null}
               {isSilver ? (
@@ -173,7 +173,7 @@ const ProductCombinations = ({
 
               {isPlatinum ? (
                 <TableCell align="right">
-                  Making Charge ( Platinum )&nbsp;(Rs)
+                  Making Charge ( Platinum )&nbsp;(%)
                 </TableCell>
               ) : null}
               {isPlatinum ? (

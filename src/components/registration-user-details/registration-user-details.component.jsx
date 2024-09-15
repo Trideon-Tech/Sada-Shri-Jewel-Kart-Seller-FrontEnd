@@ -66,8 +66,7 @@ const RegistrationUserDetails = () => {
     console.log("otp", otp);
     verifyOTPHandler();
     // API to verify OTP
-    toast("OTP Verified Successfully!", generalToastStyle);
-    activateVerifyOTPAdornment(false);
+
     // setOTPVerified(true);
   };
 
@@ -140,9 +139,11 @@ const RegistrationUserDetails = () => {
               "user_data",
               response.data.response.user_details.user_details
             );
-            // navigate("/");
+            navigate("/register/company");
+            toast("OTP Verified Successfully!", generalToastStyle);
+            activateVerifyOTPAdornment(false);
           } else {
-            // navigate("/user-details");
+            toast("OTP Verification Failed !", generalToastStyle);
           }
         }
       })

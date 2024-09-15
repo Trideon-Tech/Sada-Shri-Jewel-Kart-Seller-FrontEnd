@@ -15,6 +15,7 @@ import "./registration-company-details.styles.scss";
 
 import { generalToastStyle } from "../../utils/toast.styles";
 import InputTextField from "../input-text-field/input-text-field.component";
+import axios from "axios";
 
 const theme = createTheme({
   palette: {
@@ -36,9 +37,10 @@ const RegistrationCompanyDetails = () => {
   const [verifyOTPAdornment, activateVerifyOTPAdornment] = useState(false);
   const [nextStepLoading, activateNextStepLoading] = useState(false);
 
-  const sendOTP = () => {
+  const sendOTP = async () => {
+    await verifyGSTIN();
     // API to send OTP
-    toast("OTP Sent Successfully!", generalToastStyle);
+    // toast("OTP Sent Successfully!", generalToastStyle);
     activateSendOTPAdornment(false);
     setOTPSent(true);
   };
@@ -50,18 +52,47 @@ const RegistrationCompanyDetails = () => {
     setOTPVerified(true);
   };
 
+  const verifyGSTIN = async () => {
+    var data = JSON.stringify({
+      id_number: gstIn,
+    });
+
+    var config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "https://kyc-api.surepass.io/api/v1/corporate/gstin",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyNDY1NTYxNiwianRpIjoiN2FhYWJkNjctYTk2OS00MTA0LWI1MjUtOWY4OGM5NWU0OTljIiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LnNhZGFzaHJpamV3ZWxAc3VyZXBhc3MuaW8iLCJuYmYiOjE3MjQ2NTU2MTYsImV4cCI6MjA0MDAxNTYxNiwiZW1haWwiOiJzYWRhc2hyaWpld2VsQHN1cmVwYXNzLmlvIiwidGVuYW50X2lkIjoibWFpbiIsInVzZXJfY2xhaW1zIjp7InNjb3BlcyI6WyJ1c2VyIl19fQ.XzfFcgWopXR8Nj31l3_Ke8g0fjp9QgW9ab4nn-Rl2ts",
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(function (response) {
+        console.log("==================>", response?.data?.data?.gstin_status);
+        if (response?.data?.data?.gstin_status === "Active") {
+          toast("GSTIN Verified", generalToastStyle);
+          setCompanyTradeName(response?.data?.data?.business_name);
+          return;
+        }
+        toast.warn("GSTIN Invalid", generalToastStyle);
+
+        // if(response?.data)
+      })
+      .catch(function (error) {
+        console.log(error);
+        toast.warn("GSTIN Validation Failed", generalToastStyle);
+        return false;
+      });
+  };
+
   const onNext = () => {
     if (gstIn === "" || typeof gstIn === "undefined") {
       toast.warn("GSTIN is required!", generalToastStyle);
     } else if (!otpSent) {
       toast.warn('Click on the "Tick" icon to send OTP!', generalToastStyle);
-    } else if (gstInOtp === "" || typeof gstInOtp === "undefined") {
-      toast.warn(
-        "GSTIN OTP Verification is mandatory to proceed!",
-        generalToastStyle
-      );
-    } else if (!otpVerified) {
-      toast.warn('Click on the "Tick" icon to verify OTP!', generalToastStyle);
     } else if (
       companyTradeName === "" ||
       typeof companyTradeName === "undefined"
@@ -104,29 +135,7 @@ const RegistrationCompanyDetails = () => {
             }
           />
         </Grid>
-        <Grid item xs={6}>
-          <InputTextField
-            title={"GSTIN OTP"}
-            value={gstInOtp}
-            onEdit={(e) => {
-              setGstInOtp(e.target.value);
-              if (e.target.value.length === 6) activateVerifyOTPAdornment(true);
-              else activateVerifyOTPAdornment(false);
-            }}
-            adornment={
-              <InputAdornment position="end">
-                <Done
-                  className={
-                    verifyOTPAdornment
-                      ? "adornment-active"
-                      : "adornment-inactive"
-                  }
-                  onClick={verifyOTP}
-                />
-              </InputAdornment>
-            }
-          />
-        </Grid>
+        <Grid item xs={6}></Grid>
         <Grid item xs={12}>
           <InputTextField
             title={"Company Trade Name"}

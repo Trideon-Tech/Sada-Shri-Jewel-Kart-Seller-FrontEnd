@@ -94,7 +94,7 @@ const DiamondCustomizations = ({
           alignItems: "center",
         }}
       >
-        <div style={{ width: "45%" }}>
+        {/* <div style={{ width: "45%" }}>
           <InputLabel id="demo-simple-select-label">Height</InputLabel>
           <OutlinedInput
             fullWidth
@@ -111,7 +111,7 @@ const DiamondCustomizations = ({
             variant="outlined"
             endAdornment={<InputAdornment position="end">mm</InputAdornment>}
           />
-        </div>
+        </div> */}
       </div>
       <div
         style={{

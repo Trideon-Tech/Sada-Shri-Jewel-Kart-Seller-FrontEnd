@@ -48,6 +48,7 @@ const MaterialSelector = ({
   saveProductCustomization,
   combinationsValues,
   setCombinationValues,
+  combinationFields,
 }) => {
   const [selected, setSelected] = React.useState([]);
   const [goldSelected, setGoldSelected] = React.useState(false);
@@ -109,9 +110,27 @@ const MaterialSelector = ({
   };
 
   React.useEffect(() => {
-    const tableHeaderArr = [];
-    const tableDataArr = [];
+    let tableHeaderArr = [];
+    let tableDataArr = [];
 
+    if (readOnly === true) {
+      tableHeaderArr = combinationFields;
+    }
+
+    if (readOnly === true) {
+      if (selectedSizes.length > 0) {
+        console.log(sizeCustomizations);
+        console.log("selectedSizes", selectedSizes);
+        tableHeaderArr.push("Size");
+        tableDataArr.push(selectedSizes);
+      }
+
+      const dataCombs = generateCombinations(tableDataArr);
+      setTableDataPoint(dataCombs);
+      setTableHeaderPoint(tableHeaderArr);
+      console.log("dataCombs", dataCombs);
+      return;
+    }
     //gold
     if (goldPurity.length > 0 && goldSelected) {
       tableHeaderArr.push("Gold Purity");
@@ -393,7 +412,12 @@ const MaterialSelector = ({
           </Grid>
         ))}
       </Grid>
-      <Grid>
+      {tableHeaderPoint && tableHeaderPoint.length > 0 ? (
+        <p style={{ fontSize: "1.2rem" }}>Available Customizations</p>
+      ) : null}
+      <Divider style={{ marginTop: "50px", marginBottom: "50px" }} />
+      <p style={{ fontSize: "1.2rem" }}>Available Customizations</p>
+      <div style={{ marginTop: "50px" }}>
         {tableHeaderPoint && tableHeaderPoint.length > 0 ? (
           <ProductCombinations
             tableData={tableDataPoint}
@@ -407,7 +431,7 @@ const MaterialSelector = ({
             setCombinationValues={setCombinationValues}
           />
         ) : null}
-      </Grid>
+      </div>
     </div>
   );
 };

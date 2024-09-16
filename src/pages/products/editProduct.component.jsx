@@ -38,7 +38,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { generalToastStyle } from "../../utils/toast.styles";
 import "./addNewProduct.styles.scss";
 
@@ -60,6 +60,7 @@ const EditProduct = () => {
   let navigate = useNavigate();
   let token = localStorage.getItem("token");
   var productId = 1;
+  let { hash, name } = useParams();
 
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState(null);
@@ -99,120 +100,148 @@ const EditProduct = () => {
   const [selectedCustomizations, setSelectedCustomizations] = useState([]);
 
   const [combinationsValues, setCombinationValues] = React.useState([]);
+  const [combinationFields, setCombinationFields] = React.useState([]);
 
   useEffect(() => {
-    const result = {
-      success: 1,
-      message: "Data fetch success!",
-      response: {
-        id: "14",
-        created_at: "2024-09-08 13:42:35",
-        updated_at: "2024-09-12 17:37:30",
-        company: {
-          id: "1",
-          created_at: "2023-12-27 15:33:52",
-          updated_at: "2024-01-18 10:30:04",
-          gstin: "123456789012345",
-          gstin_verified: "1",
-          name: "NewJwellers",
-          logo: "company/NewJwellers/logo.png",
-          cover_image: "company/NewJwellers/cover_image.webp",
-          contact_email: "rishavk1102.work@gmail.com",
-          addresses: "1",
-          banks: "1",
-          admin_verified: "1",
-          admin: "1",
-        },
-        seller: "1",
-        name: "Rose P Necklace",
-        hash: "3982bc",
-        description: "<p>So, <strong><em><u>heyy yes!</u></em></strong></p>",
-        category: "More Jewellery",
-        sub_category: "Solitaire",
-        weight: "100",
-        height: "10",
-        width: "200",
-        purity: "",
-        price: "200000",
-        admin_verified: "0",
-        admin: "0",
-        is_active: "1",
-        customizations: {
-          fields: ["Diamond Color"],
-          variants: {
-            count: 2,
-            options: [
-              {
-                id: "65",
-                created_at: "2024-09-08 13:42:36",
-                updated_at: "2024-09-14 18:32:50",
-                product: "14",
-                for_customization_options: [
-                  "Diamond Color 1",
-                  "Diamond Color 2",
-                  "Diamond Color 3",
-                ],
-                price: "10000",
-                made_on_order: "1",
-                fixed_price: "2000",
-                making_charge_perc:
-                  '{"gold_making_charges":4,"silver_making_charges":1,"platinum_making_charges":3,"diamond_making_charges":4,"gemstone_making_charges":0}',
-                jewellery_type_nt_wt:
-                  '{"gold_nt_wt":10,"silver_nt_wt":0,"platinum_nt_wt":11,"diamond_nt_wt":12,"gemstone_nt_wt":11}',
-                is_active: "1",
-                for_customization_fields: [
-                  "Diamond Color",
-                  "Diamond Color",
-                  "Diamond Color",
-                ],
-              },
-              {
-                id: "66",
-                created_at: "2024-09-08 13:42:36",
-                updated_at: "2024-09-14 18:32:47",
-                product: "14",
-                for_customization_options: [
-                  "Diamond Color 1",
-                  "Diamond Color 2",
-                  "Diamond Color 3",
-                ],
-                price: "30000",
-                made_on_order: "0",
-                fixed_price: "2000",
-                making_charge_perc:
-                  '{"gold_making_charges":4,"silver_making_charges":1,"platinum_making_charges":3,"diamond_making_charges":4,"gemstone_making_charges":0}',
-                jewellery_type_nt_wt:
-                  '{"gold_nt_wt":10,"silver_nt_wt":12,"platinum_nt_wt":11,"diamond_nt_wt":12,"gemstone_nt_wt":11}',
-                is_active: "1",
-                for_customization_fields: [
-                  "Diamond Color",
-                  "Diamond Color",
-                  "Diamond Color",
-                ],
-              },
-            ],
-          },
-          options_per_field: {
-            "Diamond Color": [
-              "Diamond Color 1",
-              "Diamond Color 2",
-              "Diamond Color 3",
-            ],
-          },
-        },
-        recommended: [],
-      },
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `https://api.sadashrijewelkart.com/v1.0.0/seller/product/details.php?name=${name}&hash=${hash}`,
+      headers: {},
     };
-    setProductName(result.response.name);
-    setDesc(result.response.description);
-    setWeight(result.response.weight);
-    setPrice(result.response.price);
-    setHeight(result.response.height);
-    setWidth(result.response.width);
-    setPurity(result.response.purity);
-    setSelectedCategory(result.response.category);
-    setSelectedSubcategory(result.response.sub_category);
-    setCombinationValues(result?.response?.customizations?.variants?.options);
+
+    axios
+      .request(config)
+      .then((response) => {
+        const result = response?.data?.response;
+        setProductName(result?.name);
+        setDesc(result?.description);
+        setWeight(result?.weight);
+        setPrice(result?.price);
+        setHeight(result?.height);
+        setWidth(result?.width);
+        setPurity(result?.purity);
+        setSelectedCategory(result?.category);
+        setSelectedSubcategory(result?.sub_category);
+        setCombinationValues(result?.customizations?.variants?.options);
+        setCombinationFields(result?.customizations?.fields);
+        console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    // const result = {
+    //   success: 1,
+    //   message: "Data fetch success!",
+    //   response: {
+    //     id: "14",
+    //     created_at: "2024-09-08 13:42:35",
+    //     updated_at: "2024-09-12 17:37:30",
+    //     company: {
+    //       id: "1",
+    //       created_at: "2023-12-27 15:33:52",
+    //       updated_at: "2024-01-18 10:30:04",
+    //       gstin: "123456789012345",
+    //       gstin_verified: "1",
+    //       name: "NewJwellers",
+    //       logo: "company/NewJwellers/logo.png",
+    //       cover_image: "company/NewJwellers/cover_image.webp",
+    //       contact_email: "rishavk1102.work@gmail.com",
+    //       addresses: "1",
+    //       banks: "1",
+    //       admin_verified: "1",
+    //       admin: "1",
+    //     },
+    //     seller: "1",
+    //     name: "Rose P Necklace",
+    //     hash: "3982bc",
+    //     description: "<p>So, <strong><em><u>heyy yes!</u></em></strong></p>",
+    //     category: "More Jewellery",
+    //     sub_category: "Solitaire",
+    //     weight: "100",
+    //     height: "10",
+    //     width: "200",
+    //     purity: "",
+    //     price: "200000",
+    //     admin_verified: "0",
+    //     admin: "0",
+    //     is_active: "1",
+    //     customizations: {
+    //       fields: ["Diamond Color"],
+    //       variants: {
+    //         count: 2,
+    //         options: [
+    //           {
+    //             id: "65",
+    //             created_at: "2024-09-08 13:42:36",
+    //             updated_at: "2024-09-14 18:32:50",
+    //             product: "14",
+    //             for_customization_options: [
+    //               "Diamond Color 1",
+    //               "Diamond Color 2",
+    //               "Diamond Color 3",
+    //             ],
+    //             price: "10000",
+    //             made_on_order: "1",
+    //             fixed_price: "2000",
+    //             making_charge_perc:
+    //               '{"gold_making_charges":4,"silver_making_charges":1,"platinum_making_charges":3,"diamond_making_charges":4,"gemstone_making_charges":0}',
+    //             jewellery_type_nt_wt:
+    //               '{"gold_nt_wt":10,"silver_nt_wt":0,"platinum_nt_wt":11,"diamond_nt_wt":12,"gemstone_nt_wt":11}',
+    //             is_active: "1",
+    //             for_customization_fields: [
+    //               "Diamond Color",
+    //               "Diamond Color",
+    //               "Diamond Color",
+    //             ],
+    //           },
+    //           {
+    //             id: "66",
+    //             created_at: "2024-09-08 13:42:36",
+    //             updated_at: "2024-09-14 18:32:47",
+    //             product: "14",
+    //             for_customization_options: [
+    //               "Diamond Color 1",
+    //               "Diamond Color 2",
+    //               "Diamond Color 3",
+    //             ],
+    //             price: "30000",
+    //             made_on_order: "0",
+    //             fixed_price: "2000",
+    //             making_charge_perc:
+    //               '{"gold_making_charges":4,"silver_making_charges":1,"platinum_making_charges":3,"diamond_making_charges":4,"gemstone_making_charges":0}',
+    //             jewellery_type_nt_wt:
+    //               '{"gold_nt_wt":10,"silver_nt_wt":12,"platinum_nt_wt":11,"diamond_nt_wt":12,"gemstone_nt_wt":11}',
+    //             is_active: "1",
+    //             for_customization_fields: [
+    //               "Diamond Color",
+    //               "Diamond Color",
+    //               "Diamond Color",
+    //             ],
+    //           },
+    //         ],
+    //       },
+    //       options_per_field: {
+    //         "Diamond Color": [
+    //           "Diamond Color 1",
+    //           "Diamond Color 2",
+    //           "Diamond Color 3",
+    //         ],
+    //       },
+    //     },
+    //     recommended: [],
+    //   },
+    // };
+    // setProductName(result.response.name);
+    // setDesc(result.response.description);
+    // setWeight(result.response.weight);
+    // setPrice(result.response.price);
+    // setHeight(result.response.height);
+    // setWidth(result.response.width);
+    // setPurity(result.response.purity);
+    // setSelectedCategory(result.response.category);
+    // setSelectedSubcategory(result.response.sub_category);
+    // setCombinationValues(result?.response?.customizations?.variants?.options);
   }, []);
 
   useEffect(() => {
@@ -732,11 +761,10 @@ const EditProduct = () => {
 
       {/* Image and Video Input */}
 
-      <ThemeProvider theme={theme}>
+      {/* <ThemeProvider theme={theme}>
         <div className="inputFilePreviewContainer">
           <Paper className="inputFieldsContainer">
             <Grid container spacing={2}>
-              {/* Image Input */}
               <Grid item xs={6}>
                 <div className="imageInputContainer">
                   <label>Select Images for the Product</label>
@@ -777,7 +805,7 @@ const EditProduct = () => {
                 </div>
               </Grid>
 
-              {/* Video Input */}
+              
               <Grid item xs={6}>
                 <div className="videoInputContainer">
                   <label className="heading">Select a Product Video</label>
@@ -820,7 +848,7 @@ const EditProduct = () => {
             </Grid>
           </Paper>
         </div>
-      </ThemeProvider>
+      </ThemeProvider> */}
 
       {/* Product basic details input */}
       <ThemeProvider theme={theme}>
@@ -961,8 +989,9 @@ const EditProduct = () => {
               <MaterialSelector
                 readOnly={true}
                 saveProductCustomization={() => {}}
-                combinationsValues={[]}
+                combinationsValues={combinationsValues}
                 setCombinationValues={() => {}}
+                combinationFields={combinationFields}
               />
             </div>
             {selectedOptions === null || !showCustomizationTable ? (

@@ -146,7 +146,14 @@ const Products = () => {
                           <TableCell>{row.id}</TableCell>
                           <TableCell>{row.price}</TableCell>
                           <TableCell className="actions-content">
-                            <Edit className="allow" onClick={null} />
+                            <Edit
+                              className="allow"
+                              onClick={() =>
+                                navigate(
+                                  `/products/edit/${row.hash}/${row.name}`
+                                )
+                              }
+                            />
                             <Delete className="delete" onClick={null} />
                           </TableCell>
                         </TableRow>

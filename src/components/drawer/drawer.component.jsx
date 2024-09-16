@@ -34,7 +34,8 @@ const CustomDrawer = ({ section }) => {
     section === "categories" ||
     section === "products" ||
     section === "reviews" ||
-    section === "orders";
+    section === "orders" ||
+    section === "payments";
   const [showSubCategories, setShowSubCategories] = useState(
     isSubcategorySelected
   );
@@ -110,6 +111,17 @@ const CustomDrawer = ({ section }) => {
           }}
           isaSubcategory={true}
           isSelected={section === "orders"}
+        />
+        <DrawerItem
+          title="Payments"
+          value="payments"
+          icon={<Category />}
+          section={section}
+          clickAction={() => {
+            if (section !== "payments") navigate("/payments");
+          }}
+          isaSubcategory={true}
+          isSelected={section === "payments"}
         />
       </div>
     </div>

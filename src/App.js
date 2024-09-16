@@ -18,6 +18,7 @@ import OrdersPage from "./pages/orders/ordersPage.component";
 import OrderDetailsComponent from "./pages/orderDetails/orderDetails.component";
 import AddProductPage from "./pages/addnewproduct/addnewproductpage.component";
 import EditProductPage from "./pages/editProduct/editProductpage.component";
+import PaymentsPage from "./pages/payments/paymentsPage.component";
 
 function App() {
   return (
@@ -29,7 +30,10 @@ function App() {
           <Route path="/dashboard" element={<Home />} />
           <Route path="/products" element={<ProductPage />} />
           <Route path="/products/add" element={<AddProductPage />} />
-          <Route path="/products/edit/:id" element={<EditProductPage />} />
+          <Route
+            path="/products/edit/:hash/:name"
+            element={<EditProductPage />}
+          />
           <Route path="/staging" element={<Staging />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
@@ -38,6 +42,7 @@ function App() {
           <Route path="/term" element={<TermsandConditions />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/payments" element={<PaymentsPage />} />
           <Route path="/order-detail/:id" element={<OrderDetailsComponent />} />
         </Routes>
       </BrowserRouter>

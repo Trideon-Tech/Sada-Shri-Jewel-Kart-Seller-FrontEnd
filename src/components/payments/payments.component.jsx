@@ -107,7 +107,7 @@ const mockOrders = [
   },
 ];
 
-const OrdersComponent = ({ row }) => {
+const PaymentsComponent = ({ row }) => {
   const [ordersList, setOrdersList] = useState([]);
   const [orderStats, setOrderStats] = useState({});
 
@@ -200,7 +200,7 @@ const OrdersComponent = ({ row }) => {
 
       {/* Main Content */}
       <div className="head">
-        <div className="head-txt">Orders</div>
+        <div className="head-txt">Payments</div>
       </div>
 
       <div className="secondary-div">
@@ -208,7 +208,11 @@ const OrdersComponent = ({ row }) => {
       </div>
 
       <div>
-        <PaymentModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+        {selectedTab === 0 ? (
+          <PaymentModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+        ) : (
+          <SettlementModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+        )}
       </div>
       <Grid
         container
@@ -250,7 +254,7 @@ const OrdersComponent = ({ row }) => {
       </Grid>
       <Divider />
 
-      {/* <Box
+      <Box
         sx={{ width: "max-content", marginLeft: "auto", marginRight: "auto" }}
       >
         <Tabs
@@ -326,7 +330,7 @@ const OrdersComponent = ({ row }) => {
             </Tab>
           </TabList>
         </Tabs>
-      </Box> */}
+      </Box>
 
       <Divider />
 
@@ -375,11 +379,7 @@ const OrdersComponent = ({ row }) => {
                                 role="checkbox"
                                 tabIndex={-1}
                                 key={row.id}
-                                onClick={() =>
-                                  navigate(
-                                    `/order-detail/${row.order_detail_id}`
-                                  )
-                                }
+                                onClick={() => setModalOpen(true)}
                               >
                                 <TableCell>
                                   <Checkbox />
@@ -485,211 +485,4 @@ const itemData = [
   },
 ];
 
-export default OrdersComponent;
-
-// <div
-//                 style={{
-//                   width: "50%",
-//                   height: "100%",
-//                   flex: "none",
-//                   backgroundColor: "green",
-//                 }}
-//               >
-//                 <div
-//                   style={{
-//                     width: "50%",
-//                     display: "flex",
-//                   }}
-//                 >
-//                   <div
-//                     style={{
-//                       width: "100%",
-//                       display: "flex",
-//                       justifyContent: "space-between",
-//                       alignItems: "center",
-//                     }}
-//                   >
-//                     <p
-//                       style={{
-//                         width: "200px",
-//                         fontWeight: 800,
-//                         color: "gray",
-//                         fontSize: "1.1rem",
-//                       }}
-//                     >
-//                       Type
-//                     </p>
-//                     <p
-//                       style={{
-//                         width: "75%",
-//                         fontWeight: 800,
-//                         fontSize: "1.1rem",
-//                       }}
-//                     >
-//                       Normal Settlement
-//                     </p>
-//                   </div>
-//                 </div>
-//                 <div style={{ width: "50%", display: "flex" }}>
-//                   <div
-//                     style={{
-//                       width: "100%",
-//                       display: "flex",
-//                       justifyContent: "space-between",
-//                       alignItems: "center",
-//                     }}
-//                   >
-// <p
-//   style={{
-//     width: "200px",
-//     fontWeight: 800,
-//     color: "gray",
-//     fontSize: "1.1rem",
-//   }}
-// >
-//   Period
-// </p>
-// <p
-//   style={{
-//     width: "75%",
-//     fontWeight: 800,
-//     fontSize: "1.1rem",
-//   }}
-// >
-//   02/10/2024 at 4:15pm
-// </p>
-//                   </div>
-//                 </div>
-//                 <div style={{ width: "50%", display: "flex" }}>
-//                   <div
-//                     style={{
-//                       width: "100%",
-//                       display: "flex",
-//                       justifyContent: "space-between",
-//                       alignItems: "center",
-//                     }}
-//                   >
-//                     <p
-//                       style={{
-//                         width: "200px",
-//                         fontWeight: 800,
-//                         color: "gray",
-//                         fontSize: "1.1rem",
-//                       }}
-//                     >
-//                       Account
-//                     </p>
-//                     <p
-//                       style={{
-//                         width: "75%",
-//                         fontWeight: 800,
-//                         fontSize: "1.1rem",
-//                       }}
-//                     >
-//                       *********SSFDF
-//                     </p>
-//                   </div>
-//                 </div>
-//               </div>
-//               <div
-//                 style={{
-//                   width: "50%",
-//                   backgroundColor: "green",
-//                 }}
-//               >
-//                 <div
-//                   style={{
-//                     width: "50%",
-//                     display: "flex",
-//                   }}
-//                 >
-//                   <div
-//                     style={{
-//                       width: "100%",
-//                       display: "flex",
-//                       justifyContent: "space-between",
-//                       alignItems: "center",
-//                     }}
-//                   >
-//                     <p
-//                       style={{
-//                         width: "200px",
-//                         fontWeight: 800,
-//                         color: "gray",
-//                         fontSize: "1.1rem",
-//                       }}
-//                     >
-//                       Type
-//                     </p>
-//                     <p
-//                       style={{
-//                         width: "75%",
-//                         fontWeight: 800,
-//                         fontSize: "1.1rem",
-//                       }}
-//                     >
-//                       Normal Settlement
-//                     </p>
-//                   </div>
-//                 </div>
-//                 <div style={{ width: "50%", display: "flex" }}>
-//                   <div
-//                     style={{
-//                       width: "100%",
-//                       display: "flex",
-//                       justifyContent: "space-between",
-//                       alignItems: "center",
-//                     }}
-//                   >
-//                     <p
-//                       style={{
-//                         width: "200px",
-//                         fontWeight: 800,
-//                         color: "gray",
-//                         fontSize: "1.1rem",
-//                       }}
-//                     >
-//                       Period
-//                     </p>
-//                     <p
-//                       style={{
-//                         width: "75%",
-//                         fontWeight: 800,
-//                         fontSize: "1.1rem",
-//                       }}
-//                     >
-//                       02/10/2024 at 4:15pm
-//                     </p>
-//                   </div>
-//                 </div>
-//                 <div style={{ width: "50%", display: "flex" }}>
-//                   <div
-//                     style={{
-//                       width: "100%",
-//                       display: "flex",
-//                       justifyContent: "space-between",
-//                       alignItems: "center",
-//                     }}
-//                   >
-//                     <p
-//                       style={{
-//                         width: "200px",
-//                         fontWeight: 800,
-//                         color: "gray",
-//                         fontSize: "1.1rem",
-//                       }}
-//                     >
-//                       Account
-//                     </p>
-//                     <p
-//                       style={{
-//                         width: "75%",
-//                         fontWeight: 800,
-//                         fontSize: "1.1rem",
-//                       }}
-//                     >
-//                       *********SSFDF
-//                     </p>
-//                   </div>
-//                 </div>
-//               </div>
+export default PaymentsComponent;

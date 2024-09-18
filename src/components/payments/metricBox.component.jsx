@@ -2,7 +2,7 @@ const MetricBoxComponent = ({ heading, metric }) => {
   return (
     <div
       style={{
-        width: "100%",
+        width: "90%",
         height: "100%",
         borderRadius: "10px",
         backgroundColor: "white",

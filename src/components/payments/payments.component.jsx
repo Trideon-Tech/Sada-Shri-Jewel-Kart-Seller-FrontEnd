@@ -216,11 +216,11 @@ const PaymentsComponent = ({ row }) => {
       </div>
       <Grid
         container
-        spacing={3}
+        spacing={5}
         style={{
           width: "100%",
           height: "300px",
-          paddingLeft: "25px",
+          paddingLeft: "40px",
           marginBottom: "25px",
         }}
       >
@@ -233,7 +233,9 @@ const PaymentsComponent = ({ row }) => {
         <Grid item xs={12 / 5}>
           <MetricBoxComponent
             heading={"Total Sales"}
-            metric={`${Math.round(Number(orderStats.total_price) / 100) / 10}K`}
+            metric={`${
+              Math.round(Number(orderStats.total_price) / 10000) / 100
+            }M`}
           />
         </Grid>
         <Grid item xs={12 / 5}>
@@ -252,10 +254,15 @@ const PaymentsComponent = ({ row }) => {
           />
         </Grid>
       </Grid>
-      <Divider />
 
       <Box
-        sx={{ width: "max-content", marginLeft: "auto", marginRight: "auto" }}
+        sx={{
+          width: "max-content",
+          marginLeft: "40px",
+          marginRight: "auto",
+          marginTop: "50px",
+          marginBottom: "50px",
+        }}
       >
         <Tabs
           aria-label="tabs"
@@ -282,9 +289,8 @@ const PaymentsComponent = ({ row }) => {
             sx={{
               p: 0.5,
 
-              gap: 0.5,
+              gap: 0,
               borderRadius: "xl",
-              bgcolor: "background.level1",
               [`& .${tabClasses.root}[aria-selected="true"]`]: {
                 boxShadow: "sm",
                 bgcolor: "background.surface",
@@ -298,11 +304,14 @@ const PaymentsComponent = ({ row }) => {
               style={{
                 minWidth: "300px",
                 padding: "20px",
+                borderRadius: "5px",
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
                 border:
-                  selectedTab === 0 ? "2px solid brown" : "0px solid green",
+                  selectedTab === 0 ? "2px solid brown" : "2px solid #BEBEBE",
               }}
             >
-              Payment
+              <p style={{ fontWeight: 600, color: "gray" }}>Payment</p>
             </Tab>
             <Tab
               value={1}
@@ -310,11 +319,12 @@ const PaymentsComponent = ({ row }) => {
               style={{
                 minWidth: "300px",
                 padding: "20px",
+                borderRadius: 0,
                 border:
-                  selectedTab === 1 ? "2px solid brown" : "0px solid green",
+                  selectedTab === 1 ? "2px solid brown" : "2px solid #BEBEBE",
               }}
             >
-              Settlement
+              <p style={{ fontWeight: 600, color: "gray" }}>Settlement</p>
             </Tab>
             <Tab
               value={2}
@@ -322,20 +332,24 @@ const PaymentsComponent = ({ row }) => {
               style={{
                 minWidth: "300px",
                 padding: "20px",
+                borderRadius: "5px",
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
                 border:
-                  selectedTab === 2 ? "2px solid brown" : "0px solid green",
+                  selectedTab === 2 ? "2px solid brown" : "2px solid #BEBEBE",
               }}
             >
-              Refund
+              <p style={{ fontWeight: 600, color: "gray" }}> Refund</p>
             </Tab>
           </TabList>
         </Tabs>
       </Box>
 
-      <Divider />
-
       <ThemeProvider theme={theme}>
-        <Paper className="table-paper" style={{ height: "max-content" }}>
+        <Paper
+          className="table-paper"
+          style={{ height: "max-content", width: "95%", marginLeft: "40px" }}
+        >
           {ordersList.length === 0 ? (
             <CircularProgress
               style={{

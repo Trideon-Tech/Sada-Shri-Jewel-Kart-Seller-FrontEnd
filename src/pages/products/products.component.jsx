@@ -114,6 +114,7 @@ const Products = () => {
                     <TableCell>Name</TableCell>
                     <TableCell>Total Variants</TableCell>
                     <TableCell>Price</TableCell>
+                    <TableCell>Created On</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -145,6 +146,7 @@ const Products = () => {
                           </TableCell>
                           <TableCell>{row.id}</TableCell>
                           <TableCell>{row.price}</TableCell>
+                          <TableCell>{row.created_at}</TableCell>
                           <TableCell className="actions-content">
                             <Edit
                               className="allow"

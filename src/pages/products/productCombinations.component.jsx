@@ -28,6 +28,7 @@ const rows = [
 ];
 
 const ProductCombinations = ({
+  optionsMap,
   tableData,
   tableHeaders,
   gold,
@@ -88,6 +89,13 @@ const ProductCombinations = ({
           diamond_making_charges: 0,
           gemstone_making_charges: 0,
         },
+        making_charge_perc: {
+          gold_making_charges: 0,
+          silver_making_charges: 0,
+          platinum_making_charges: 0,
+          diamond_making_charges: 0,
+          gemstone_making_charges: 0,
+        },
         net_wt: {
           gold_nt_wt: 0,
           silver_nt_wt: 0,
@@ -95,14 +103,14 @@ const ProductCombinations = ({
           diamond_nt_wt: 0,
           gemstone_nt_wt: 0,
         },
-        customization_dropdowns: [
-          {
-            customization_option_id: 1,
-          },
-          {
-            customization_option_id: 3,
-          },
-        ],
+        jewellery_type_nt_wt: {
+          gold_nt_wt: 0,
+          silver_nt_wt: 0,
+          platinum_nt_wt: 0,
+          diamond_nt_wt: 0,
+          gemstone_nt_wt: 0,
+        },
+        customization_dropdowns: [],
         made_on_oder: 1,
         key: i,
       });
@@ -114,17 +122,38 @@ const ProductCombinations = ({
     index,
     targetKey,
     value,
+    currentCombination,
     makingCharge,
     netWt
   ) => {
     // console.log();
     if (!makingCharge && !netWt) return;
     const temp = combinationsValues[index];
+
+    console.log("++++++++__+_+__+__+__+>", temp);
+
     if (makingCharge) {
-      temp["making_charges"][targetKey] = value;
+      if (temp["making_charges"]) temp["making_charges"][targetKey] = value;
+      if (temp["making_charge_perc"]) {
+        console.log(temp["making_charge_perc"]);
+        temp["making_charge_perc"] = JSON.parse(temp["making_charge_perc"]);
+        temp["making_charge_perc"][targetKey] = value;
+      }
     } else {
-      temp["net_wt"][targetKey] = value;
+      if (temp["net_wt"]) temp["net_wt"][targetKey] = value;
+      if (temp["jewellery_type_nt_wt"]) {
+        console.log(temp["jewellery_type_nt_wt"]);
+        temp["jewellery_type_nt_wt"] = JSON.parse(temp["jewellery_type_nt_wt"]);
+        temp["jewellery_type_nt_wt"][targetKey] = value;
+      }
     }
+
+    //current Combination to options
+
+    console.log("current comb--=-=-=-=-=-=-=--=-=-=-=-=>", currentCombination);
+    temp["customization_dropdowns"] = currentCombination.map((currComb) => ({
+      customization_option_id: optionsMap[currComb],
+    }));
 
     const tempAll = combinationsValues;
     tempAll[index] = temp;
@@ -213,6 +242,7 @@ const ProductCombinations = ({
                           row.key,
                           GOLD_MAKING_CHARGES,
                           event.target.value,
+                          row?.data,
                           true,
                           false
                         );
@@ -236,6 +266,7 @@ const ProductCombinations = ({
                           row.key,
                           GOLD_NT_WT,
                           event.target.value,
+                          row?.data,
                           false,
                           true
                         );
@@ -248,7 +279,6 @@ const ProductCombinations = ({
                   <TableCell align="right">
                     <TextField
                       id="standard-select-currency"
-                      select
                       variant="outlined"
                       fullWidth
                       onChange={(event) => {
@@ -256,6 +286,7 @@ const ProductCombinations = ({
                           row.key,
                           SILVER_MAKING_CHARGES,
                           event.target.value,
+                          row?.data,
                           true,
                           false
                         );
@@ -279,6 +310,7 @@ const ProductCombinations = ({
                           row.key,
                           SILVER_NT_WT,
                           event.target.value,
+                          row?.data,
                           false,
                           true
                         );
@@ -291,7 +323,6 @@ const ProductCombinations = ({
                   <TableCell align="right">
                     <TextField
                       id="standard-select-currency"
-                      select
                       variant="outlined"
                       fullWidth
                       defaultValue={"Rs"}
@@ -300,6 +331,7 @@ const ProductCombinations = ({
                           row.key,
                           PLATINUM_MAKING_CHARGES,
                           event.target.value,
+                          row?.data,
                           true,
                           false
                         );
@@ -323,6 +355,7 @@ const ProductCombinations = ({
                           row.key,
                           PLATINUM_NT_WT,
                           event.target.value,
+                          row?.data,
                           false,
                           true
                         );
@@ -343,6 +376,7 @@ const ProductCombinations = ({
                           row.key,
                           DIAMOND_MAKING_CHARGES,
                           event.target.value,
+                          row?.data,
                           true,
                           false
                         );
@@ -363,6 +397,7 @@ const ProductCombinations = ({
                           row.key,
                           GEMSTONE_MAKING_CHARGES,
                           event.target.value,
+                          row?.data,
                           true,
                           false
                         );

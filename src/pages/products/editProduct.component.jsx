@@ -43,7 +43,7 @@ import { generalToastStyle } from "../../utils/toast.styles";
 import "./addNewProduct.styles.scss";
 
 import InputTextField from "../../components/input-text-field/input-text-field.component";
-import MaterialSelector from "./materialSelector.component";
+import MaterialSelectorEdit from "./materialSelectorEdit.component";
 
 const theme = createTheme({
   palette: {
@@ -124,6 +124,7 @@ const EditProduct = () => {
         setSelectedCategory(result?.category);
         setSelectedSubcategory(result?.sub_category);
         setCombinationValues(result?.customizations?.variants?.options);
+
         setCombinationFields(result?.customizations?.fields);
         console.log(JSON.stringify(response.data));
       })
@@ -484,252 +485,108 @@ const EditProduct = () => {
     setImages(newImages);
   };
 
-  const handleSubmit = () => {
-    if (!selectedCustomizations || selectedCustomizations.length === 0) {
-      if (productName === "" || typeof productName === "undefined") {
-        toast.warn("Product Name is required!", generalToastStyle);
-      } else if (desc === "" || typeof desc === "undefined") {
-        toast.warn("Description is required!", generalToastStyle);
-      } else if (weight === "" || typeof weight === "undefined") {
-        toast.warn("Weight is required!", generalToastStyle);
-      } else if (price === "" || typeof price === "undefined") {
-        toast.warn("Price is required!", generalToastStyle);
-      } else if (height === "" || typeof height === "undefined") {
-        toast.warn("Height is required!", generalToastStyle);
-      } else if (width === "" || typeof width === "undefined") {
-        toast.warn("Width is required!", generalToastStyle);
-      } else if (purity === "" || typeof purity === "undefined") {
-        toast.warn("Purity is required!", generalToastStyle);
-      } else if (images === "" || typeof images === "undefined") {
-        toast.warn("Images are required!", generalToastStyle);
-      } else {
-        const initialFormData = new FormData();
-        initialFormData.append("type", "item");
-        initialFormData.append("name", productName);
-        initialFormData.append("description", desc);
-        initialFormData.append("weight", weight);
-        initialFormData.append("price", price);
-        initialFormData.append("height", height);
-        initialFormData.append("width", width);
-        initialFormData.append("purity", purity);
-        initialFormData.append("category", selectedCategory);
-        initialFormData.append("sub_category", selectedSubcategory);
-
-        axios
-          .post(
-            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-            initialFormData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-          .then((response) => {
-            productId = response.data.response.id;
-
-            const promises = [];
-
-            images.forEach((image, index) => {
-              const formData = new FormData();
-              formData.append("type", "infographics");
-              formData.append("product", productId);
-              formData.append("is_primary", index === 0 ? true : false);
-              formData.append("file_type", "img");
-              formData.append("file", image);
-              console.log(formData);
-              promises.push(
-                axios.post(
-                  "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-                  formData,
-                  {
-                    headers: {
-                      "Content-Type": "multipart/form-data",
-                      Authorization: `Bearer ${token}`,
-                    },
-                  }
-                )
-              );
-            });
-
-            if (video) {
-              const videoFormData = new FormData();
-              videoFormData.append("type", "infographics");
-              videoFormData.append("product", productId);
-              videoFormData.append("is_primary", false);
-              videoFormData.append("file_type", "vid");
-              videoFormData.append("file", video);
-
-              promises.push(
-                axios.post(
-                  "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-                  videoFormData,
-                  {
-                    headers: {
-                      "Content-Type": "multipart/form-data",
-                      Authorization: `Bearer ${token}`,
-                    },
-                  }
-                )
-              );
-            }
-
-            Promise.all(promises)
-              .then((responses) => {
-                console.log(
-                  "All Details, images and videos uploaded successfully:",
-                  responses
-                );
-                navigate("/home/products");
-              })
-              .catch((error) => {
-                console.error("Error uploading images and videos:", error);
-              });
-          })
-          .catch((error) => {
-            console.error("Error saving initial product details:", error);
-          });
-      }
+  const handleProductSave = async () => {
+    if (productName === "" || typeof productName === "undefined") {
+      toast.warn("Product Name is required!", generalToastStyle);
+    } else if (desc === "" || typeof desc === "undefined") {
+      toast.warn("Description is required!", generalToastStyle);
+    } else if (weight === "" || typeof weight === "undefined") {
+      toast.warn("Weight is required!", generalToastStyle);
+    } else if (price === "" || typeof price === "undefined") {
+      toast.warn("Price is required!", generalToastStyle);
+    } else if (height === "" || typeof height === "undefined") {
+      toast.warn("Height is required!", generalToastStyle);
+    } else if (width === "" || typeof width === "undefined") {
+      toast.warn("Width is required!", generalToastStyle);
+    } else if (purity === "" || typeof purity === "undefined") {
+      toast.warn("Purity is required!", generalToastStyle);
     } else {
-      if (productName === "" || typeof productName === "undefined") {
-        toast.warn("Product Name is required!", generalToastStyle);
-      } else if (desc === "" || typeof desc === "undefined") {
-        toast.warn("Description is required!", generalToastStyle);
-      } else if (weight === "" || typeof weight === "undefined") {
-        toast.warn("Weight is required!", generalToastStyle);
-      } else if (price === "" || typeof price === "undefined") {
-        toast.warn("Price is required!", generalToastStyle);
-      } else if (height === "" || typeof height === "undefined") {
-        toast.warn("Height is required!", generalToastStyle);
-      } else if (width === "" || typeof width === "undefined") {
-        toast.warn("Width is required!", generalToastStyle);
-      } else if (purity === "" || typeof purity === "undefined") {
-        toast.warn("Purity is required!", generalToastStyle);
-      } else if (images === "" || typeof images === "undefined") {
-        toast.warn("Images are required!", generalToastStyle);
-      } else {
-        console.log(token);
-        const initialFormData = new FormData();
-        initialFormData.append("type", "item");
-        initialFormData.append("name", productName);
-        initialFormData.append("description", desc);
-        initialFormData.append("weight", weight);
-        initialFormData.append("price", price);
-        initialFormData.append("height", height);
-        initialFormData.append("width", width);
-        initialFormData.append("purity", purity);
-        initialFormData.append("category", 1);
-        initialFormData.append("sub_category", 1);
+      axios
+        .post(
+          "https://api.sadashrijewelkart.com/v1.0.0/seller/product/update.php",
+          {
+            type: "item",
+            name: productName,
+            description: desc,
+            category: selectedCategory,
+            sub_category: selectedSubcategory,
+            price: price,
+            weight: weight,
+            height: height,
+            width: width,
+            customization: combinationsValues,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          productId = response.data.response.id;
 
-        axios
-          .post(
-            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-            initialFormData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-          .then((response) => {
-            productId = response.data.response.id;
+          const promises = [];
 
-            const promises = [];
-
-            images.forEach((image, index) => {
-              const formData = new FormData();
-              formData.append("type", "infographics");
-              formData.append("product", productId);
-              formData.append("is_primary", index === 0 ? true : false);
-              formData.append("file_type", "img");
-              formData.append("file", image);
-              console.log(formData);
-              promises.push(
-                axios.post(
-                  "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-                  formData,
-                  {
-                    headers: {
-                      "Content-Type": "multipart/form-data",
-                      Authorization: `Bearer ${token}`,
-                    },
-                  }
-                )
-              );
-            });
-
-            if (video) {
-              const videoFormData = new FormData();
-              videoFormData.append("type", "infographics");
-              videoFormData.append("product", productId);
-              videoFormData.append("is_primary", false);
-              videoFormData.append("file_type", "vid");
-              videoFormData.append("file", video);
-
-              promises.push(
-                axios.post(
-                  "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-                  videoFormData,
-                  {
-                    headers: {
-                      "Content-Type": "multipart/form-data",
-                      Authorization: `Bearer ${token}`,
-                    },
-                  }
-                )
-              );
-            }
-
-            if (selectedCustomizations) {
-              const customizationsPayload = selectedCustomizations.map(
-                (combination, index) => {
-                  return {
-                    options: combination["customization_ids"],
-                    price: combination["price"],
-                    made_on_order: combination["madeOnOrder"] || false,
-                  };
+          images.forEach((image, index) => {
+            const formData = new FormData();
+            formData.append("type", "infographics");
+            formData.append("product", productId);
+            formData.append("is_primary", index === 0 ? true : false);
+            formData.append("file_type", "img");
+            formData.append("file", image);
+            console.log(formData);
+            promises.push(
+              axios.post(
+                "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+                formData,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
                 }
-              );
-
-              console.log("customizationplayload : " + customizationsPayload);
-
-              const payload = {
-                product: productId,
-                customizations: customizationsPayload,
-              };
-
-              promises.push(
-                axios.post(
-                  "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/add.php",
-                  payload,
-                  {
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`,
-                    },
-                  }
-                )
-              );
-            }
-
-            Promise.all(promises)
-              .then((responses) => {
-                console.log(
-                  "All Details, images and videos uploaded successfully:",
-                  responses
-                );
-                navigate("/home/products");
-              })
-              .catch((error) => {
-                console.error("Error uploading images and videos:", error);
-              });
-          })
-          .catch((error) => {
-            console.error("Error saving initial product details:", error);
+              )
+            );
           });
-      }
+
+          if (video) {
+            const videoFormData = new FormData();
+            videoFormData.append("type", "infographics");
+            videoFormData.append("product", productId);
+            videoFormData.append("is_primary", false);
+            videoFormData.append("file_type", "vid");
+            videoFormData.append("file", video);
+
+            promises.push(
+              axios.post(
+                "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+                videoFormData,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                }
+              )
+            );
+          }
+
+          Promise.all(promises)
+            .then((responses) => {
+              console.log(
+                "All Details, images and videos uploaded successfully:",
+                responses
+              );
+              navigate("/products");
+            })
+            .catch((error) => {
+              console.error("Error uploading images and videos:", error);
+            });
+        })
+        .catch((error) => {
+          console.error("Error saving initial product details:", error);
+        });
     }
   };
 
@@ -752,7 +609,7 @@ const EditProduct = () => {
           <Button className="button1" onClick={() => navigate("/products")}>
             Cancel
           </Button>
-          <Button className="button2" onClick={handleSubmit}>
+          <Button className="button2" onClick={handleProductSave}>
             Update
           </Button>
         </div>
@@ -986,7 +843,7 @@ const EditProduct = () => {
                 minHeight: "300px",
               }}
             >
-              <MaterialSelector
+              <MaterialSelectorEdit
                 readOnly={true}
                 saveProductCustomization={() => {}}
                 combinationsValues={combinationsValues}

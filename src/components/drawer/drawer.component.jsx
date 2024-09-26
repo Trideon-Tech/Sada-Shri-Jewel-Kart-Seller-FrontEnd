@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Divider } from "@mui/material";
+import { Button, Divider } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import {
   Dashboard,
@@ -9,6 +9,7 @@ import {
   Category,
   ListAlt,
 } from "@mui/icons-material";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -56,7 +57,7 @@ const CustomDrawer = ({ section }) => {
 
   return (
     <div className="drawer-component">
-      <div className="data">
+      <div className="data" style={{ height: "90%" }}>
         <img
           alt="logo"
           src={process.env.PUBLIC_URL + "/assets/logo_dark.png"}
@@ -123,6 +124,34 @@ const CustomDrawer = ({ section }) => {
           isaSubcategory={true}
           isSelected={section === "payments"}
         />
+      </div>
+      <div
+        style={{
+          marginTop: "auto",
+          width: "100%",
+          height: "70px",
+          borderTop: "3px solid lightgray",
+          display: "flex",
+          justifyContent: "space-evenly",
+          alignItems: "center",
+        }}
+      >
+        <Button
+          fullWidth
+          style={{
+            color: "gray",
+            fontWeight: 700,
+          }}
+          onClick={() => {
+            localStorage.removeItem("token");
+            navigate("/");
+          }}
+        >
+          <ExitToAppIcon style={{ fontSize: "1.5rem", color: "#a36e29" }} />
+          <p style={{ width: "70%", textAlign: "left", paddingLeft: "20px" }}>
+            Logout
+          </p>
+        </Button>
       </div>
     </div>
   );

@@ -86,6 +86,8 @@ const MaterialSelector = ({
 
   const [customizationOptions, setCustomizationOptions] = React.useState([]);
 
+  const [optionsMap, setOptionsMap] = React.useState({});
+
   React.useEffect(() => {
     getAllCustomizationOptionsPerField();
   }, []);
@@ -118,17 +120,36 @@ const MaterialSelector = ({
     }
 
     if (readOnly === true) {
+      const tempArr = [];
+      console.log("*=*+*+*+*+*+*+*+*+>combination fields", combinationFields);
+      console.log("*=*+*+*+*+*+*+*+*+>combination Values", combinationsValues);
+      for (let i of combinationFields) {
+        tempArr.push([]);
+      }
+      for (let i of combinationsValues) {
+        for (let j = 0; j < i.for_customization_options.length; j++) {
+          tempArr[j].push(i.for_customization_options[j]);
+        }
+      }
+      const setArray = [];
+      for (let i of tempArr) {
+        setArray.push(Array.from(new Set(i)));
+      }
+
       if (selectedSizes.length > 0) {
         console.log(sizeCustomizations);
         console.log("selectedSizes", selectedSizes);
         tableHeaderArr.push("Size");
         tableDataArr.push(selectedSizes);
+        setArray.push(selectedSizes);
       }
 
-      const dataCombs = generateCombinations(tableDataArr);
+      const dataCombs = generateCombinations(setArray);
       setTableDataPoint(dataCombs);
       setTableHeaderPoint(tableHeaderArr);
       console.log("dataCombs", dataCombs);
+      console.log("*=*+*+*+*+*+*+*+*+>combination Values", combinationsValues);
+
       return;
     }
     //gold
@@ -189,8 +210,15 @@ const MaterialSelector = ({
       tableDataArr.push(selectedSizes);
     }
 
+    //test//
+    // selectedSizes.push(["5/6in"]);
     console.log("tableDataArr", tableDataArr);
     console.log("tableHeaderArr", tableHeaderArr);
+    if (readOnly && selectedSizes.length === 0) {
+      setTableDataPoint([]);
+      setTableHeaderPoint([]);
+      return;
+    }
     const dataCombs = generateCombinations(tableDataArr);
     setTableDataPoint(dataCombs);
     setTableHeaderPoint(tableHeaderArr);
@@ -206,6 +234,7 @@ const MaterialSelector = ({
     gemNames,
     gemQuantity,
     selectedSizes,
+    combinationFields,
   ]);
 
   React.useEffect(() => {
@@ -221,20 +250,26 @@ const MaterialSelector = ({
       )
       .then((response) => {
         const result = response?.data?.response;
+        const localOptionsMap = {};
         const formattedObject = {};
         for (let item of result) {
           formattedObject[item.name] = {};
           for (let field of item.customization_fields) {
+            for (let property of field?.property_value) {
+              localOptionsMap[property.name] = property.id;
+            }
             const optionList = field?.property_value?.map(
               (fieldItem) => fieldItem.name
             );
             formattedObject[item.name][field.name] = optionList;
           }
         }
+
         console.log(
           "formattedObject===============================>",
           formattedObject
         );
+        setOptionsMap(localOptionsMap);
         setCustomizationOptions(formattedObject);
       })
       .catch((error) => {
@@ -412,21 +447,21 @@ const MaterialSelector = ({
           </Grid>
         ))}
       </Grid>
+      <Divider style={{ marginTop: "50px", marginBottom: "50px" }} />
       {tableHeaderPoint && tableHeaderPoint.length > 0 ? (
         <p style={{ fontSize: "1.2rem" }}>Available Customizations</p>
       ) : null}
-      <Divider style={{ marginTop: "50px", marginBottom: "50px" }} />
-      <p style={{ fontSize: "1.2rem" }}>Available Customizations</p>
       <div style={{ marginTop: "50px" }}>
         {tableHeaderPoint && tableHeaderPoint.length > 0 ? (
           <ProductCombinations
+            optionsMap={optionsMap}
             tableData={tableDataPoint}
             tableHeaders={tableHeaderPoint}
-            gold={goldSelected}
-            silver={silverSelected}
-            platinum={platinumSelected}
-            diamond={diamondSelected}
-            gem={gemSelected}
+            gold={readOnly ? true : goldSelected}
+            silver={readOnly ? true : silverSelected}
+            platinum={readOnly ? true : platinumSelected}
+            diamond={readOnly ? true : diamondSelected}
+            gem={readOnly ? true : gemSelected}
             combinationsValues={combinationsValues}
             setCombinationValues={setCombinationValues}
           />

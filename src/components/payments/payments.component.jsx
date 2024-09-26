@@ -53,6 +53,7 @@ import { TabList, Tabs } from "@mui/joy";
 import { borderRadius } from "@mui/system";
 import SettlementModal from "./settlementModel.component";
 import PaymentModal from "./paymentModel.component";
+import PaymentSettlementModal from "./paymentSettlement.component";
 
 const theme = createTheme({
   palette: {
@@ -114,6 +115,7 @@ const PaymentsComponent = ({ row }) => {
   const [paymentList, setPaymentList] = useState([]);
   const [settlementList, setSettlementList] = useState([]);
   const [refundList, setRefundList] = useState([]);
+  const [showDataLoading, setShowDataLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -129,7 +131,8 @@ const PaymentsComponent = ({ row }) => {
         }
       );
 
-      console.log("sdsd", data.response);
+      // console.log("sdsd", data.response);
+      setShowDataLoading(false);
       setOrdersList(
         data?.response?.order_list?.filter(
           (item) => item?.shipment_status === "ORDER_CREATED"
@@ -160,6 +163,7 @@ const PaymentsComponent = ({ row }) => {
 
   const navigate = useNavigate();
   const admin = JSON.parse(localStorage.getItem("admin"));
+  const [openSettlementModal, setOpenSettlementModal] = useState(false);
 
   const [showLoading, setShowLoading] = useState(false);
 
@@ -213,6 +217,11 @@ const PaymentsComponent = ({ row }) => {
         ) : (
           <SettlementModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
         )}
+        <PaymentSettlementModal
+          modalOpen={openSettlementModal}
+          setModalOpen={setOpenSettlementModal}
+          orderList={ordersList}
+        />
       </div>
       <Grid
         container
@@ -257,11 +266,14 @@ const PaymentsComponent = ({ row }) => {
 
       <Box
         sx={{
-          width: "max-content",
+          width: "95%",
           marginLeft: "40px",
           marginRight: "auto",
           marginTop: "50px",
           marginBottom: "50px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
         <Tabs
@@ -343,6 +355,21 @@ const PaymentsComponent = ({ row }) => {
             </Tab>
           </TabList>
         </Tabs>
+        <Button
+          style={{
+            width: "max-content",
+            paddingLeft: "60px",
+            paddingRight: "60px",
+            fontWeight: 600,
+            height: "60px",
+            backgroundColor: "#a36e29",
+            color: "white",
+          }}
+          onClick={() => setOpenSettlementModal(true)}
+        >
+          {" "}
+          Settle Payment
+        </Button>
       </Box>
 
       <ThemeProvider theme={theme}>
@@ -350,7 +377,7 @@ const PaymentsComponent = ({ row }) => {
           className="table-paper"
           style={{ height: "max-content", width: "95%", marginLeft: "40px" }}
         >
-          {ordersList.length === 0 ? (
+          {showDataLoading ? (
             <CircularProgress
               style={{
                 margin: "auto",

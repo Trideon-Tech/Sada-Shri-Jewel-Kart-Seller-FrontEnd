@@ -331,7 +331,10 @@ const OrdersComponent = ({ row }) => {
       <Divider />
 
       <ThemeProvider theme={theme}>
-        <Paper className="table-paper" style={{ height: "max-content" }}>
+        <Paper
+          className="table-paper"
+          sx={{ width: "95%", overflow: "hidden", height: 950 }}
+        >
           {ordersList.length === 0 ? (
             <CircularProgress
               style={{
@@ -341,83 +344,75 @@ const OrdersComponent = ({ row }) => {
               }}
             />
           ) : (
-            <Fragment>
-              <TableContainer
-                style={{
-                  height: "max-content",
-                  overflowY: "scroll",
-                }}
-              >
-                <Table stickyHeader aria-label="sticky table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell></TableCell>
-                      <TableCell>Order Id</TableCell>
-                      <TableCell>Customer</TableCell>
-                      <TableCell>Date</TableCell>
-                      <TableCell>Order Item</TableCell>
-                      <TableCell>Total Price</TableCell>
-                      <TableCell>Status</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {ordersList?.length > 0 &&
-                      ordersList
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        ?.map((row) => {
-                          return (
-                            <Fragment key={row.id}>
-                              <TableRow
-                                hover
-                                role="checkbox"
-                                tabIndex={-1}
-                                key={row.id}
-                                onClick={() =>
-                                  navigate(
-                                    `/order-detail/${row.order_detail_id}`
-                                  )
-                                }
+            <TableContainer style={{ height: "90%" }}>
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell>Order Id</TableCell>
+                    <TableCell>Customer</TableCell>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Order Item</TableCell>
+                    <TableCell>Total Price</TableCell>
+                    <TableCell>Status</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {ordersList?.length > 0 &&
+                    ordersList
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      ?.map((row) => {
+                        return (
+                          <Fragment key={row.id}>
+                            <TableRow
+                              hover
+                              role="checkbox"
+                              tabIndex={-1}
+                              key={row.id}
+                              onClick={() =>
+                                navigate(`/order-detail/${row.order_detail_id}`)
+                              }
+                            >
+                              <TableCell>
+                                <Checkbox />
+                              </TableCell>
+                              <TableCell>{row.id}</TableCell>
+                              <TableCell>{row.user_name}</TableCell>
+                              <TableCell>{row.created_at}</TableCell>
+                              <TableCell>{row.product_name}</TableCell>
+                              <TableCell>{row.order_price}</TableCell>
+                              <TableCell
+                                style={{
+                                  fontWeight: 800,
+                                  color:
+                                    row.shipment_status !== "ORDER_CREATED"
+                                      ? "green"
+                                      : "gray",
+                                }}
                               >
-                                <TableCell>
-                                  <Checkbox />
-                                </TableCell>
-                                <TableCell>{row.id}</TableCell>
-                                <TableCell>{row.user_name}</TableCell>
-                                <TableCell>{row.created_at}</TableCell>
-                                <TableCell>{row.product_name}</TableCell>
-                                <TableCell>{row.order_price}</TableCell>
-                                <TableCell
-                                  style={{
-                                    fontWeight: 800,
-                                    color:
-                                      row.shipment_status !== "ORDER_CREATED"
-                                        ? "green"
-                                        : "gray",
-                                  }}
-                                >
-                                  ⬤ {row.shipment_status}
-                                </TableCell>
-                              </TableRow>
-                            </Fragment>
-                          );
-                        })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[25, 50, 100, 200]}
-                component="div"
-                count={ordersList.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </Fragment>
+                                ⬤ {row.shipment_status}
+                              </TableCell>
+                            </TableRow>
+                          </Fragment>
+                        );
+                      })}
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
+          <TablePagination
+            sx={{ position: "sticky", zIndex: 2 }}
+            rowsPerPageOptions={[25, 50, 100, 200]}
+            component="div"
+            count={ordersList.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
         </Paper>
       </ThemeProvider>
     </div>

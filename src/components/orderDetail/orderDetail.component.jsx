@@ -15,6 +15,86 @@ import { useEffect, useState } from "react";
 import { Label } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
+const ProductCardSmall = ({ orderDetails }) => {
+  return (
+    <div
+      style={{
+        width: "100%",
+        marginTop: "30px",
+        height: "max-content",
+        display: "flex",
+        justifyContent: "flex-start",
+        alignItems: "center",
+      }}
+    >
+      <div
+        style={{
+          width: "130px",
+          height: "130px",
+          borderRadius: "12px",
+          border: "1px solid #e7e7e7",
+        }}
+      >
+        <img
+          src={`https://api.sadashrijewelkart.com/assets/${orderDetails?.images[0]["file"]}`}
+          alt=""
+        />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          height: "130px",
+          width: "50%",
+          display: "flex",
+          flexDirection: "column",
+          marginLeft: "30px",
+        }}
+      >
+        <p style={{ margin: 0, fontSize: "1.4rem", fontWeight: 600 }}>
+          {orderDetails?.product_name}
+        </p>
+        <p
+          style={{
+            margin: 0,
+            marginTop: "auto",
+            color: "gray",
+            lineHeight: "2rem",
+            fontWeight: 500,
+            fontSize: "1.1rem",
+          }}
+        >
+          Size: {orderDetails.height} {"     "} Quantity: 1
+        </p>
+        <p
+          style={{
+            margin: 0,
+            color: "gray",
+            fontWeight: 500,
+            lineHeight: "2rem",
+            fontSize: "1.1rem",
+          }}
+        >
+          Price :{" "}
+          <span style={{ color: "black" }}>
+            {" "}
+            Rs: {orderDetails?.amount_due}
+          </span>
+        </p>
+        <p
+          style={{
+            margin: 0,
+            color: "gray",
+            fontWeight: 500,
+            lineHeight: "2rem",
+          }}
+        >
+          Deliver By: 2nd May, 2024
+        </p>
+      </div>
+    </div>
+  );
+};
 const OrderDetail = ({ id }) => {
   const [open, setOpen] = useState(false);
   const [orderDetails, setOrderDetails] = useState([]);
@@ -70,14 +150,14 @@ const OrderDetail = ({ id }) => {
       style={{
         width: "100%",
         height: "max-content",
-        backgroundColor: "#e7e7e7",
+        backgroundColor: "#f5f5f5",
       }}
     >
       <Dialog
         maxWidth={"lg"}
         style={{
           width: "100%",
-          height: "100%",
+          height: "max-content",
           margin: "auto",
         }}
         open={open}
@@ -87,7 +167,7 @@ const OrderDetail = ({ id }) => {
           style={{
             backgroundColor: "white",
             padding: "30px",
-            height: "584px",
+            height: "max-content",
             width: "759px",
             borderRadius: "10px",
           }}
@@ -95,80 +175,10 @@ const OrderDetail = ({ id }) => {
           <p style={{ fontSize: "1.7rem", margin: 0, fontWeight: "bold" }}>
             Fulfill Order
           </p>
-          <div
-            style={{
-              width: "100%",
-              marginTop: "30px",
-              height: "max-content",
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{
-                width: "130px",
-                height: "130px",
-                borderRadius: "12px",
-                border: "1px solid #e7e7e7",
-              }}
-            >
-              <img
-                src={`https://api.sadashrijewelkart.com/assets/${orderDetails[0]?.images[0]["file"]}`}
-                alt=""
-              />
-            </div>
-            <div
-              style={{
-                display: "flex",
-                height: "130px",
-                width: "50%",
-                display: "flex",
-                flexDirection: "column",
-                marginLeft: "30px",
-              }}
-            >
-              <p style={{ margin: 0, fontSize: "1.4rem", fontWeight: 600 }}>
-                {orderDetails[0]?.product_name}
-              </p>
-              <p
-                style={{
-                  margin: 0,
-                  marginTop: "auto",
-                  color: "gray",
-                  lineHeight: "2rem",
-                  fontWeight: 500,
-                  fontSize: "1.1rem",
-                }}
-              >
-                Size: 12(44mm) {"     "} Quantity: 1
-              </p>
-              <p
-                style={{
-                  margin: 0,
-                  color: "gray",
-                  fontWeight: 500,
-                  lineHeight: "2rem",
-                  fontSize: "1.1rem",
-                }}
-              >
-                Price :{" "}
-                <span style={{ color: "black" }}>
-                  {" "}
-                  Rs: {orderDetails[0]?.amount_due}
-                </span>
-              </p>
-              <p
-                style={{
-                  margin: 0,
-                  color: "gray",
-                  fontWeight: 500,
-                  lineHeight: "2rem",
-                }}
-              >
-                Deliver By: 2nd May, 2024
-              </p>
-            </div>
+          <div style={{ width: "100%", height: "300px", overflowY: "scroll" }}>
+            {orderDetails.map((orderData) => (
+              <ProductCardSmall orderDetails={orderData} />
+            ))}
           </div>
           <p style={{ fontSize: "1.3rem", fontWeight: "bold" }}>
             Tracking Information
@@ -276,12 +286,24 @@ const OrderDetail = ({ id }) => {
                 <p style={{ fontSize: "3rem", margin: 0, lineHeight: 1 }}>
                   {orderDetails[0]?.public_id}
                 </p>
-                <p style={{ margin: 0, color: "gray" }}>02/10/2024 at 4:15pm</p>
+                <p
+                  style={{
+                    margin: 0,
+                    color: "gray",
+                    fontSize: "1.1rem",
+                    fontWeight: 600,
+                  }}
+                >
+                  02/10/2024 at 4:15PM
+                </p>
               </div>
             </span>
             <div
               style={{
-                width: "80px",
+                minWidth: "80px",
+                width: "max-content",
+
+                marginLeft: "30px",
                 height: "40px",
                 display: "flex",
                 justifyContent: "space-around",
@@ -289,18 +311,24 @@ const OrderDetail = ({ id }) => {
                 backgroundColor: "white",
                 borderRadius: "5px",
                 fontSize: "20px",
+                padding: "10px",
+                paddingTop: "20px",
+                paddingBottom: "20px",
                 border: "1px solid #b7b7b7",
               }}
             >
               <span
                 style={{
+                  paddingTop: "20px",
+                  paddingBottom: "20px",
+                  paddingRight: "10px",
                   color:
                     orderDetails[0]?.amount_paid == 0 ? "#cc3521" : "#0D9C00",
                 }}
               >
                 ●
               </span>
-              Paid
+              {orderDetails[0]?.amount_paid == 0 ? "Unpaid" : "Paid"}
             </div>
             <Button
               variant="contained"

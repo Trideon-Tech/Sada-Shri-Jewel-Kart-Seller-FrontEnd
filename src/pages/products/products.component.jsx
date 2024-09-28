@@ -67,6 +67,33 @@ const Products = () => {
     setPage(newPage);
   };
 
+  const handleDeleteProduct = (productId) => {
+    let data = JSON.stringify({
+      product_id: productId,
+    });
+
+    let config = {
+      method: "delete",
+      maxBodyLength: Infinity,
+      url: "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    navigate(0);
+  };
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
@@ -97,7 +124,10 @@ const Products = () => {
       </div>
       <Divider />
       <ThemeProvider theme={theme}>
-        <Paper className="table-paper">
+        <Paper
+          className="table-paper"
+          sx={{ width: "95%", overflow: "hidden" }}
+        >
           {productsLoaded === false ? (
             <CircularProgress
               style={{
@@ -107,7 +137,7 @@ const Products = () => {
               }}
             />
           ) : products && products.length > 0 ? (
-            <TableContainer>
+            <TableContainer sx={{ maxHeight: 850 }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
@@ -156,22 +186,18 @@ const Products = () => {
                                 )
                               }
                             />
-                            <Delete className="delete" onClick={null} />
+                            <Delete
+                              className="delete"
+                              onClick={() => {
+                                handleDeleteProduct(row.id);
+                              }}
+                            />
                           </TableCell>
                         </TableRow>
                       );
                     })}
                 </TableBody>
               </Table>
-              <TablePagination
-                rowsPerPageOptions={[25, 50, 100, 200]}
-                component="div"
-                count={products.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
             </TableContainer>
           ) : (
             <Paper
@@ -193,6 +219,16 @@ const Products = () => {
               </Typography>
             </Paper>
           )}
+          <TablePagination
+            sx={{ position: "sticky", zIndex: 2 }}
+            rowsPerPageOptions={[25, 50, 100, 200]}
+            component="div"
+            count={products?.length || 0}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
         </Paper>
       </ThemeProvider>
     </div>

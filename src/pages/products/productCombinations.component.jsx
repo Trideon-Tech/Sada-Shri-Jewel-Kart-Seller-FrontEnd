@@ -75,7 +75,6 @@ const ProductCombinations = ({
   const DIAMOND_NT_WT = "diamond_nt_wt";
   const GEMSTONE_NT_WT = "gemstone_nt_wt";
 
-  console.log("tableData======================>", tableData);
   React.useEffect(() => {
     const dataHolder = [];
     for (let i = 0; i < tableData.length; i++) {
@@ -89,13 +88,13 @@ const ProductCombinations = ({
           diamond_making_charges: 0,
           gemstone_making_charges: 0,
         },
-        making_charge_perc: {
-          gold_making_charges: 0,
-          silver_making_charges: 0,
-          platinum_making_charges: 0,
-          diamond_making_charges: 0,
-          gemstone_making_charges: 0,
-        },
+        // making_charge_perc: {
+        //   gold_making_charges: 0,
+        //   silver_making_charges: 0,
+        //   platinum_making_charges: 0,
+        //   diamond_making_charges: 0,
+        //   gemstone_making_charges: 0,
+        // },
         net_wt: {
           gold_nt_wt: 0,
           silver_nt_wt: 0,
@@ -103,20 +102,20 @@ const ProductCombinations = ({
           diamond_nt_wt: 0,
           gemstone_nt_wt: 0,
         },
-        jewellery_type_nt_wt: {
-          gold_nt_wt: 0,
-          silver_nt_wt: 0,
-          platinum_nt_wt: 0,
-          diamond_nt_wt: 0,
-          gemstone_nt_wt: 0,
-        },
+        // jewellery_type_nt_wt: {
+        //   gold_nt_wt: 0,
+        //   silver_nt_wt: 0,
+        //   platinum_nt_wt: 0,
+        //   diamond_nt_wt: 0,
+        //   gemstone_nt_wt: 0,
+        // },
         customization_dropdowns: [],
         made_on_oder: 1,
         key: i,
       });
     }
     setCombinationValues(dataHolder);
-  }, [tableData]);
+  }, [tableData, optionsMap]);
 
   const updateCombinationInputs = (
     index,
@@ -130,27 +129,37 @@ const ProductCombinations = ({
     if (!makingCharge && !netWt) return;
     const temp = combinationsValues[index];
 
-    console.log("++++++++__+_+__+__+__+>", temp);
+    console.log(
+      "values for update combs",
+      index,
+      targetKey,
+      value,
+      currentCombination,
+      makingCharge,
+      netWt
+    );
+    // console.log("++++++++__+_+__+__+__+>", temp);
 
     if (makingCharge) {
       if (temp["making_charges"]) temp["making_charges"][targetKey] = value;
-      if (temp["making_charge_perc"]) {
-        console.log(temp["making_charge_perc"]);
-        temp["making_charge_perc"] = JSON.parse(temp["making_charge_perc"]);
-        temp["making_charge_perc"][targetKey] = value;
-      }
+      // if (temp["making_charge_perc"]) {
+      //   console.log(temp["making_charge_perc"]);
+      //   temp["making_charge_perc"] = JSON.parse(temp["making_charge_perc"]);
+      //   temp["making_charge_perc"][targetKey] = value;
+      // }
     } else {
       if (temp["net_wt"]) temp["net_wt"][targetKey] = value;
-      if (temp["jewellery_type_nt_wt"]) {
-        console.log(temp["jewellery_type_nt_wt"]);
-        temp["jewellery_type_nt_wt"] = JSON.parse(temp["jewellery_type_nt_wt"]);
-        temp["jewellery_type_nt_wt"][targetKey] = value;
-      }
+      // if (temp["jewellery_type_nt_wt"]) {
+      //   console.log(temp["jewellery_type_nt_wt"]);
+      //   temp["jewellery_type_nt_wt"] = JSON.parse(temp["jewellery_type_nt_wt"]);
+      //   temp["jewellery_type_nt_wt"][targetKey] = value;
+      // }
     }
 
     //current Combination to options
 
-    console.log("current comb--=-=-=-=-=-=-=--=-=-=-=-=>", currentCombination);
+    console.log("options", optionsMap);
+    console.log("current comb--=-=-=-=-=-=-=--=-=-=-=-=>", temp);
     temp["customization_dropdowns"] = currentCombination.map((currComb) => ({
       customization_option_id: optionsMap[currComb],
     }));

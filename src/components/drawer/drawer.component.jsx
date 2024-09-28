@@ -57,7 +57,10 @@ const CustomDrawer = ({ section }) => {
 
   return (
     <div className="drawer-component">
-      <div className="data" style={{ height: "90%" }}>
+      <div
+        className="data"
+        style={{ height: "90%", width: "335px", position: "fixed" }}
+      >
         <img
           alt="logo"
           src={process.env.PUBLIC_URL + "/assets/logo_dark.png"}
@@ -80,18 +83,7 @@ const CustomDrawer = ({ section }) => {
             if (section !== "dashboard") navigate("/dashboard");
           }}
         />
-        <DrawerItem
-          title="Shops"
-          value="shops"
-          icon={<Shop />}
-          arrowicon={
-            showSubCategories ? <ExpandLessIcon /> : <ChevronRightIcon />
-          }
-          section={section}
-          clickAction={handleCategoriesClick}
-          hassubcategory={true}
-          isSelected={isSubcategorySelected}
-        />
+
         <DrawerItem
           title="Products"
           value="products"
@@ -124,34 +116,35 @@ const CustomDrawer = ({ section }) => {
           isaSubcategory={true}
           isSelected={section === "payments"}
         />
-      </div>
-      <div
-        style={{
-          marginTop: "auto",
-          width: "100%",
-          height: "70px",
-          borderTop: "3px solid lightgray",
-          display: "flex",
-          justifyContent: "space-evenly",
-          alignItems: "center",
-        }}
-      >
-        <Button
-          fullWidth
+        <div
           style={{
-            color: "gray",
-            fontWeight: 700,
-          }}
-          onClick={() => {
-            localStorage.removeItem("token");
-            navigate("/");
+            marginTop: "34vh",
+            marginBottom: "0px",
+            width: "95%",
+            height: "70px",
+            borderTop: "3px solid lightgray",
+            display: "flex",
+            justifyContent: "space-evenly",
+            alignItems: "center",
           }}
         >
-          <ExitToAppIcon style={{ fontSize: "1.5rem", color: "#a36e29" }} />
-          <p style={{ width: "70%", textAlign: "left", paddingLeft: "20px" }}>
-            Logout
-          </p>
-        </Button>
+          <Button
+            fullWidth
+            style={{
+              color: "gray",
+              fontWeight: 700,
+            }}
+            onClick={() => {
+              localStorage.removeItem("token");
+              navigate("/");
+            }}
+          >
+            <ExitToAppIcon style={{ fontSize: "1.5rem", color: "#a36e29" }} />
+            <p style={{ width: "70%", textAlign: "left", paddingLeft: "20px" }}>
+              Logout
+            </p>
+          </Button>
+        </div>
       </div>
     </div>
   );

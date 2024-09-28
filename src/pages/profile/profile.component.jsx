@@ -20,7 +20,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import { borderRadius, display, height, width } from "@mui/system";
 
 const Profile = () => {
-  const [editProfile, setEditProfile] = useState(false);
+  const [editProfile, setEditProfile] = useState(true);
 
   const [gstIn, setGstIn] = useState("asdf12325df");
   const [firstName, setFirstName] = useState("Sushovan");
@@ -172,11 +172,20 @@ const Profile = () => {
                 </>
               ) : (
                 <>
-                  <p style={{ fontSize: "1.2rem", width: "60%" }}>
-                    <b>GSTIN : </b>12SDAW123
+                  <p
+                    style={{
+                      fontSize: "1.2rem",
+                      width: "60%",
+                    }}
+                  >
+                    <b style={{ color: "rgba(0,0,0,0.8)" }}>GSTIN : </b>
+                    12SDAW123
                   </p>
                   <p style={{ fontSize: "1.2rem", marginRight: "auto" }}>
-                    <b>COMPANY TRADE NAME : </b>XYZ
+                    <b style={{ color: "rgba(0,0,0,0.8)" }}>
+                      COMPANY TRADE NAME :{" "}
+                    </b>
+                    XYZ
                   </p>
                 </>
               )}
@@ -204,7 +213,8 @@ const Profile = () => {
               ) : (
                 <>
                   <p style={{ fontSize: "1.2rem", width: "60%" }}>
-                    <b>EMAILID : </b>sushovanpaul07@gmail.com
+                    <b style={{ color: "rgba(0,0,0,0.8)" }}>EMAILID : </b>
+                    sushovanpaul07@gmail.com
                   </p>
                 </>
               )}
@@ -270,11 +280,11 @@ const Profile = () => {
               ) : (
                 <>
                   <p style={{ fontSize: "1.2rem", width: "60%" }}>
-                    <b>FIRST NAME : </b>
+                    <b style={{ color: "rgba(0,0,0,0.8)" }}>FIRST NAME : </b>
                     {firstName}
                   </p>
                   <p style={{ fontSize: "1.2rem", marginRight: "auto" }}>
-                    <b>LAST NAME : </b>
+                    <b style={{ color: "rgba(0,0,0,0.8)" }}>LAST NAME : </b>
                     {lastName}
                   </p>
                 </>
@@ -312,11 +322,11 @@ const Profile = () => {
               ) : (
                 <>
                   <p style={{ fontSize: "1.2rem", width: "60%" }}>
-                    <b>PASSWORD : </b>
-                    {password}
+                    <b> </b>
+                    {}
                   </p>
                   <p style={{ fontSize: "1.2rem", marginRight: "auto" }}>
-                    <b>PHONE NUMBER : </b>
+                    <b style={{ color: "rgba(0,0,0,0.8)" }}>PHONE NUMBER : </b>
                     {phone}
                   </p>
                 </>

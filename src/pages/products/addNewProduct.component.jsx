@@ -177,7 +177,7 @@ const AddNewProduct = () => {
   };
 
   const getAllCustomizationOptionsPerField = () => {
-    if (selectedCustomizationTypeId)
+    if (selectedCustomizationTypeId > 0)
       axios
         .get(
           `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedCustomizationTypeId}`,
@@ -840,7 +840,11 @@ const AddNewProduct = () => {
 
       {/* Product basic details input */}
       <ThemeProvider theme={theme}>
-        <Paper elevation={3} className="detail-paper">
+        <Paper
+          elevation={3}
+          className="detail-paper"
+          style={{ marginTop: "50px" }}
+        >
           <div className="heading">Product Details</div>
           <Divider />
           <Grid container spacing={0}>
@@ -882,7 +886,7 @@ const AddNewProduct = () => {
                 title={"Width"}
                 value={width}
                 onEdit={(e) => setWidth(e.target.value)}
-                adornmentType="inch"
+                adornmentType="mm"
               />
             </Grid>
             <Grid item xs={6}>
@@ -954,7 +958,11 @@ const AddNewProduct = () => {
       {/* Customization input */}
       <div className="product-customization-wrapper">
         <ThemeProvider theme={theme}>
-          <Paper className="customization-paper">
+          <Paper
+            className="customization-paper"
+            elevation={4}
+            style={{ marginTop: "50px" }}
+          >
             <div className="heading">Product Customization</div>
             <Divider />
             <div className="customization-text">

@@ -64,11 +64,15 @@ const Login = () => {
 
     //call API for OTP verification
     axios
-      .post("https://api.sadashrijewelkart.com/v1.0.0/user/otp.php", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
+      .post(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/otp.php",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
       .then((response) => {
         console.log(response);
         if (response.data.success === 1) {
@@ -90,7 +94,7 @@ const Login = () => {
     //call API for OTP verification
     axios
       .get(
-        `https://api.sadashrijewelkart.com/v1.0.0/user/otp.php?type=verify_otp&otp=${otp}&mobile=${`91${mobile}`}`,
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/otp.php?type=verify_otp&otp=${otp}&mobile=${`91${mobile}`}`,
         {
           headers: {
             "Content-Type": "multipart/form-data",

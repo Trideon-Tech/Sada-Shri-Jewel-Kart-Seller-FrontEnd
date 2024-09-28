@@ -243,8 +243,8 @@ const PaymentSettlementModal = ({ modalOpen, setModalOpen, orderList }) => {
               fontSize: "1.3rem",
             }}
           >
-            <p style={{ fontSize: "1rem" }}>Total Amount:</p>
-            <p>
+            <p>Total Amount:</p>
+            <p style={{ color: "rgba(0,0,0,0.6)" }}>
               <b>Rs {totalAmount}</b>
             </p>
           </div>

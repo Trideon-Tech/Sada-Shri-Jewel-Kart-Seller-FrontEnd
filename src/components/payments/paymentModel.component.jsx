@@ -30,7 +30,8 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
           width: "70%",
           height: 1000,
           bgcolor: "background.paper",
-          border: "2px solid #000",
+          border: "2px solid #fff",
+          borderRadius: "20px",
         }}
       >
         <div
@@ -67,7 +68,13 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               marginRight: "auto",
             }}
           >
-            <p style={{ fontWeight: 800 }}>
+            <p
+              style={{
+                fontWeight: 800,
+                fontSize: "1.2rem",
+                color: "rgba(0,0,0,0.8)",
+              }}
+            >
               <b>Order : SS1J2340K</b>
             </p>
             <p style={{ fontWeight: 800, color: "gray" }}>
@@ -114,12 +121,15 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               <p
                 style={{
                   backgroundColor: "#F99B1CDF",
+                  marginLeft: "20px",
                   padding: "10px",
+                  paddingLeft: "20px",
+                  paddingRight: "20px",
                   color: "white",
                   borderRadius: "5px",
                 }}
               >
-                Pending
+                <b>Pending</b>
               </p>
             </div>
             <div
@@ -131,7 +141,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               }}
             >
               <p style={{ fontWeight: 800, color: "gray" }}>PAYMENT:</p>
-              <p style={{}}>
+              <p style={{ fontSize: "1.2rem" }}>
                 <b>5,400</b>
               </p>
             </div>
@@ -196,7 +206,8 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               <p
                 style={{
                   width: "75%",
-                  fontWeight: 800,
+                  color: "rgba(0,0,0,0.8)",
+                  fontWeight: 500,
                   fontSize: "1.1rem",
                 }}
               >
@@ -223,8 +234,9 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               <p
                 style={{
                   width: "75%",
-                  fontWeight: 800,
                   fontSize: "1.1rem",
+                  color: "rgba(0,0,0,0.8)",
+                  fontWeight: 500,
                 }}
               >
                 02/10/2024 at 4:15pm
@@ -250,8 +262,9 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               <p
                 style={{
                   width: "75%",
-                  fontWeight: 800,
                   fontSize: "1.1rem",
+                  color: "rgba(0,0,0,0.8)",
+                  fontWeight: 500,
                 }}
               >
                 *********SSFDF
@@ -289,8 +302,9 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               <p
                 style={{
                   width: "75%",
-                  fontWeight: 800,
                   fontSize: "1.1rem",
+                  color: "rgba(0,0,0,0.8)",
+                  fontWeight: 500,
                 }}
               >
                 AXIS12423502433457394350
@@ -316,8 +330,9 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               <p
                 style={{
                   width: "75%",
-                  fontWeight: 800,
                   fontSize: "1.1rem",
+                  color: "rgba(0,0,0,0.8)",
+                  fontWeight: 500,
                 }}
               >
                 02/10/2024 at 4:15pm
@@ -343,7 +358,8 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               <p
                 style={{
                   width: "75%",
-                  fontWeight: 800,
+                  color: "rgba(0,0,0,0.8)",
+                  fontWeight: 500,
                   fontSize: "1.1rem",
                 }}
               >
@@ -411,8 +427,9 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               <p
                 style={{
                   width: "75%",
-                  fontWeight: 800,
                   fontSize: "1.1rem",
+                  color: "rgba(0,0,0,0.8)",
+                  fontWeight: 500,
                 }}
               >
                 Some Guy
@@ -438,8 +455,10 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               <p
                 style={{
                   width: "75%",
-                  fontWeight: 800,
+
                   fontSize: "1.1rem",
+                  color: "rgba(0,0,0,0.8)",
+                  fontWeight: 500,
                 }}
               >
                 someone@aomeone.com
@@ -477,8 +496,10 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               <p
                 style={{
                   width: "75%",
-                  fontWeight: 800,
+
                   fontSize: "1.1rem",
+                  color: "rgba(0,0,0,0.8)",
+                  fontWeight: 500,
                 }}
               >
                 433457394350
@@ -504,7 +525,9 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               <p
                 style={{
                   width: "75%",
-                  fontWeight: 800,
+                  color: "rgba(0,0,0,0.8)",
+                  fontWeight: 500,
+
                   fontSize: "1.1rem",
                 }}
               >
@@ -554,6 +577,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
             <div
               style={{
                 width: "100%",
+                paddingTop: "20px",
                 display: "flex",
                 justifyContent: "space-between",
               }}
@@ -582,6 +606,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
               style={{
                 width: "100%",
                 display: "flex",
+                paddingTop: "20px",
                 justifyContent: "space-between",
               }}
             >
@@ -608,6 +633,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
             <div
               style={{
                 width: "100%",
+                paddingTop: "20px",
                 display: "flex",
                 justifyContent: "space-between",
               }}
@@ -635,6 +661,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
             <div
               style={{
                 width: "100%",
+                paddingTop: "20px",
                 display: "flex",
                 justifyContent: "space-between",
               }}
@@ -662,6 +689,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
             <div
               style={{
                 width: "100%",
+                paddingTop: "20px",
                 display: "flex",
                 justifyContent: "space-between",
               }}
@@ -700,6 +728,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
             <div
               style={{
                 width: "100%",
+                paddingTop: "20px",
                 display: "flex",
                 justifyContent: "space-between",
               }}
@@ -728,6 +757,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
             <div
               style={{
                 width: "100%",
+                paddingTop: "20px",
                 display: "flex",
                 justifyContent: "space-between",
               }}
@@ -755,6 +785,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
             <div
               style={{
                 width: "100%",
+                paddingTop: "20px",
                 display: "flex",
                 justifyContent: "space-between",
               }}
@@ -782,6 +813,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
             <div
               style={{
                 width: "100%",
+                paddingTop: "20px",
                 display: "flex",
                 justifyContent: "space-between",
               }}

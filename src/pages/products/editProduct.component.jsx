@@ -70,6 +70,7 @@ const EditProduct = () => {
   const [price, setPrice] = useState();
   const [height, setHeight] = useState();
   const [width, setWidth] = useState();
+  const [orderProductId, setOrderProductId] = useState();
   const [purity, setPurity] = useState();
   const [newCustomizationType, setNewCustomizationType] = useState();
   const [newCustomizationOption, setNewCustomizationOption] = useState();
@@ -114,17 +115,24 @@ const EditProduct = () => {
       .request(config)
       .then((response) => {
         const result = response?.data?.response;
+        console.log("response", result);
+        setOrderProductId(result?.id);
         setProductName(result?.name);
         setDesc(result?.description);
         setWeight(result?.weight);
         setPrice(result?.price);
         setHeight(result?.height);
         setWidth(result?.width);
-        setPurity(result?.purity);
+        console.log(
+          "result?.purity, result?.category, result?.sub_category",
+          result?.purity,
+          result?.category,
+          result?.sub_category
+        );
+        setPurity(result?.purity || 0);
         setSelectedCategory(result?.category);
         setSelectedSubcategory(result?.sub_category);
         setCombinationValues(result?.customizations?.variants?.options);
-
         setCombinationFields(result?.customizations?.fields);
         console.log(JSON.stringify(response.data));
       })
@@ -296,6 +304,7 @@ const EditProduct = () => {
   };
 
   const getAllCustomizationOptionsPerField = () => {
+    if (!selectedCustomizationTypeId) return;
     axios
       .get(
         `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedCustomizationTypeId}`,
@@ -502,14 +511,16 @@ const EditProduct = () => {
       toast.warn("Purity is required!", generalToastStyle);
     } else {
       axios
-        .post(
+        .put(
           "https://api.sadashrijewelkart.com/v1.0.0/seller/product/update.php",
           {
-            type: "item",
+            id: orderProductId,
+            type: "update_item",
             name: productName,
             description: desc,
             category: selectedCategory,
             sub_category: selectedSubcategory,
+            purity: purity,
             price: price,
             weight: weight,
             height: height,
@@ -709,7 +720,11 @@ const EditProduct = () => {
 
       {/* Product basic details input */}
       <ThemeProvider theme={theme}>
-        <Paper elevation={3} className="detail-paper">
+        <Paper
+          elevation={3}
+          className="detail-paper"
+          style={{ marginTop: "50px" }}
+        >
           <div className="heading">Product Details</div>
           <Divider />
           <Grid container spacing={0}>
@@ -751,7 +766,7 @@ const EditProduct = () => {
                 title={"Width"}
                 value={width}
                 onEdit={(e) => setWidth(e.target.value)}
-                adornmentType="inch"
+                adornmentType="mm"
               />
             </Grid>
             <Grid item xs={6}>
@@ -823,7 +838,11 @@ const EditProduct = () => {
       {/* Customization input */}
       <div className="product-customization-wrapper">
         <ThemeProvider theme={theme}>
-          <Paper className="customization-paper">
+          <Paper
+            className="customization-paper"
+            elevation={4}
+            style={{ marginTop: "50px" }}
+          >
             <div className="heading">Product Customization</div>
             <Divider />
             {/* <div className="customization-text">
@@ -847,7 +866,7 @@ const EditProduct = () => {
                 readOnly={true}
                 saveProductCustomization={() => {}}
                 combinationsValues={combinationsValues}
-                setCombinationValues={() => {}}
+                setCombinationValues={setCombinationValues}
                 combinationFields={combinationFields}
               />
             </div>

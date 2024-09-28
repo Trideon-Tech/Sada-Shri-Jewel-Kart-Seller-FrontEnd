@@ -146,7 +146,7 @@ const OrderSummaryComponent = ({ orderDetails }) => {
         style={{
           width: "calc(100% - 20px)",
           padding: "10px",
-          height: "200px",
+          height: "220px",
           borderRadius: "10px",
           border: "1px solid #e7e7e7",
         }}
@@ -253,6 +253,8 @@ const OrderSummaryComponent = ({ orderDetails }) => {
             color: "#797979",
             fontWeight: 500,
             fontSize: "1rem",
+            paddingBottom: "10px",
+            paddingTop: "10px",
           }}
         >
           <div style={{ width: "25%" }}>

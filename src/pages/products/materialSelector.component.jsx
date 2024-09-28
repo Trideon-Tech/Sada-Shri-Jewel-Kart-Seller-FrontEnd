@@ -96,7 +96,7 @@ const MaterialSelector = ({
     const token = localStorage.getItem("token");
     axios
       .get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${5}`,
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${28}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

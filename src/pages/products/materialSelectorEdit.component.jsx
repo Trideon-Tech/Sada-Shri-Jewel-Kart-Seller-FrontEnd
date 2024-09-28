@@ -62,7 +62,7 @@ const MaterialSelectorEdit = ({
   const [gemSelected, setGemSelected] = React.useState(false);
   const [customizations, setCustomizations] = React.useState([]);
 
-  const [selectedSizes, setSelectedSizes] = React.useState(["5/6in"]);
+  const [selectedSizes, setSelectedSizes] = React.useState([]);
 
   const [tableDataPoint, setTableDataPoint] = React.useState();
   const [tableHeaderPoint, setTableHeaderPoint] = React.useState();
@@ -91,6 +91,10 @@ const MaterialSelectorEdit = ({
   const [customizationOptions, setCustomizationOptions] = React.useState([]);
 
   const [optionsMap, setOptionsMap] = React.useState({});
+  const [availableCustomizationType, setAvailableCustomizationType] =
+    React.useState({});
+  const [enabledItems, setEnabledItems] = React.useState([]);
+  const [storedSetArray, setStoredSetArray] = React.useState([]);
 
   React.useEffect(() => {
     getAllCustomizationOptionsPerField();
@@ -100,7 +104,7 @@ const MaterialSelectorEdit = ({
     const token = localStorage.getItem("token");
     axios
       .get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${5}`,
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${28}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -123,27 +127,39 @@ const MaterialSelectorEdit = ({
       tableHeaderArr = combinationFields;
     }
 
+    let setArray = [];
     const tempArr = [];
-    console.log("*=*+*+*+*+*+*+*+*+>combination fields", combinationFields);
+    // console.log("*=*+*+*+*+*+*+*+*+>combination fields", combinationFields);
     console.log("*=*+*+*+*+*+*+*+*+>combination Values", combinationsValues);
-    for (let i of combinationFields) {
-      tempArr.push([]);
-    }
-    for (let i of combinationsValues) {
-      for (let j = 0; j < i.for_customization_options.length; j++) {
-        tempArr[j].push(i.for_customization_options[j]);
+    if (storedSetArray.length > 0) {
+      setArray = storedSetArray;
+      if (selectedSizes.length > 0)
+        setArray[setArray.length - 1] = selectedSizes;
+    } else {
+      for (let i of combinationFields) {
+        tempArr.push([]);
       }
-    }
-    const setArray = [];
-    for (let i of tempArr) {
-      setArray.push(Array.from(new Set(i)));
+      for (let i of combinationsValues) {
+        for (let j = 0; j < i?.for_customization_options.length; j++) {
+          tempArr[j]?.push(i.for_customization_options[j]);
+        }
+      }
+      // const setArray = [];
+      for (let i of tempArr) {
+        setArray.push(Array.from(new Set(i)));
+      }
+      if (selectedSizes.length > 0) setArray.push(selectedSizes);
     }
     console.log("setArray======================>", setArray);
 
+    console.log(
+      "==============================>tableHeaderArr",
+      tableHeaderArr
+    );
     // setSelectedSizes();
     if (selectedSizes.length > 0) {
-      setArray.push(selectedSizes);
       const dataCombs = generateCombinations(setArray);
+      setStoredSetArray(setArray);
       setTableDataPoint(dataCombs);
       setTableHeaderPoint([...tableHeaderArr, "Size"]);
       console.log("dataCombs", dataCombs);
@@ -162,6 +178,13 @@ const MaterialSelectorEdit = ({
     combinationFields,
   ]);
 
+  const checkItemEnabled = (ar1, ar2) => {
+    for (let i of ar1) {
+      if (i === "Size") continue;
+      if (ar2.includes(i)) return true;
+    }
+    return false;
+  };
   React.useEffect(() => {
     const token = localStorage.getItem("token");
     axios
@@ -174,6 +197,7 @@ const MaterialSelectorEdit = ({
         }
       )
       .then((response) => {
+        // console.log("(**^(&$!@$**@!$(!)(#", response?.data?.response);
         const result = response?.data?.response;
         const localOptionsMap = {};
         const formattedObject = {};
@@ -192,12 +216,15 @@ const MaterialSelectorEdit = ({
 
         const options_customization_map = {};
         for (let item of result) {
-          for (let field of item.customization_fields) {
-            options_customization_map[item.name] = field?.map(
-              (fieldItem) => fieldItem.name
-            );
-          }
+          options_customization_map[item.name] = item.customization_fields.map(
+            (customObj) => customObj.name
+          );
         }
+
+        console.log("sizeCustomizations", sizeCustomizations);
+        options_customization_map["Size"] = sizeCustomizations.map(
+          (size) => size.name
+        );
 
         console.log(
           "formattedobj =====================",
@@ -209,11 +236,13 @@ const MaterialSelectorEdit = ({
         );
         setOptionsMap(localOptionsMap);
         setCustomizationOptions(formattedObject);
+
+        setAvailableCustomizationType(options_customization_map);
       })
       .catch((error) => {
         console.error("Error fetching customization options:", error);
       });
-  }, []);
+  }, [sizeCustomizations]);
 
   React.useEffect(() => {
     const arr = [];
@@ -395,11 +424,26 @@ const MaterialSelectorEdit = ({
             optionsMap={optionsMap}
             tableData={tableDataPoint}
             tableHeaders={tableHeaderPoint}
-            gold={readOnly ? true : goldSelected}
-            silver={readOnly ? true : silverSelected}
-            platinum={readOnly ? true : platinumSelected}
-            diamond={readOnly ? true : diamondSelected}
-            gem={readOnly ? true : gemSelected}
+            gold={checkItemEnabled(
+              tableHeaderPoint,
+              availableCustomizationType["Gold"]
+            )}
+            silver={checkItemEnabled(
+              tableHeaderPoint,
+              availableCustomizationType["Silver"]
+            )}
+            platinum={checkItemEnabled(
+              tableHeaderPoint,
+              availableCustomizationType["Platinum"]
+            )}
+            diamond={checkItemEnabled(
+              tableHeaderPoint,
+              availableCustomizationType["Diamond"]
+            )}
+            gem={checkItemEnabled(
+              tableHeaderPoint,
+              availableCustomizationType["Gemstone"]
+            )}
             combinationsValues={combinationsValues}
             setCombinationValues={setCombinationValues}
           />

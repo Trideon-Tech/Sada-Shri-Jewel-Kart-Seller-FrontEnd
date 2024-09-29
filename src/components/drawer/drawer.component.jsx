@@ -59,7 +59,13 @@ const CustomDrawer = ({ section }) => {
     <div className="drawer-component">
       <div
         className="data"
-        style={{ height: "90%", width: "335px", position: "fixed" }}
+        style={{
+          height: "100%",
+          width: "335px",
+          position: "fixed",
+          display: "flex",
+          flexDirection: "column",
+        }}
       >
         <img
           alt="logo"
@@ -118,8 +124,7 @@ const CustomDrawer = ({ section }) => {
         />
         <div
           style={{
-            marginTop: "34vh",
-            marginBottom: "0px",
+            marginTop: "auto",
             width: "95%",
             height: "70px",
             borderTop: "3px solid lightgray",

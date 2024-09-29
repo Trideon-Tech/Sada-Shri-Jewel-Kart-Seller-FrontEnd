@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Paper,
   Avatar,
@@ -17,10 +17,14 @@ import CustomDrawer from "../../components/drawer/drawer.component";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import SaveIcon from "@mui/icons-material/Save";
 
-import { borderRadius, display, height, width } from "@mui/system";
+import { borderRadius, display, height, positions, width } from "@mui/system";
+import axios from "axios";
+import zIndex from "@mui/material/styles/zIndex";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const [editProfile, setEditProfile] = useState(true);
+  const navigate = useNavigate();
 
   const [gstIn, setGstIn] = useState("asdf12325df");
   const [firstName, setFirstName] = useState("Sushovan");
@@ -29,6 +33,68 @@ const Profile = () => {
   const [emailId, setEmailId] = useState("sushovanpaul07@gmail.com");
   const [phone, setPhone] = useState("8102535095");
   const [password, setPassword] = useState("abcd1234");
+  const [coverImage, setCoverImage] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+
+  useEffect(() => {
+    let data = new FormData();
+
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: "https://api.sadashrijewelkart.com/v1.0.0/seller/all.php?type=seller_details",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+
+        setGstIn(response?.data?.response?.gstin);
+        setFirstName(response?.data?.response?.name);
+        setLastName(response?.data?.response?.name);
+        setEmailId(response?.data?.response?.contact_email);
+        setPhone(response?.data?.response?.mobile);
+        setCompanyTradeName(response?.data?.response?.company_name);
+        setCoverImage(response?.data?.response?.cover_image);
+        setProfileImage(response?.data?.response?.logo);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  const updateProfileDetails = () => {
+    const FormData = require("form-data");
+    let data = new FormData();
+    data.append("name", `${firstName} ${lastName}`);
+    data.append("mobile", `${phone}`);
+    data.append("type", "update_seller");
+
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "https://api.sadashrijewelkart.com/v1.0.0/seller/register.php",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        contentType: "multipart/form-data",
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        navigate(0);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <div className="product-component">
@@ -107,7 +173,7 @@ const Profile = () => {
                       fontWeight: "bold",
                       backgroundColor: "#a36e29",
                     }}
-                    onClick={() => setEditProfile(!editProfile)}
+                    onClick={() => updateProfileDetails()}
                   >
                     <SaveIcon style={{ fontSize: "1.5rem", color: "white" }} />
                     Save
@@ -133,10 +199,38 @@ const Profile = () => {
                   height: "calc(100% - 20px)",
                   borderRadius: "7px",
                   overflow: "hidden",
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
                 }}
               >
+                <Box
+                  style={{
+                    position: "absolute",
+                    zIndex: 2,
+                    width: "150px",
+                    height: "150px",
+                    backgroundColor: "white",
+                    borderRadius: "150px",
+                    marginLeft: "40px",
+
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <img
+                    src={`https://api.sadashrijewelkart.com/assets/${profileImage}`}
+                    style={{
+                      width: "130px",
+                      height: "130px",
+                      borderRadius: "100px",
+                      backgroundColor: "lightgray",
+                    }}
+                  />
+                </Box>
                 <img
-                  src={"https://picsum.photos/1200/300"}
+                  src={`https://api.sadashrijewelkart.com/assets/${coverImage}`}
                   style={{ width: "100%" }}
                 />
               </Box>
@@ -155,6 +249,7 @@ const Profile = () => {
                     id="outlined-controlled"
                     label="GSTIN"
                     value={gstIn}
+                    disabled
                     onChange={(event) => {
                       setGstIn(event.target.value);
                     }}
@@ -164,6 +259,7 @@ const Profile = () => {
                     id="outlined-controlled"
                     label="COMPANY TRADE NAME"
                     value={companyTradeName}
+                    disabled
                     onChange={(event) => {
                       setCompanyTradeName(event.target.value);
                     }}
@@ -179,13 +275,13 @@ const Profile = () => {
                     }}
                   >
                     <b style={{ color: "rgba(0,0,0,0.8)" }}>GSTIN : </b>
-                    12SDAW123
+                    {gstIn}
                   </p>
                   <p style={{ fontSize: "1.2rem", marginRight: "auto" }}>
                     <b style={{ color: "rgba(0,0,0,0.8)" }}>
                       COMPANY TRADE NAME :{" "}
                     </b>
-                    XYZ
+                    {companyTradeName}
                   </p>
                 </>
               )}
@@ -203,6 +299,7 @@ const Profile = () => {
                   <TextField
                     id="outlined-controlled"
                     label="EMAILID"
+                    disabled
                     value={emailId}
                     onChange={(event) => {
                       setEmailId(event.target.value);
@@ -214,7 +311,7 @@ const Profile = () => {
                 <>
                   <p style={{ fontSize: "1.2rem", width: "60%" }}>
                     <b style={{ color: "rgba(0,0,0,0.8)" }}>EMAILID : </b>
-                    sushovanpaul07@gmail.com
+                    {emailId}
                   </p>
                 </>
               )}
@@ -300,7 +397,7 @@ const Profile = () => {
             >
               {!editProfile ? (
                 <>
-                  <TextField
+                  {/* <TextField
                     id="outlined-controlled"
                     label="PASSWORD"
                     value={password}
@@ -308,10 +405,11 @@ const Profile = () => {
                       setPassword(event.target.value);
                     }}
                     style={{ marginRight: "40%", width: "30%" }}
-                  />
+                  /> */}
                   <TextField
                     id="outlined-controlled"
                     label="PHONE NUMBER"
+                    disabled
                     value={phone}
                     onChange={(event) => {
                       setPhone(event.target.value);

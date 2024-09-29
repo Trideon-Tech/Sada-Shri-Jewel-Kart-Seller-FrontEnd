@@ -149,6 +149,7 @@ const RegistrationUserDetails = () => {
       })
       .catch((error) => {
         console.error("Error:", error);
+        toast("OTP Verification Failed !", generalToastStyle);
       });
   };
 

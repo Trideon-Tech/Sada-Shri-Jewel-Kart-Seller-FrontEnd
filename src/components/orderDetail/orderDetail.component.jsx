@@ -149,6 +149,7 @@ const OrderDetail = ({ id }) => {
     <div
       style={{
         width: "100%",
+        minHeight: "100vh",
         height: "max-content",
         backgroundColor: "#f5f5f5",
       }}
@@ -271,26 +272,34 @@ const OrderDetail = ({ id }) => {
                 height: "100%",
                 display: "flex",
                 justifyContent: "space-evenly",
-                alignItems: "center",
+                alignItems: "flex-start",
               }}
             >
               <ArrowBackIcon
                 style={{
                   fontSize: "3rem",
-                  color: "#797979",
                   cursor: "pointer",
                 }}
                 onClick={() => navigate("/orders")}
               />
               <div>
-                <p style={{ fontSize: "3rem", margin: 0, lineHeight: 1 }}>
+                <p
+                  style={{
+                    fontSize: "3rem",
+                    margin: 0,
+                    lineHeight: 1,
+                    marginLeft: "20px",
+                  }}
+                >
                   {orderDetails[0]?.public_id}
                 </p>
                 <p
                   style={{
                     margin: 0,
                     color: "gray",
-                    fontSize: "1.1rem",
+                    fontSize: "1.2rem",
+                    marginLeft: "20px",
+                    paddingTop: "10px",
                     fontWeight: 600,
                   }}
                 >
@@ -336,6 +345,7 @@ const OrderDetail = ({ id }) => {
                 marginLeft: "auto",
                 width: "300px",
                 height: "62px",
+                fontWeight: 700,
                 backgroundColor: "#A36E29",
               }}
               onClick={() => setOpen(true)}
@@ -344,14 +354,16 @@ const OrderDetail = ({ id }) => {
             </Button>
           </div>
         </Grid>
-        <Grid item xs={8}>
+        <Grid item xs={8} style={{ marginTop: "30px" }}>
           <OrderSummaryComponent orderDetails={orderDetails} />
-          <div style={{ padding: "40px", paddingTop: 0, paddingBottom: 0 }}>
+          <div
+            style={{ padding: "40px", paddingTop: "50px", paddingBottom: 0 }}
+          >
             <p style={{ fontSize: "2rem", fontWeight: 600 }}> Order Status</p>
           </div>
           <TrackOrderComponent />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={4} style={{ marginTop: "30px" }}>
           <CustomerDetailComponent
             userData={orderDetails[0]?.user_address[0]}
           />

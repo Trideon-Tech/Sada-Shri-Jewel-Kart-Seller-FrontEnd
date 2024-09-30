@@ -131,8 +131,8 @@ const OrderSummaryComponent = ({ orderDetails }) => {
         style={{
           marginTop: "30px",
           marginBottom: "10px",
-          width: "60px",
-          height: "30px",
+          width: "max-content",
+          height: "max-content",
           display: "flex",
           borderRadius: "8px",
           alignItems: "center",
@@ -140,7 +140,9 @@ const OrderSummaryComponent = ({ orderDetails }) => {
           backgroundColor: "#e7e7e7",
         }}
       >
-        Paid
+        <p style={{ padding: "7px" }}>
+          {orderDetails[0]?.amount_paid == 0 ? "Unpaid" : "Paid"}
+        </p>
       </div>
       <div
         style={{

@@ -396,6 +396,7 @@ const AddNewProduct = () => {
             weight: weight,
             height: height,
             width: width,
+            purity: purity,
             customization: combinationsValues,
           },
           {

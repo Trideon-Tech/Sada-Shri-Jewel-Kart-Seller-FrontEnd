@@ -373,7 +373,7 @@ const OrdersComponent = ({ row }) => {
                               tabIndex={-1}
                               key={row.id}
                               onClick={() =>
-                                navigate(`/order-detail/${row.order_detail_id}`)
+                                navigate(`/order-detail/${row.order_record_id}`)
                               }
                             >
                               <TableCell>

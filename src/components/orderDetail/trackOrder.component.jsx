@@ -5,7 +5,7 @@ import StepIndicator from "@mui/joy/StepIndicator";
 import Check from "@mui/icons-material/Check";
 const TrackOrderComponent = () => {
   return (
-    <div>
+    <div style={{ paddingLeft: "20px" }}>
       <Stepper orientation="vertical">
         {[1, 2, 3, 4, 5].map((item) => (
           <Step
@@ -38,7 +38,9 @@ const TrackOrderComponent = () => {
                 style={{
                   width: "100%",
                   paddingLeft: "10px",
-                  paddingRight: "50px",
+                  paddingBottom: "50px",
+                  paddingTop: "20px",
+                  paddingRight: 0,
                   display: "flex",
                   justifyContent: "flex-start",
                   height: "max-content",
@@ -46,11 +48,31 @@ const TrackOrderComponent = () => {
                   color: "gray",
                 }}
               >
-                <p style={{ width: "50%", textAlign: "left" }}>
-                  {" "}
-                  A payment of Rs. 539 was processed on razorpay
+                <div style={{ width: "50%", height: "max-content" }}>
+                  <p style={{ width: "100%", textAlign: "left" }}>
+                    {" "}
+                    26th April
+                  </p>
+                  <p
+                    style={{
+                      width: "100%",
+                      textAlign: "left",
+                      color: "#000000bb",
+                    }}
+                  >
+                    {" "}
+                    A payment of Rs. 539 was processed on razorpay
+                  </p>
+                </div>
+                <p
+                  style={{
+                    width: "20%",
+                    marginLeft: "auto",
+                    color: "#000000bb",
+                  }}
+                >
+                  8:46 pm
                 </p>
-                <p style={{ width: "20%", marginLeft: "auto" }}>8:46 pm</p>
               </div>
             </StepButton>
           </Step>

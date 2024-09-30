@@ -69,30 +69,34 @@ const Profile = () => {
   }, []);
 
   const updateProfileDetails = () => {
+    console.log("heu");
     const FormData = require("form-data");
     let data = new FormData();
     data.append("name", `${firstName} ${lastName}`);
     data.append("mobile", `${phone}`);
+    data.append("email", `${emailId}`);
     data.append("type", "update_seller");
 
-    let config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: "https://api.sadashrijewelkart.com/v1.0.0/seller/register.php",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        contentType: "multipart/form-data",
-      },
-      data: data,
-    };
-
+    //call API for OTP verification
     axios
-      .request(config)
+      .post(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/register.php",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
       .then((response) => {
-        navigate(0);
+        console.log(response);
+        if (response.data.success === 1) {
+          // navigate(0);
+        }
       })
       .catch((error) => {
-        console.log(error);
+        console.error("Error:", error);
       });
   };
 
@@ -299,7 +303,6 @@ const Profile = () => {
                   <TextField
                     id="outlined-controlled"
                     label="EMAILID"
-                    disabled
                     value={emailId}
                     onChange={(event) => {
                       setEmailId(event.target.value);
@@ -397,15 +400,6 @@ const Profile = () => {
             >
               {!editProfile ? (
                 <>
-                  {/* <TextField
-                    id="outlined-controlled"
-                    label="PASSWORD"
-                    value={password}
-                    onChange={(event) => {
-                      setPassword(event.target.value);
-                    }}
-                    style={{ marginRight: "40%", width: "30%" }}
-                  /> */}
                   <TextField
                     id="outlined-controlled"
                     label="PHONE NUMBER"
@@ -419,10 +413,6 @@ const Profile = () => {
                 </>
               ) : (
                 <>
-                  <p style={{ fontSize: "1.2rem", width: "60%" }}>
-                    <b> </b>
-                    {}
-                  </p>
                   <p style={{ fontSize: "1.2rem", marginRight: "auto" }}>
                     <b style={{ color: "rgba(0,0,0,0.8)" }}>PHONE NUMBER : </b>
                     {phone}

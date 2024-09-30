@@ -68,31 +68,26 @@ const Products = () => {
   };
 
   const handleDeleteProduct = (productId) => {
-    let data = JSON.stringify({
-      product_id: productId,
-    });
-
-    let config = {
-      method: "delete",
-      maxBodyLength: Infinity,
-      url: "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json",
-      },
-      data: data,
-    };
-
     axios
-      .request(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
+      .delete(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+          data: {
+            product_id: productId,
+          },
+        }
+      )
+      .then((_) => {
+        toast("Product deleted successfully!", generalToastStyle);
+        navigate(0);
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((err) => {
+        toast(err.response.data.message, generalToastStyle);
       });
-
-    navigate(0);
   };
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);

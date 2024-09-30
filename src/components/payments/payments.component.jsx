@@ -323,7 +323,14 @@ const PaymentsComponent = ({ row }) => {
                   selectedTab === 0 ? "2px solid brown" : "2px solid #BEBEBE",
               }}
             >
-              <p style={{ fontWeight: 600, color: "gray" }}>Payment</p>
+              <p
+                style={{
+                  fontWeight: 550,
+                  color: selectedTab === 0 ? "#A36E29" : "gray",
+                }}
+              >
+                Payment
+              </p>
             </Tab>
             <Tab
               value={1}
@@ -336,7 +343,14 @@ const PaymentsComponent = ({ row }) => {
                   selectedTab === 1 ? "2px solid brown" : "2px solid #BEBEBE",
               }}
             >
-              <p style={{ fontWeight: 600, color: "gray" }}>Settlement</p>
+              <p
+                style={{
+                  fontWeight: 550,
+                  color: selectedTab === 1 ? "#A36E29" : "gray",
+                }}
+              >
+                Settlement
+              </p>
             </Tab>
             <Tab
               value={2}
@@ -351,7 +365,15 @@ const PaymentsComponent = ({ row }) => {
                   selectedTab === 2 ? "2px solid brown" : "2px solid #BEBEBE",
               }}
             >
-              <p style={{ fontWeight: 600, color: "gray" }}> Refund</p>
+              <p
+                style={{
+                  fontWeight: 550,
+                  color: selectedTab === 2 ? "#A36E29" : "gray",
+                }}
+              >
+                {" "}
+                Refund
+              </p>
             </Tab>
           </TabList>
         </Tabs>

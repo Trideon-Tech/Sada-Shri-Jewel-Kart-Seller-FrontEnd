@@ -151,7 +151,7 @@ const Login = () => {
       activateNextStepLoading(true);
       axios
         .get(
-          "https://api.sadashrijewelkart.com/v1.0.0/seller/login.php?mobile=1234567890",
+          `https://api.sadashrijewelkart.com/v1.0.0/seller/login.php?mobile=${mobile}`,
           {
             headers: {
               Authorization:

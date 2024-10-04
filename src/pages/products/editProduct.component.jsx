@@ -103,6 +103,90 @@ const EditProduct = () => {
   const [combinationsValues, setCombinationValues] = React.useState([]);
   const [combinationFields, setCombinationFields] = React.useState([]);
 
+  const [displayTable, setDisplayTable] = React.useState({});
+
+  const convertToTableData = (rawData) => {
+    const tableHeaders = rawData?.customizations?.fields;
+    const checkData =
+      rawData?.customizations?.variants?.options[0]?.making_charge_perc;
+
+    const headerLists = [];
+
+    if (checkData["gold_making_charges"] !== 0) {
+      tableHeaders.push("gold_making_charges");
+      headerLists.push("gold_making_charges");
+    }
+
+    if (checkData["silver_making_charges"] !== 0) {
+      tableHeaders.push("silver_making_charges");
+      headerLists.push("silver_making_charges");
+    }
+
+    if (checkData["platinum_making_charges"] !== 0) {
+      tableHeaders.push("platinum_making_charges");
+      headerLists.push("platinum_making_charges");
+    }
+
+    if (checkData["diamond_making_charges"] !== 0) {
+      tableHeaders.push("diamond_making_charges");
+      headerLists.push("diamond_making_charges");
+    }
+
+    if (checkData["gemstone_making_charges"] !== 0) {
+      tableHeaders.push("gemstone_making_charges");
+      headerLists.push("gemstone_making_charges");
+    }
+
+    //wt headers
+
+    const checkDataWt =
+      rawData?.customizations?.variants?.options[0]?.jewellery_type_nt_wt;
+
+    if (checkDataWt["gold_nt_wt"] !== 0) {
+      tableHeaders.push("gold_nt_wt");
+      headerLists.push("gold_nt_wt");
+    }
+
+    if (checkDataWt["silver_nt_wt"] !== 0) {
+      tableHeaders.push("silver_nt_wt");
+      headerLists.push("silver_nt_wt");
+    }
+
+    if (checkDataWt["platinum_nt_wt"] !== 0) {
+      tableHeaders.push("platinum_nt_wt");
+      headerLists.push("platinum_nt_wt");
+    }
+
+    if (checkDataWt["diamond_nt_wt"] !== 0) {
+      tableHeaders.push("diamond_nt_wt");
+      headerLists.push("diamond_nt_wt");
+    }
+
+    if (checkDataWt["gemstone_nt_wt"] !== 0) {
+      tableHeaders.push("gemstone_nt_wt");
+      headerLists.push("gemstone_nt_wt");
+    }
+
+    const tableData = [];
+    for (let row of rawData?.customizations?.variants?.options) {
+      const fillUpData = row?.for_customization_options;
+      const mergedObject = {
+        ...row?.making_charge_perc,
+        ...row?.jewellery_type_nt_wt,
+      };
+      headerLists.map((key) => fillUpData.push(mergedObject[key]));
+
+      tableData.push(fillUpData);
+    }
+
+    console.log("formed Data ========>>>>>>>", {
+      tableHeaders: tableHeaders,
+      tableData: tableData,
+    });
+
+    setDisplayTable({ tableHeaders: tableHeaders, tableData: tableData });
+  };
+
   useEffect(() => {
     let config = {
       method: "get",
@@ -134,6 +218,7 @@ const EditProduct = () => {
         setSelectedSubcategory(result?.sub_category);
         setCombinationValues(result?.customizations?.variants?.options);
         setCombinationFields(result?.customizations?.fields);
+        convertToTableData(result);
         console.log(JSON.stringify(response.data));
       })
       .catch((error) => {
@@ -836,6 +921,44 @@ const EditProduct = () => {
       </ThemeProvider>
 
       {/* Customization input */}
+
+      <div className="product-customization-wrapper">
+        <ThemeProvider theme={theme}>
+          <Paper
+            className="customization-paper"
+            elevation={4}
+            style={{ marginTop: "50px" }}
+            sx={{ width: "100%", overflow: "scroll" }}
+          >
+            <div className="heading">Existing Customization</div>
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    {displayTable?.tableHeaders?.map((column) => (
+                      <TableCell key={column} align={"left"}>
+                        {column}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {displayTable?.tableData?.map((columns, index) => {
+                    return (
+                      <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                        {columns.map((column) => (
+                          <TableCell>{column}</TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </ThemeProvider>
+      </div>
+
       <div className="product-customization-wrapper">
         <ThemeProvider theme={theme}>
           <Paper

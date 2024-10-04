@@ -377,7 +377,7 @@ const PaymentsComponent = ({ row }) => {
             </Tab>
           </TabList>
         </Tabs>
-        <Button
+        {/* <Button
           style={{
             width: "max-content",
             paddingLeft: "60px",
@@ -391,7 +391,7 @@ const PaymentsComponent = ({ row }) => {
         >
           {" "}
           Settle Payment
-        </Button>
+        </Button> */}
       </Box>
 
       <ThemeProvider theme={theme}>

@@ -104,7 +104,7 @@ const RegistrationUserDetails = () => {
     //call API for OTP verification
     axios
       .get(
-        `https://api.sadashrijewelkart.com/v1.0.0/user/otp.php?type=verify_otp&otp=${otp}&mobile=${`91${mobile}`}`,
+        `https://api.sadashrijewelkart.com/v1.0.0/user/otp.php?type=verify_otp&otp=${otp}&mobile=${`${mobile}`}`,
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -113,11 +113,17 @@ const RegistrationUserDetails = () => {
       )
       .then((response) => {
         console.log("userdata=====================================", response);
+        if (response?.data?.response?.type === "success") {
+          toast("OTP Verified Successfully!", generalToastStyle);
+          navigate("/register/company");
+        }
         if (
           response.data.success === 1 &&
           response?.data?.response?.user_details
         ) {
           setOTPVerified(true);
+          if (response?.data?.response?.user_details?.user_exists) {
+          }
           if (response.data.response.user_details.user_exists) {
             localStorage.setItem(
               "user_id",

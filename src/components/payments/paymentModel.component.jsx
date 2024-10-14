@@ -12,7 +12,31 @@ import {
   Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-const PaymentModal = ({ modalOpen, setModalOpen }) => {
+import axios from "axios";
+import { useEffect, useState } from "react";
+const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
+  const [payementDetails, setPaymentDetails] = useState({});
+  useEffect(() => {
+    (async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const { data } = await axios.get(
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=payment_detail&order_record_id=${selectedPaymentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(
+        "data?.response?.payment_list[0]",
+        data?.response?.payment_list[0]
+      );
+
+      setPaymentDetails(data?.response?.payment_list[0]);
+    })();
+  }, [selectedPaymentId]);
   return (
     <Modal
       open={modalOpen}
@@ -59,7 +83,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
           </div>
           <div
             style={{
-              width: "55%",
+              width: "50%",
               height: "100%",
               display: "flex",
               flexDirection: "column",
@@ -75,10 +99,10 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                 color: "rgba(0,0,0,0.8)",
               }}
             >
-              <b>Order : SS1J2340K</b>
+              <b>Order : {payementDetails?.order_id}</b>
             </p>
             <p style={{ fontWeight: 800, color: "gray" }}>
-              02/10/2024 at 4:15pm
+              {payementDetails?.updated_at}
             </p>
           </div>
           <div
@@ -94,12 +118,12 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
           >
             <p style={{ fontWeight: 800, color: "gray" }}>SETTLEMENT ID</p>
             <p>
-              <b>123GJRG3SEQ</b>
+              <b>{payementDetails?.settlement_public_id}</b>
             </p>
           </div>
           <div
             style={{
-              width: "12%",
+              width: "15%",
               height: "100%",
               display: "flex",
               flexDirection: "column",
@@ -122,14 +146,14 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                 style={{
                   backgroundColor: "#F99B1CDF",
                   marginLeft: "20px",
-                  padding: "10px",
-                  paddingLeft: "20px",
-                  paddingRight: "20px",
+                  padding: "7px",
+                  paddingLeft: "15px",
+                  paddingRight: "15px",
                   color: "white",
                   borderRadius: "5px",
                 }}
               >
-                <b>Pending</b>
+                <b>{payementDetails?.settlement_status}</b>
               </p>
             </div>
             <div
@@ -142,7 +166,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
             >
               <p style={{ fontWeight: 800, color: "gray" }}>PAYMENT:</p>
               <p style={{ fontSize: "1.2rem" }}>
-                <b>5,400</b>
+                <b>{payementDetails?.total_amount}</b>
               </p>
             </div>
           </div>
@@ -239,7 +263,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                   fontWeight: 500,
                 }}
               >
-                02/10/2024 at 4:15pm
+                {payementDetails.created_at}
               </p>
             </div>
             <div
@@ -307,7 +331,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                   fontWeight: 500,
                 }}
               >
-                AXIS12423502433457394350
+                {payementDetails?.utr_number}
               </p>
             </div>
             <div
@@ -335,7 +359,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                   fontWeight: 500,
                 }}
               >
-                02/10/2024 at 4:15pm
+                {payementDetails.created_at}
               </p>
             </div>
             <div
@@ -432,7 +456,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                   fontWeight: 500,
                 }}
               >
-                Some Guy
+                {payementDetails?.user_details?.name}
               </p>
             </div>
             <div
@@ -461,7 +485,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                   fontWeight: 500,
                 }}
               >
-                someone@aomeone.com
+                {payementDetails?.user_details?.email}
               </p>
             </div>
           </div>
@@ -502,7 +526,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                   fontWeight: 500,
                 }}
               >
-                433457394350
+                {payementDetails?.user_details?.mobile}
               </p>
             </div>
             <div
@@ -599,7 +623,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                   fontSize: "1.2rem",
                 }}
               >
-                Rs 1,05,933
+                Rs {payementDetails?.settlement_amount}
               </p>
             </div>
             <div
@@ -627,7 +651,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                   fontSize: "1.2rem",
                 }}
               >
-                Rs 1,05,933
+                Rs {payementDetails?.settlement_amount}
               </p>
             </div>
             <div
@@ -655,7 +679,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                   fontSize: "1.2rem",
                 }}
               >
-                Rs 1,05,933
+                Rs {payementDetails?.commission_perc}
               </p>
             </div>
             <div
@@ -683,7 +707,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                   fontSize: "1.2rem",
                 }}
               >
-                Rs 1,05,933
+                Rs {payementDetails?.commission_gst}
               </p>
             </div>
             <div
@@ -711,7 +735,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                   fontSize: "1.2rem",
                 }}
               >
-                Rs 1,05,933
+                Rs {payementDetails?.total_amount}
               </p>
             </div>
           </Box>
@@ -779,7 +803,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                   fontSize: "1.2rem",
                 }}
               >
-                Rs 1,05,933
+                Rs {payementDetails?.tds_perc}
               </p>
             </div>
             <div
@@ -807,7 +831,7 @@ const PaymentModal = ({ modalOpen, setModalOpen }) => {
                   fontSize: "1.2rem",
                 }}
               >
-                Rs 1,05,933
+                Rs {payementDetails?.tcs_perc}
               </p>
             </div>
             <div

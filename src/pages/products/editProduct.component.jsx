@@ -45,6 +45,18 @@ import "./addNewProduct.styles.scss";
 import InputTextField from "../../components/input-text-field/input-text-field.component";
 import MaterialSelectorEdit from "./materialSelectorEdit.component";
 
+const COLUMN_TRANSFORMS = {
+  gold_making_charges: "Gold Making Charge(%)",
+  silver_making_charges: "Silver Making Charge(%)",
+  platinum_making_charges: "Platinum Making Charges(%)",
+  diamond_making_charges: "Diamond Fixed Price",
+  gemstone_making_charges: "Gemstone Fixed Price",
+  gold_nt_wt: "Gold Weight(gms)",
+  silver_nt_wt: "Silver Weight(gms)",
+  platinum_nt_wt: "Platinum Weight(gms)",
+  diamond_nt_wt: "Diamond weight",
+  gemstone_nt_wt: "Gem weight",
+};
 const theme = createTheme({
   palette: {
     primary: {
@@ -937,7 +949,9 @@ const EditProduct = () => {
                   <TableRow>
                     {displayTable?.tableHeaders?.map((column) => (
                       <TableCell key={column} align={"left"}>
-                        {column}
+                        {COLUMN_TRANSFORMS[column]
+                          ? COLUMN_TRANSFORMS[column]
+                          : column.toUpperCase()}
                       </TableCell>
                     ))}
                   </TableRow>

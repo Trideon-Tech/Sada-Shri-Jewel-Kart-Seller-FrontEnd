@@ -115,6 +115,7 @@ const RegistrationUserDetails = () => {
         console.log("userdata=====================================", response);
         if (response?.data?.response?.type === "success") {
           toast("OTP Verified Successfully!", generalToastStyle);
+          localStorage.setItem("mobile", mobile);
           navigate("/register/company");
         }
         if (

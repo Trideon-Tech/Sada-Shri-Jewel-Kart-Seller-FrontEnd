@@ -111,6 +111,8 @@ const mockOrders = [
 const PaymentsComponent = ({ row }) => {
   const [ordersList, setOrdersList] = useState([]);
   const [orderStats, setOrderStats] = useState({});
+  const [selectedPaymentId, setSelectedPaymentId] = useState("");
+  const [selectedPaymentDetail, setSelectedPaymentDetail] = useState({});
 
   const [paymentList, setPaymentList] = useState([]);
   const [settlementList, setSettlementList] = useState([]);
@@ -122,7 +124,7 @@ const PaymentsComponent = ({ row }) => {
       const token = localStorage.getItem("token");
       if (!token) return;
       const { data } = await axios.get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=seller_orders&seller_id=1`,
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=payment_list`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -131,28 +133,27 @@ const PaymentsComponent = ({ row }) => {
         }
       );
 
+      const { data: settlementList } = await axios.get(
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=settlement_list`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("settlementList", settlementList?.response?.settlement_list);
+
       // console.log("sdsd", data.response);
       setShowDataLoading(false);
-      setOrdersList(
-        data?.response?.order_list?.filter(
-          (item) => item?.shipment_status === "ORDER_CREATED"
-        )
-      );
+      setOrdersList(data?.response?.payment_list);
 
-      setPaymentList(
-        data?.response?.order_list?.filter(
-          (item) => item?.shipment_status === "ORDER_CREATED"
-        )
-      );
+      setPaymentList(data?.response?.payment_list);
 
-      setSettlementList(
-        data?.response?.order_list?.filter(
-          (item) => item?.shipment_status === "SETTLEMENT_LIST"
-        )
-      );
+      setSettlementList(settlementList?.response?.settlement_list);
 
       setRefundList(
-        data?.response?.order_list?.filter(
+        data?.response?.payment_list?.filter(
           (item) => item?.shipment_status === "REFUND_LIST"
         )
       );
@@ -213,9 +214,17 @@ const PaymentsComponent = ({ row }) => {
 
       <div>
         {selectedTab === 0 ? (
-          <PaymentModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+          <PaymentModal
+            modalOpen={modalOpen}
+            setModalOpen={setModalOpen}
+            selectedPaymentId={selectedPaymentId}
+          />
         ) : (
-          <SettlementModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+          <SettlementModal
+            modalOpen={modalOpen}
+            setModalOpen={setModalOpen}
+            selectedPaymentId={selectedPaymentId}
+          />
         )}
         <PaymentSettlementModal
           modalOpen={openSettlementModal}
@@ -223,7 +232,7 @@ const PaymentsComponent = ({ row }) => {
           orderList={ordersList}
         />
       </div>
-      <Grid
+      {/* <Grid
         container
         spacing={5}
         style={{
@@ -262,7 +271,7 @@ const PaymentsComponent = ({ row }) => {
             metric={orderStats.refunded_orders}
           />
         </Grid>
-      </Grid>
+      </Grid> */}
 
       <Box
         sx={{
@@ -397,7 +406,12 @@ const PaymentsComponent = ({ row }) => {
       <ThemeProvider theme={theme}>
         <Paper
           className="table-paper"
-          style={{ height: "max-content", width: "95%", marginLeft: "40px" }}
+          style={{
+            minHeight: "55vh",
+            height: "max-content",
+            width: "95%",
+            marginLeft: "40px",
+          }}
         >
           {showDataLoading ? (
             <CircularProgress
@@ -442,26 +456,33 @@ const PaymentsComponent = ({ row }) => {
                                 role="checkbox"
                                 tabIndex={-1}
                                 key={row.id}
-                                onClick={() => setModalOpen(true)}
+                                onClick={() => {
+                                  setSelectedPaymentId(row?.order_record_id);
+                                  setModalOpen(true);
+                                }}
                               >
                                 <TableCell>
                                   <Checkbox />
                                 </TableCell>
-                                <TableCell>{row.id}</TableCell>
-                                <TableCell>{row.user_name}</TableCell>
-                                <TableCell>{row.created_at}</TableCell>
-                                <TableCell>{row.product_name}</TableCell>
-                                <TableCell>{row.order_price}</TableCell>
+                                <TableCell>{row?.order_id}</TableCell>
+                                <TableCell>{row?.user}</TableCell>
+                                <TableCell>{row?.updated_at}</TableCell>
+                                <TableCell>
+                                  {row?.productsArray?.length > 0
+                                    ? row?.productsArray[0]
+                                    : null}
+                                </TableCell>
+                                <TableCell>{row?.settlement_amount}</TableCell>
                                 <TableCell
                                   style={{
                                     fontWeight: 800,
                                     color:
-                                      row.shipment_status !== "ORDER_CREATED"
+                                      row?.settlement_status !== "NOT_SETTLED"
                                         ? "green"
                                         : "gray",
                                   }}
                                 >
-                                  ⬤ {row.shipment_status}
+                                  ⬤ {row?.settlement_status}
                                 </TableCell>
                               </TableRow>
                             </Fragment>
@@ -471,9 +492,10 @@ const PaymentsComponent = ({ row }) => {
                 </Table>
               </TableContainer>
               <TablePagination
+                style={{ marginTop: "auto" }}
                 rowsPerPageOptions={[25, 50, 100, 200]}
                 component="div"
-                count={ordersList.length}
+                count={ordersList?.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}

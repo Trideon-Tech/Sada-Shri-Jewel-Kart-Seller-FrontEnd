@@ -12,7 +12,33 @@ import {
   Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-const SettlementModal = ({ modalOpen, setModalOpen }) => {
+import axios from "axios";
+import { useEffect, useState } from "react";
+const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
+  const [payementDetails, setPaymentDetails] = useState({});
+
+  useEffect(() => {
+    (async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const { data } = await axios.get(
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=payment_detail&order_record_id=${selectedPaymentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(
+        "data?.response?.payment_list[0]",
+        data?.response?.payment_list[0]
+      );
+
+      setPaymentDetails(data?.response?.payment_list[0]);
+    })();
+  }, [selectedPaymentId]);
+
   return (
     <Modal
       open={modalOpen}
@@ -28,8 +54,9 @@ const SettlementModal = ({ modalOpen, setModalOpen }) => {
           transform: "translate(-50%, -50%)",
           width: "70%",
           height: 800,
+          borderRadius: "20px",
           bgcolor: "background.paper",
-          border: "2px solid #000",
+          border: "0px solid #fff",
           boxShadow: 24,
         }}
       >
@@ -68,10 +95,10 @@ const SettlementModal = ({ modalOpen, setModalOpen }) => {
             }}
           >
             <p style={{ fontWeight: 800 }}>
-              <b>Order : SS1J2340K</b>
+              <b>Order : {payementDetails?.order_id}</b>
             </p>
             <p style={{ fontWeight: 800, color: "gray" }}>
-              02/10/2024 at 4:15pm
+              {payementDetails?.updated_at}
             </p>
           </div>
           <div
@@ -87,7 +114,7 @@ const SettlementModal = ({ modalOpen, setModalOpen }) => {
           >
             <p style={{ fontWeight: 800, color: "gray" }}>SETTLEMENT ID</p>
             <p>
-              <b>123GJRG3SEQ</b>
+              <b>{payementDetails?.settlement_public_id} </b>
             </p>
           </div>
           <div
@@ -119,7 +146,7 @@ const SettlementModal = ({ modalOpen, setModalOpen }) => {
                   borderRadius: "5px",
                 }}
               >
-                Pending
+                {payementDetails?.settlement_status}
               </p>
             </div>
             <div
@@ -132,7 +159,7 @@ const SettlementModal = ({ modalOpen, setModalOpen }) => {
             >
               <p style={{ fontWeight: 800, color: "gray" }}>PAYMENT:</p>
               <p style={{}}>
-                <b>5,400</b>
+                <b>{payementDetails?.settlement_amount}</b>
               </p>
             </div>
           </div>
@@ -224,7 +251,7 @@ const SettlementModal = ({ modalOpen, setModalOpen }) => {
                   fontSize: "1.1rem",
                 }}
               >
-                02/10/2024 at 4:15pm
+                {payementDetails.created_at}
               </p>
             </div>
             <div
@@ -290,7 +317,7 @@ const SettlementModal = ({ modalOpen, setModalOpen }) => {
                   fontSize: "1.1rem",
                 }}
               >
-                AXIS12423502433457394350
+                {payementDetails.utr}
               </p>
             </div>
             <div
@@ -317,7 +344,7 @@ const SettlementModal = ({ modalOpen, setModalOpen }) => {
                   fontSize: "1.1rem",
                 }}
               >
-                02/10/2024 at 4:15pm
+                {payementDetails.updated_at}
               </p>
             </div>
             <div
@@ -394,32 +421,17 @@ const SettlementModal = ({ modalOpen, setModalOpen }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {[
-                {
-                  id: "SS190366",
-                  date: "12-01-2024 12:00",
-                  orderName: "Margaret Gold Ring, 16mm",
-                  price: "16,500",
-                  status: "UNFULFILLED",
-                },
-                {
-                  id: "SS190366",
-                  date: "12-01-2024 12:00",
-                  orderName: "Margaret Gold Ring, 16mm",
-                  price: "16,500",
-                  status: "UNFULFILLED",
-                },
-              ].map((row) => (
+              {payementDetails?.productsArray?.map((row) => (
                 <TableRow
-                  key={row.name}
+                  key={row}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell align="left">{row.id}</TableCell>
-                  <TableCell align="left">{row.date}</TableCell>
-                  <TableCell align="left">{row.orderName}</TableCell>
-                  <TableCell align="left">{row.price}</TableCell>
+                  <TableCell align="left">{row}</TableCell>
+                  <TableCell align="left">{row}</TableCell>
+                  <TableCell align="left">{row}</TableCell>
+                  <TableCell align="left">{row}</TableCell>
                   <TableCell align="left">
-                    <b style={{ color: "gray" }}>{row.status}</b>
+                    <b style={{ color: "gray" }}>{row}</b>
                   </TableCell>
                 </TableRow>
               ))}

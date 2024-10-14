@@ -51,7 +51,7 @@ const Login = () => {
     console.log("otp", otp);
     verifyOTPHandler();
     // API to verify OTP
-    toast("OTP Verified Successfully!", generalToastStyle);
+    // toast("OTP Verified Successfully!", generalToastStyle);
     activateVerifyOTPAdornment(false);
     setOTPVerified(true);
   };
@@ -104,6 +104,14 @@ const Login = () => {
       .then((response) => {
         console.log("userdata=====================================", response);
         setOTPVerified(true);
+
+        if (response.data.success === 1) {
+          if (
+            response?.data?.response?.seller_details?.seller_exists === false
+          ) {
+            toast("Seller doesn't Exist", generalToastStyle);
+          }
+        }
         if (
           response.data.success === 1 &&
           response?.data?.response?.user_details

@@ -3,8 +3,13 @@ import {
   Checkbox,
   Dialog,
   Divider,
+  FormControl,
   Grid,
   Input,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
   TextField,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -15,6 +20,9 @@ import { useEffect, useState } from "react";
 import { Label } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
+import SequelLogo from "./sequel_logo.png";
+import DelhiveryLogo from "./delhivery_logo.png";
 
 const ProductCardSmall = ({ orderDetails }) => {
   return (
@@ -54,7 +62,7 @@ const ProductCardSmall = ({ orderDetails }) => {
         <p style={{ margin: 0, fontSize: "1.4rem", fontWeight: 600 }}>
           {orderDetails?.product_name}
         </p>
-        <p
+        {/* <p
           style={{
             margin: 0,
             marginTop: "auto",
@@ -64,8 +72,8 @@ const ProductCardSmall = ({ orderDetails }) => {
             fontSize: "1.1rem",
           }}
         >
-          Size: {orderDetails.height} {"     "} Quantity: 1
-        </p>
+          Size: {orderDetails?.height} {"     "} Quantity: 1
+        </p> */}
         <p
           style={{
             margin: 0,
@@ -76,10 +84,7 @@ const ProductCardSmall = ({ orderDetails }) => {
           }}
         >
           Price :{" "}
-          <span style={{ color: "black" }}>
-            {" "}
-            Rs: {orderDetails?.amount_due}
-          </span>
+          <span style={{ color: "black" }}> Rs: {orderDetails?.price}</span>
         </p>
         <p
           style={{
@@ -116,8 +121,8 @@ const OrderDetail = ({ id }) => {
         }
       );
 
-      console.log("order summary", data.response);
-      setOrderDetails(data.response);
+      console.log("order summary", data?.response);
+      setOrderDetails(data?.response);
     })();
   }, []);
 
@@ -173,10 +178,19 @@ const OrderDetail = ({ id }) => {
             borderRadius: "10px",
           }}
         >
-          <p style={{ fontSize: "1.7rem", margin: 0, fontWeight: "bold" }}>
+          <p style={{ fontSize: "1.7rem", margin: 0, fontWeight: 600 }}>
             Fulfill Order
           </p>
-          <div style={{ width: "100%", height: "300px", overflowY: "scroll" }}>
+          <div
+            style={{
+              width: "100%",
+              height: "max-content",
+              minHeight: "150px",
+              maxHeight: "300px",
+              overflowY: "scroll",
+              marginBottom: "20px",
+            }}
+          >
             {orderDetails.map((orderData) => (
               <ProductCardSmall orderDetails={orderData} />
             ))}
@@ -200,10 +214,24 @@ const OrderDetail = ({ id }) => {
             </div>
             <div style={{ width: "47%" }}>
               <p style={{ color: "gray", fontWeight: 600 }}>Shipping Carrier</p>
-              <TextField
-                fullWidth
-                onChange={(e) => setLogistics(e.target.value)}
-              ></TextField>
+              <FormControl fullWidth>
+                <InputLabel id="demo-multiple-name-label">Name</InputLabel>
+                <Select
+                  labelId="demo-multiple-name-label"
+                  id="demo-multiple-name"
+                  onChange={(event) => setLogistics(event.target.value)}
+                  input={<OutlinedInput label="Name" />}
+                >
+                  {[
+                    { name: "Sequel", logo: SequelLogo },
+                    { name: "Delhivery", logo: DelhiveryLogo },
+                  ].map((item) => (
+                    <MenuItem key={item.name} value={item.name}>
+                      <img src={item.logo} style={{ height: "20px" }} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </div>
           </div>
           <Divider style={{ marginTop: "30px" }} />
@@ -215,9 +243,10 @@ const OrderDetail = ({ id }) => {
               width: "100%",
               display: "flex",
               justifyContent: "flex-start",
+              alignItems: "center",
             }}
           >
-            <Checkbox style={{}} />
+            <Checkbox color="warning" />
             <p
               style={{
                 width: "70%",

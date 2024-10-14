@@ -185,7 +185,7 @@ const PaymentSettlementModal = ({ modalOpen, setModalOpen, orderList }) => {
                 }
                 MenuProps={MenuProps}
               >
-                {orderList.map((order) => (
+                {orderList?.map((order) => (
                   <MenuItem key={order.product_name} value={order}>
                     {order.product_name}
                   </MenuItem>

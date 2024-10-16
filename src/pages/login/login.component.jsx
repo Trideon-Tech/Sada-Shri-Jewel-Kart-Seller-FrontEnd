@@ -94,7 +94,7 @@ const Login = () => {
     //call API for OTP verification
     axios
       .get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/otp.php?type=verify_otp&otp=${otp}&mobile=${`91${mobile}`}`,
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/otp.php?type=verify_otp&otp=${otp}&mobile=${`${mobile}`}`,
         {
           headers: {
             "Content-Type": "multipart/form-data",

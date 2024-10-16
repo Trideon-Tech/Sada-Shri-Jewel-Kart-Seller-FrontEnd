@@ -19,6 +19,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
   useEffect(() => {
     (async () => {
       const token = localStorage.getItem("token");
+      if (!selectedPaymentId) return;
       if (!token) return;
       const { data } = await axios.get(
         `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=payment_detail&order_record_id=${selectedPaymentId}`,

@@ -335,7 +335,7 @@ const OrdersComponent = ({ row }) => {
           className="table-paper"
           sx={{ width: "95%", overflow: "hidden", height: 950 }}
         >
-          {ordersList.length === 0 ? (
+          {ordersList?.length === 0 ? (
             <CircularProgress
               style={{
                 margin: "auto",

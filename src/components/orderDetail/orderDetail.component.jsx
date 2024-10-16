@@ -178,7 +178,14 @@ const OrderDetail = ({ id }) => {
             borderRadius: "10px",
           }}
         >
-          <p style={{ fontSize: "1.7rem", margin: 0, fontWeight: 600 }}>
+          <p
+            style={{
+              fontSize: "1.7rem",
+              margin: 0,
+              fontWeight: 600,
+              color: "#333333",
+            }}
+          >
             Fulfill Order
           </p>
           <div
@@ -227,7 +234,7 @@ const OrderDetail = ({ id }) => {
                     { name: "Delhivery", logo: DelhiveryLogo },
                   ].map((item) => (
                     <MenuItem key={item.name} value={item.name}>
-                      <img src={item.logo} style={{ height: "20px" }} />
+                      {item.name}
                     </MenuItem>
                   ))}
                 </Select>

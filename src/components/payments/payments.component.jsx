@@ -406,12 +406,7 @@ const PaymentsComponent = ({ row }) => {
       <ThemeProvider theme={theme}>
         <Paper
           className="table-paper"
-          style={{
-            minHeight: "55vh",
-            height: "max-content",
-            width: "95%",
-            marginLeft: "40px",
-          }}
+          sx={{ width: "95%", overflow: "hidden", height: 1000 }}
         >
           {showDataLoading ? (
             <CircularProgress
@@ -422,87 +417,86 @@ const PaymentsComponent = ({ row }) => {
               }}
             />
           ) : (
-            <Fragment>
-              <TableContainer
-                style={{
-                  height: "max-content",
-                  overflowY: "scroll",
-                }}
-              >
-                <Table stickyHeader aria-label="sticky table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell></TableCell>
-                      <TableCell>Order Id</TableCell>
-                      <TableCell>Customer</TableCell>
-                      <TableCell>Date</TableCell>
-                      <TableCell>Order Item</TableCell>
-                      <TableCell>Total Price</TableCell>
-                      <TableCell>Status</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {ordersList?.length > 0 &&
-                      ordersList
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        ?.map((row) => {
-                          return (
-                            <Fragment key={row.id}>
-                              <TableRow
-                                hover
-                                role="checkbox"
-                                tabIndex={-1}
-                                key={row.id}
-                                onClick={() => {
+            <TableContainer style={{ height: "100%" }}>
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell>Order Id</TableCell>
+                    <TableCell>Customer</TableCell>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Order Item</TableCell>
+                    <TableCell>Total Price</TableCell>
+                    <TableCell>Status</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {ordersList?.length > 0 &&
+                    ordersList
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      ?.map((row) => {
+                        return (
+                          <Fragment key={row.id}>
+                            <TableRow
+                              hover
+                              role="checkbox"
+                              tabIndex={-1}
+                              key={row.id}
+                              onClick={() => {
+                                if (selectedTab === 1) {
+                                  setSelectedPaymentId(
+                                    row?.settlement_public_id
+                                  );
+                                } else {
                                   setSelectedPaymentId(row?.order_record_id);
-                                  setModalOpen(true);
+                                }
+                                setModalOpen(true);
+                              }}
+                            >
+                              <TableCell>
+                                <Checkbox />
+                              </TableCell>
+                              <TableCell>{row?.order_id}</TableCell>
+                              <TableCell>{row?.user}</TableCell>
+                              <TableCell>{row?.updated_at}</TableCell>
+                              <TableCell>
+                                {row?.productsArray?.length > 0
+                                  ? row?.productsArray[0]
+                                  : null}
+                              </TableCell>
+                              <TableCell>{row?.settlement_amount}</TableCell>
+                              <TableCell
+                                style={{
+                                  fontWeight: 800,
+                                  color:
+                                    row?.settlement_status !== "NOT_SETTLED"
+                                      ? "green"
+                                      : "gray",
                                 }}
                               >
-                                <TableCell>
-                                  <Checkbox />
-                                </TableCell>
-                                <TableCell>{row?.order_id}</TableCell>
-                                <TableCell>{row?.user}</TableCell>
-                                <TableCell>{row?.updated_at}</TableCell>
-                                <TableCell>
-                                  {row?.productsArray?.length > 0
-                                    ? row?.productsArray[0]
-                                    : null}
-                                </TableCell>
-                                <TableCell>{row?.settlement_amount}</TableCell>
-                                <TableCell
-                                  style={{
-                                    fontWeight: 800,
-                                    color:
-                                      row?.settlement_status !== "NOT_SETTLED"
-                                        ? "green"
-                                        : "gray",
-                                  }}
-                                >
-                                  ⬤ {row?.settlement_status}
-                                </TableCell>
-                              </TableRow>
-                            </Fragment>
-                          );
-                        })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                style={{ marginTop: "auto" }}
-                rowsPerPageOptions={[25, 50, 100, 200]}
-                component="div"
-                count={ordersList?.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </Fragment>
+                                ⬤ {row?.settlement_status}
+                              </TableCell>
+                            </TableRow>
+                          </Fragment>
+                        );
+                      })}
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
+          <TablePagination
+            style={{ marginTop: "auto" }}
+            rowsPerPageOptions={[25, 50, 100, 200]}
+            component="div"
+            count={ordersList?.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
         </Paper>
       </ThemeProvider>
     </div>

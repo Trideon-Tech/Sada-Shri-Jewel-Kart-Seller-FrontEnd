@@ -96,7 +96,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               style={{
                 fontWeight: 800,
                 fontSize: "1.2rem",
-                color: "rgba(0,0,0,0.8)",
+                color: "#333333",
               }}
             >
               <b>Order : {payementDetails?.order_id}</b>
@@ -117,7 +117,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
             }}
           >
             <p style={{ fontWeight: 800, color: "gray" }}>SETTLEMENT ID</p>
-            <p>
+            <p style={{ color: "#333333" }}>
               <b>{payementDetails?.settlement_public_id}</b>
             </p>
           </div>
@@ -144,7 +144,10 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               <p style={{ fontWeight: 800, color: "gray" }}>STATUS:</p>
               <p
                 style={{
-                  backgroundColor: "#F99B1CDF",
+                  backgroundColor:
+                    payementDetails?.settlement_status === "NOT_SETTLED"
+                      ? "#F99B1CDF"
+                      : "#87c914",
                   marginLeft: "20px",
                   padding: "7px",
                   paddingLeft: "15px",
@@ -165,7 +168,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               }}
             >
               <p style={{ fontWeight: 800, color: "gray" }}>PAYMENT:</p>
-              <p style={{ fontSize: "1.2rem" }}>
+              <p style={{ fontSize: "1.2rem", color: "#333333" }}>
                 <b>{payementDetails?.total_amount}</b>
               </p>
             </div>
@@ -181,7 +184,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
             paddingBottom: "0px",
           }}
         >
-          <p style={{ fontWeight: 800, fontSize: "1.5rem" }}>
+          <p style={{ fontWeight: 800, fontSize: "1.5rem", color: "#333333" }}>
             Settlement Details
           </p>
         </div>
@@ -263,7 +266,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 500,
                 }}
               >
-                {payementDetails.created_at}
+                {payementDetails?.created_at}
               </p>
             </div>
             <div
@@ -359,7 +362,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 500,
                 }}
               >
-                {payementDetails.created_at}
+                {payementDetails?.created_at}
               </p>
             </div>
             <div
@@ -404,7 +407,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
             paddingBottom: "0px",
           }}
         >
-          <p style={{ fontWeight: 800, fontSize: "1.5rem" }}>
+          <p style={{ fontWeight: 800, fontSize: "1.5rem", color: "#333333" }}>
             Customer Details
           </p>
         </div>
@@ -570,7 +573,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
             paddingBottom: "0px",
           }}
         >
-          <p style={{ fontWeight: 800, fontSize: "1.5rem" }}>
+          <p style={{ fontWeight: 800, fontSize: "1.5rem", color: "#333333" }}>
             Settlement Details
           </p>
         </div>

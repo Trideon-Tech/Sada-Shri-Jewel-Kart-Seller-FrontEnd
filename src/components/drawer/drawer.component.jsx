@@ -11,6 +11,8 @@ import {
 } from "@mui/icons-material";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
+import PaymentsLogo from "./payments_logo.png";
+
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import "./drawer.styles.scss";
@@ -114,7 +116,21 @@ const CustomDrawer = ({ section }) => {
         <DrawerItem
           title="Payments"
           value="payments"
-          icon={<Category />}
+          icon={
+            <div
+              style={{
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <img
+                src={PaymentsLogo}
+                style={{ width: "25px", margin: "auto" }}
+              />
+            </div>
+          }
           section={section}
           clickAction={() => {
             if (section !== "payments") navigate("/payments");

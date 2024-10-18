@@ -44,6 +44,8 @@ const RegistrationAddressDetails = () => {
       toast.warn("State Name is required!", generalToastStyle);
     } else if (pincode === "" || typeof pincode === "undefined") {
       toast.warn("Pincode is required!", generalToastStyle);
+    } else if (pincode.length > 6) {
+      return toast.warn("Pincode is Invalid", generalToastStyle);
     } else {
       activateNextStepLoading(true);
 

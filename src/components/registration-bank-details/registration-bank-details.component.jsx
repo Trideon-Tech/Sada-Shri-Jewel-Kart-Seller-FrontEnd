@@ -23,7 +23,10 @@ const theme = createTheme({
     },
   },
 });
-
+function isNumeric(string) {
+  const regex = /^\d+$/;
+  return regex.test(string);
+}
 const RegistrationBankDetails = () => {
   let navigate = useNavigate();
 
@@ -47,6 +50,8 @@ const RegistrationBankDetails = () => {
       );
     } else if (bankName === "" || typeof bankName === "undefined") {
       toast.warn("Bank Name is required!", generalToastStyle);
+    } else if (!isNumeric(accountNumber)) {
+      return toast.warn("Invalid Account Number !", generalToastStyle);
     } else {
       activateNextStepLoading(true);
 

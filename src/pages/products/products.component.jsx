@@ -42,7 +42,7 @@ const Products = () => {
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [productsLoaded, setProductsLoaded] = useState(false);
 
-  const getCategories = () => {
+  const getProductList = () => {
     axios
       .get(
         "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php?type=item",
@@ -60,6 +60,7 @@ const Products = () => {
       .catch((error) => {
         console.log(error);
         toast.warn(error.response.data.message, generalToastStyle);
+        setProductsLoaded(true);
       });
   };
 
@@ -104,7 +105,7 @@ const Products = () => {
   };
 
   useEffect(() => {
-    getCategories();
+    getProductList();
   }, []);
 
   return (

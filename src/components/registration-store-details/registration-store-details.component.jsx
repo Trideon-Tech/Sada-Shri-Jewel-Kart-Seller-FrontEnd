@@ -24,6 +24,14 @@ const theme = createTheme({
   },
 });
 
+function isValidEmail(email) {
+  // Regular expression to validate email addresses
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Test the email against the regular expression
+  return emailRegex.test(email);
+}
+
 const RegistrationStoreDetails = () => {
   let navigate = useNavigate();
 
@@ -57,6 +65,10 @@ const RegistrationStoreDetails = () => {
       toast.warn("Logo is required!", generalToastStyle);
     } else {
       activateNextStepLoading(true);
+
+      if (!isValidEmail(emailId)) {
+        return toast.warn("Invalid Email Id", generalToastStyle);
+      }
 
       const formData = new FormData();
       if (selectedCoverImage) {

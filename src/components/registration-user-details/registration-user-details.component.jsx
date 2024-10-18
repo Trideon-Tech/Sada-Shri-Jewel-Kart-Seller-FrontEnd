@@ -94,7 +94,7 @@ const RegistrationUserDetails = () => {
       });
   };
 
-  const verifyOTPHandler = () => {
+  const verifyOTPHandler1 = () => {
     const formData = new FormData();
     // setotpSent(true);
     formData.append("type", "verify_otp");
@@ -160,6 +160,46 @@ const RegistrationUserDetails = () => {
       });
   };
 
+  const verifyOTPHandler = () => {
+    const formData = new FormData();
+    // setotpSent(true);
+    formData.append("type", "verify_otp");
+    formData.append("mobile", `91${mobile}`);
+    formData.append("otp", otp);
+
+    //call API for OTP verification
+    axios
+      .get(
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/otp.php?type=verify_otp&otp=${otp}&mobile=${`${mobile}`}`,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((response) => {
+        console.log(
+          "userdata=====================================",
+          response,
+          response?.data?.response?.seller_details?.seller_details
+            ?.seller_exists
+        );
+        setOTPVerified(true);
+
+        if (response.data.success === 1) {
+          if (response?.data?.response?.seller_details?.seller_exists) {
+            toast("OTP Verified Successfully!", generalToastStyle);
+            localStorage.setItem("mobile", mobile);
+            navigate("/register/company");
+          } else if (response?.data?.response?.seller_details?.seller_exists) {
+            return toast("User Already Exists | Login", generalToastStyle);
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
   const onNext = () => {
     if (firstName === "" || typeof firstName === "undefined") {
       toast.warn("First Name is required!", generalToastStyle);
@@ -233,6 +273,7 @@ const RegistrationUserDetails = () => {
             title={"Mobile"}
             value={mobile}
             onEdit={(e) => {
+              if (e.target.value?.length > 11) return;
               setMobile(e.target.value);
               if (e.target.value.length === 10) activateSendOTPAdornment(true);
               else activateSendOTPAdornment(false);
@@ -254,6 +295,7 @@ const RegistrationUserDetails = () => {
             title={"OTP"}
             value={otp}
             onEdit={(e) => {
+              if (e.target.value?.length > 4) return;
               setOtp(e.target.value);
               if (e.target.value.length === 6) activateVerifyOTPAdornment(true);
               else activateVerifyOTPAdornment(false);

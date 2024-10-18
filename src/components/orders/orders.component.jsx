@@ -223,13 +223,15 @@ const OrdersComponent = ({ row }) => {
         <Grid item xs={12 / 5}>
           <MetricBoxComponent
             heading={"Total Orders"}
-            metric={orderStats.total_orders}
+            metric={orderStats?.total_orders}
           />
         </Grid>
         <Grid item xs={12 / 5}>
           <MetricBoxComponent
             heading={"Total Sales"}
-            metric={`${Math.round(Number(orderStats.total_price) / 100) / 10}K`}
+            metric={`${
+              Math.round(Number(orderStats?.total_price) / 100) / 10
+            }K`}
           />
         </Grid>
         <Grid item xs={12 / 5}>
@@ -238,13 +240,13 @@ const OrdersComponent = ({ row }) => {
         <Grid item xs={12 / 5}>
           <MetricBoxComponent
             heading={"Orders Completed"}
-            metric={orderStats.completed_orders}
+            metric={orderStats?.completed_orders}
           />
         </Grid>
         <Grid item xs={12 / 5}>
           <MetricBoxComponent
             heading={"Orders Refunded"}
-            metric={orderStats.refunded_orders}
+            metric={orderStats?.refunded_orders}
           />
         </Grid>
       </Grid>
@@ -379,21 +381,21 @@ const OrdersComponent = ({ row }) => {
                               <TableCell>
                                 <Checkbox />
                               </TableCell>
-                              <TableCell>{row.id}</TableCell>
-                              <TableCell>{row.user_name}</TableCell>
-                              <TableCell>{row.created_at}</TableCell>
-                              <TableCell>{row.product_name}</TableCell>
-                              <TableCell>{row.order_price}</TableCell>
+                              <TableCell>{row?.id}</TableCell>
+                              <TableCell>{row?.user_name}</TableCell>
+                              <TableCell>{row?.created_at}</TableCell>
+                              <TableCell>{row?.product_name}</TableCell>
+                              <TableCell>{row?.order_price}</TableCell>
                               <TableCell
                                 style={{
                                   fontWeight: 800,
                                   color:
-                                    row.shipment_status !== "ORDER_CREATED"
+                                    row?.shipment_status !== "ORDER_CREATED"
                                       ? "green"
                                       : "gray",
                                 }}
                               >
-                                ⬤ {row.shipment_status}
+                                ⬤ {row?.shipment_status}
                               </TableCell>
                             </TableRow>
                           </Fragment>
@@ -407,7 +409,7 @@ const OrdersComponent = ({ row }) => {
             sx={{ position: "sticky", zIndex: 2 }}
             rowsPerPageOptions={[25, 50, 100, 200]}
             component="div"
-            count={ordersList.length}
+            count={ordersList?.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

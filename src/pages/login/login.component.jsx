@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -37,6 +37,17 @@ const Login = () => {
   const [sendOTPAdornment, activateSendOTPAdornment] = useState(false);
   const [verifyOTPAdornment, activateVerifyOTPAdornment] = useState(false);
   const [nextStepLoading, activateNextStepLoading] = useState(false);
+
+  useEffect(() => {
+    if (!mobile) return;
+    if (mobile.length > 9 && mobile.length <= 11) sendOTP();
+  }, [mobile]);
+
+  useEffect(() => {
+    if (!otp) return;
+    if (otp.length === 4)
+      if (mobile.length > 9 && mobile.length <= 11) verifyOTP();
+  }, [otp]);
 
   const sendOTP = () => {
     // API to send OTP
@@ -102,42 +113,48 @@ const Login = () => {
         }
       )
       .then((response) => {
-        console.log("userdata=====================================", response);
+        console.log(
+          "userdata=====================================",
+          response,
+          response?.data?.response?.seller_details?.seller_details
+            ?.seller_exists
+        );
         setOTPVerified(true);
 
         if (response.data.success === 1) {
           if (
             response?.data?.response?.seller_details?.seller_exists === false
           ) {
-            toast("Seller doesn't Exist", generalToastStyle);
+            return toast("Seller doesn't Exist", generalToastStyle);
           }
         }
         if (
           response.data.success === 1 &&
-          response?.data?.response?.user_details
+          response?.data?.response?.seller_details
         ) {
-          if (response.data.response.user_details.user_exists) {
-            // localStorage.setItem(
-            //   "user_id",
-            //   response.data.response.user_details.user_details.id
-            // );
-            // localStorage.setItem(
-            //   "token",
-            //   response.data.response.user_details.user_details.token
-            // );
-            // localStorage.setItem(
-            //   "user_name",
-            //   response.data.response.user_details.user_details.name
-            // );
-            // localStorage.setItem(
-            //   "user_email",
-            //   response.data.response.user_details.user_details.email
-            // );
-            // localStorage.setItem(
-            //   "user_data",
-            //   response.data.response.user_details.user_details
-            // );
-            // navigate("/");
+          if (response?.data?.response?.seller_details?.seller_exists) {
+            console.log("user data to be set");
+            localStorage.setItem(
+              "user_id",
+              response.data.response.seller_details.seller_details.id
+            );
+            localStorage.setItem(
+              "token",
+              response.data.response.seller_details.seller_details.token
+            );
+            localStorage.setItem(
+              "user_name",
+              response.data.response.seller_details.seller_details.name
+            );
+            localStorage.setItem(
+              "user_email",
+              response.data.response.seller_details.seller_details.email
+            );
+            localStorage.setItem(
+              "user_data",
+              response.data.response.seller_details.seller_details
+            );
+            navigate("/dashboard");
           } else {
             // navigate("/user-details");
           }
@@ -231,18 +248,7 @@ const Login = () => {
                   activateSendOTPAdornment(true);
                 else activateSendOTPAdornment(false);
               }}
-              adornment={
-                <InputAdornment position="end">
-                  <Done
-                    className={
-                      sendOTPAdornment
-                        ? "adornment-active"
-                        : "adornment-inactive"
-                    }
-                    onClick={sendOTP}
-                  />
-                </InputAdornment>
-              }
+              adornment={<InputAdornment position="end"></InputAdornment>}
             />
             <InputTextField
               title={"OTP"}
@@ -253,33 +259,8 @@ const Login = () => {
                   activateVerifyOTPAdornment(true);
                 else activateVerifyOTPAdornment(false);
               }}
-              adornment={
-                <InputAdornment position="end">
-                  <Done
-                    className={
-                      verifyOTPAdornment
-                        ? "adornment-active"
-                        : "adornment-inactive"
-                    }
-                    onClick={verifyOTP}
-                  />
-                </InputAdornment>
-              }
+              adornment={<InputAdornment position="end"></InputAdornment>}
             />
-            <div className="actions">
-              <Button className="btn-secondary" disabled={true}>
-                Reset
-              </Button>
-              <Button className="btn-primary" onClick={onNext}>
-                {nextStepLoading ? (
-                  <ThemeProvider theme={theme}>
-                    <CircularProgress size={"1.1rem"} />
-                  </ThemeProvider>
-                ) : (
-                  "Login"
-                )}
-              </Button>
-            </div>
           </div>
         </Grid>
         <Grid item xs={8} className="infographics">

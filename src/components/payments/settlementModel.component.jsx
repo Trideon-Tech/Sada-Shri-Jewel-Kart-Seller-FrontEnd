@@ -261,7 +261,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontSize: "1.1rem",
                 }}
               >
-                {payementDetails.created_at}
+                {payementDetails?.created_at}
               </p>
             </div>
             <div
@@ -325,7 +325,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontSize: "1.1rem",
                 }}
               >
-                {payementDetails.utr}
+                {payementDetails?.utr}
               </p>
             </div>
             <div
@@ -432,12 +432,12 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   key={row}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell align="left">{row.order_id}</TableCell>
-                  <TableCell align="left">{row.created_at}</TableCell>
-                  <TableCell align="left">{row.productsArray[0]}</TableCell>
-                  <TableCell align="left">{row.total_amount}</TableCell>
+                  <TableCell align="left">{row?.order_id}</TableCell>
+                  <TableCell align="left">{row?.created_at}</TableCell>
+                  <TableCell align="left">{row?.productsArray[0]}</TableCell>
+                  <TableCell align="left">{row?.total_amount}</TableCell>
                   <TableCell align="left">
-                    <b style={{ color: "gray" }}>{row.settlement_status}</b>
+                    <b style={{ color: "gray" }}>{row?.settlement_status}</b>
                   </TableCell>
                 </TableRow>
               ))}

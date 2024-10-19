@@ -5,11 +5,14 @@ import { useEffect, useState } from "react";
 
 const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
   const [payementDetails, setPaymentDetails] = useState({});
+  const [sellerBankDetails, setSellerBankDetails] = useState();
   useEffect(() => {
     (async () => {
+      console.log(selectedPaymentId);
       const token = localStorage.getItem("token");
       if (!selectedPaymentId) return;
       if (!token) return;
+
       const { data } = await axios.get(
         `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=payment_detail&order_record_id=${selectedPaymentId}`,
         {
@@ -19,12 +22,9 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
           },
         }
       );
-      console.log(
-        "data?.response?.payment_list[0]",
-        data?.response?.payment_list[0]
-      );
 
       setPaymentDetails(data?.response?.payment_list[0]);
+      setSellerBankDetails(data?.response?.payment_list[0]?.seller_bank[0]);
     })();
   }, [selectedPaymentId]);
 
@@ -210,7 +210,9 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
           </div>
         </div>
         <Divider />
-        {payementDetails?.settlement_status === "NOT_SETTLED" ? null : (
+        {payementDetails?.settlement_status === "NOT_SETTLED" ? (
+          <div></div>
+        ) : (
           <>
             <div
               style={{
@@ -226,6 +228,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 800,
                   fontSize: "1.5rem",
                   color: "#333333",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
                 Settlement Details
@@ -269,6 +272,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontWeight: 800,
                       color: "gray",
                       fontSize: "1.1rem",
+                      fontFamily: '"Work Sans", sans-serif',
                     }}
                   >
                     Type
@@ -279,6 +283,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       color: "rgba(0,0,0,0.8)",
                       fontWeight: 500,
                       fontSize: "1.1rem",
+                      fontFamily: '"Work Sans", sans-serif',
                     }}
                   >
                     Normal Settlement
@@ -297,9 +302,10 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontWeight: 800,
                       color: "gray",
                       fontSize: "1.1rem",
+                      fontFamily: '"Work Sans", sans-serif',
                     }}
                   >
-                    Period
+                    Setted On
                   </p>
                   <p
                     style={{
@@ -307,9 +313,12 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontSize: "1.1rem",
                       color: "rgba(0,0,0,0.8)",
                       fontWeight: 500,
+                      fontFamily: '"Work Sans", sans-serif',
                     }}
                   >
-                    {payementDetails?.created_at}
+                    {new Date(
+                      payementDetails?.settlement_date
+                    ).toLocaleDateString("en-GB")}
                   </p>
                 </div>
                 <div
@@ -325,6 +334,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontWeight: 800,
                       color: "gray",
                       fontSize: "1.1rem",
+                      fontFamily: '"Work Sans", sans-serif',
                     }}
                   >
                     Account
@@ -335,9 +345,10 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontSize: "1.1rem",
                       color: "rgba(0,0,0,0.8)",
                       fontWeight: 500,
+                      fontFamily: '"Work Sans", sans-serif',
                     }}
                   >
-                    *********SSFDF
+                    {sellerBankDetails?.ac_number?.replace(/.(?=.{4})/g, "*")}
                   </p>
                 </div>
               </div>
@@ -365,6 +376,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontWeight: 800,
                       color: "gray",
                       fontSize: "1.1rem",
+                      fontFamily: '"Work Sans", sans-serif',
                     }}
                   >
                     UTR No.
@@ -375,6 +387,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontSize: "1.1rem",
                       color: "rgba(0,0,0,0.8)",
                       fontWeight: 500,
+                      fontFamily: '"Work Sans", sans-serif',
                     }}
                   >
                     {payementDetails?.utr_number}
@@ -393,9 +406,10 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontWeight: 800,
                       color: "gray",
                       fontSize: "1.1rem",
+                      fontFamily: '"Work Sans", sans-serif',
                     }}
                   >
-                    Setted On
+                    Bank Name
                   </p>
                   <p
                     style={{
@@ -403,9 +417,10 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontSize: "1.1rem",
                       color: "rgba(0,0,0,0.8)",
                       fontWeight: 500,
+                      fontFamily: '"Work Sans", sans-serif',
                     }}
                   >
-                    {payementDetails?.created_at}
+                    {sellerBankDetails?.ac_bank_name}
                   </p>
                 </div>
                 <div
@@ -421,9 +436,10 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontWeight: 800,
                       color: "gray",
                       fontSize: "1.1rem",
+                      fontFamily: '"Work Sans", sans-serif',
                     }}
                   >
-                    IFSC CODE
+                    IFSC Code
                   </p>
                   <p
                     style={{
@@ -431,9 +447,10 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       color: "rgba(0,0,0,0.8)",
                       fontWeight: 500,
                       fontSize: "1.1rem",
+                      fontFamily: '"Work Sans", sans-serif',
                     }}
                   >
-                    BOB0VJRAN120
+                    {sellerBankDetails?.ac_ifsc}
                   </p>
                 </div>
               </div>

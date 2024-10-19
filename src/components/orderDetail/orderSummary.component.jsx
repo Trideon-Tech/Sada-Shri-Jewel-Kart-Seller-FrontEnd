@@ -1,6 +1,5 @@
-import { Button, Divider, Grid } from "@mui/material";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { Divider } from "@mui/material";
+
 const OrderInfoCard = ({ orderDetail }) => {
   return (
     <div
@@ -30,7 +29,6 @@ const OrderInfoCard = ({ orderDetail }) => {
       <div
         style={{
           display: "flex",
-          height: "160px",
           width: "50%",
           display: "flex",
           flexDirection: "column",
@@ -50,8 +48,7 @@ const OrderInfoCard = ({ orderDetail }) => {
             fontSize: "1.1rem",
           }}
         >
-          Size: {orderDetail?.height} {"     "} Quantity:{" "}
-          {orderDetail?.quantity}
+          Quantity: {orderDetail?.quantity} pcs.
         </p>
         <p
           style={{
@@ -73,12 +70,13 @@ const OrderInfoCard = ({ orderDetail }) => {
             lineHeight: "2rem",
           }}
         >
-          Deliver By: 2nd May, 2024
+          Deliver By: {Date(orderDetail?.estimated_date)}
         </p>
       </div>
     </div>
   );
 };
+
 const OrderSummaryComponent = ({ orderDetails }) => {
   return (
     <div
@@ -98,23 +96,21 @@ const OrderSummaryComponent = ({ orderDetails }) => {
           height: "max-content",
         }}
       >
-        <p
+        <div
           style={{
-            width: "300px",
             fontSize: "2rem",
             fontWeight: 600,
             margin: 0,
           }}
         >
           Order Summary
-        </p>
+        </div>
         <div
           style={{
             display: "flex",
             justifyContent: "space-around",
             alignItems: "center",
             width: "100px",
-            height: "36px",
             backgroundColor: "#F99B1C59",
             borderRadius: "5px",
             color: "#F99B1C",
@@ -129,28 +125,12 @@ const OrderSummaryComponent = ({ orderDetails }) => {
 
       <div
         style={{
-          marginTop: "30px",
-          marginBottom: "10px",
-          width: "max-content",
-          height: "max-content",
-          display: "flex",
-          borderRadius: "8px",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#e7e7e7",
-        }}
-      >
-        <p style={{ padding: "7px" }}>
-          {orderDetails[0]?.amount_paid == 0 ? "Unpaid" : "Paid"}
-        </p>
-      </div>
-      <div
-        style={{
           width: "calc(100% - 20px)",
           padding: "10px",
           height: "220px",
           borderRadius: "10px",
           border: "1px solid #e7e7e7",
+          marginTop: "20px",
         }}
       >
         <div

@@ -1,36 +1,38 @@
-import Stepper from "@mui/joy/Stepper";
 import Step from "@mui/joy/Step";
 import StepButton from "@mui/joy/StepButton";
 import StepIndicator from "@mui/joy/StepIndicator";
-import Check from "@mui/icons-material/Check";
+import Stepper from "@mui/joy/Stepper";
+
 const TrackOrderComponent = () => {
   return (
-    <div style={{ paddingLeft: "20px" }}>
-      <Stepper orientation="vertical">
+    <div style={{ paddingLeft: "20px", paddingBottom: "50px" }}>
+      <Stepper
+        orientation="vertical"
+        sx={{
+          "--Stepper-verticalGap": "2.5rem",
+        }}
+      >
         {[1, 2, 3, 4, 5].map((item) => (
           <Step
-            sx={{
-              "&::after": {
-                height: "100%",
-              },
-            }}
             key={item}
             indicator={
-              <StepIndicator
-                style={{ backgroundColor: "#b7b7b7" }}
-                variant={"solid"}
-                color={"neutral"}
-              >
-                {" "}
-                <div
-                  style={{
-                    width: "60%",
-                    height: "60%",
-                    borderRadius: "30px",
-                    backgroundColor: "#00000099",
-                  }}
-                ></div>
-              </StepIndicator>
+              <div>
+                <StepIndicator
+                  style={{ backgroundColor: "#b7b7b7" }}
+                  variant={"solid"}
+                  color={"neutral"}
+                >
+                  {" "}
+                  <div
+                    style={{
+                      width: "60%",
+                      height: "60%",
+                      borderRadius: "30px",
+                      backgroundColor: "#00000099",
+                    }}
+                  />
+                </StepIndicator>
+              </div>
             }
           >
             <StepButton>
@@ -38,9 +40,8 @@ const TrackOrderComponent = () => {
                 style={{
                   width: "100%",
                   paddingLeft: "10px",
-                  paddingBottom: "50px",
-                  paddingTop: "20px",
                   paddingRight: 0,
+                  paddingTop: "10px",
                   display: "flex",
                   justifyContent: "flex-start",
                   height: "max-content",
@@ -58,9 +59,9 @@ const TrackOrderComponent = () => {
                       width: "100%",
                       textAlign: "left",
                       color: "#000000bb",
+                      fontWeight: "500",
                     }}
                   >
-                    {" "}
                     A payment of Rs. 539 was processed on razorpay
                   </p>
                 </div>

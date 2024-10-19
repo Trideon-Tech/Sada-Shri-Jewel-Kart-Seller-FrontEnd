@@ -1,20 +1,14 @@
-import { React, useState, useEffect } from "react";
-import { Button, Divider } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import {
-  Dashboard,
-  Business,
-  List,
-  Shop,
   Category,
-  ListAlt,
+  ListAlt
 } from "@mui/icons-material";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import { Button, Divider } from "@mui/material";
+import { React, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import PaymentsLogo from "./payments_logo.png";
 
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import "./drawer.styles.scss";
 
 import DrawerItem from "./item/item.component";
@@ -82,7 +76,7 @@ const CustomDrawer = ({ section }) => {
             Edit
           </div>
         </div>
-        <DrawerItem
+        {/* <DrawerItem
           title="Dashboard"
           value="dashboard"
           icon={<Dashboard />}
@@ -90,7 +84,7 @@ const CustomDrawer = ({ section }) => {
           clickAction={() => {
             if (section !== "dashboard") navigate("/dashboard");
           }}
-        />
+        /> */}
 
         <DrawerItem
           title="Products"

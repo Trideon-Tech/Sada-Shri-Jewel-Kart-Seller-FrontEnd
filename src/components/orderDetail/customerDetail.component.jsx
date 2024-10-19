@@ -1,4 +1,4 @@
-const CustomerDetailComponent = ({ userData }) => {
+const CustomerDetailComponent = ({ userData, orderData }) => {
   return (
     <div
       style={{
@@ -16,24 +16,13 @@ const CustomerDetailComponent = ({ userData }) => {
       </p>
       <p
         style={{
-          color: "#3ba0ff",
+          color: "#a36e29",
           fontWeight: 600,
           margin: 0,
           fontSize: "1.2rem",
         }}
       >
         {userData?.name}
-      </p>
-
-      <p
-        style={{
-          color: "#a7a7a7",
-          fontWeight: 500,
-          margin: 0,
-          fontSize: "1.2rem",
-        }}
-      >
-        1 Order
       </p>
       <p
         style={{
@@ -48,13 +37,13 @@ const CustomerDetailComponent = ({ userData }) => {
 
       <p
         style={{
-          color: "#3ba0ff",
+          color: "#a36e29",
           fontWeight: 600,
           margin: 0,
           fontSize: "1.2rem",
         }}
       >
-        {userData?.email}
+        {orderData?.user_email}
       </p>
 
       <p
@@ -65,7 +54,7 @@ const CustomerDetailComponent = ({ userData }) => {
           fontSize: "1.2rem",
         }}
       >
-        {userData?.mobile}
+        +{orderData?.user_mobile}
       </p>
       <p
         style={{
@@ -87,22 +76,12 @@ const CustomerDetailComponent = ({ userData }) => {
         }}
       >
         {userData?.add_line_1}
-        <br></br>
-        {userData?.add_line_2} <br></br>
-        {userData?.city} {userData?.state}
+        <br />
+        {userData?.add_line_2} <br />
+        {userData?.city} <br /> {userData?.state} <br />
         {userData?.pincode}
       </p>
 
-      <p
-        style={{
-          color: "#a7a7a7",
-          fontWeight: 500,
-          margin: 0,
-          fontSize: "1.2rem",
-        }}
-      >
-        +91 {userData?.mobile}
-      </p>
       <p
         style={{
           fontSize: "1.2rem",

@@ -1,24 +1,14 @@
+import { AppBar, Button, createTheme, Grid, Toolbar } from "@mui/material";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  Grid,
-  InputAdornment,
-  createTheme,
-  ThemeProvider,
-  CircularProgress,
-} from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Done } from "@mui/icons-material";
-import axios from "axios";
 
 import "./login.styles.scss";
 
-import { generalToastStyle } from "../../utils/toast.styles";
 import InputTextField from "../../components/input-text-field/input-text-field.component";
+import { generalToastStyle } from "../../utils/toast.styles";
 
 const theme = createTheme({
   palette: {
@@ -43,15 +33,7 @@ const Login = () => {
     if (mobile.length > 9 && mobile.length <= 11) sendOTP();
   }, [mobile]);
 
-  useEffect(() => {
-    if (!otp) return;
-    if (otp.length === 4)
-      if (mobile.length > 9 && mobile.length <= 11) verifyOTP();
-  }, [otp]);
-
   const sendOTP = () => {
-    // API to send OTP
-    console.log("otp", otp);
     sendOTPHandler();
     toast("OTP Sent Successfully!", generalToastStyle);
     activateSendOTPAdornment(false);
@@ -61,15 +43,12 @@ const Login = () => {
   const verifyOTP = () => {
     console.log("otp", otp);
     verifyOTPHandler();
-    // API to verify OTP
-    // toast("OTP Verified Successfully!", generalToastStyle);
     activateVerifyOTPAdornment(false);
     setOTPVerified(true);
   };
 
   const sendOTPHandler = () => {
     const formData = new FormData();
-    // setotpSent(true);
     formData.append("type", "generate_otp");
     formData.append("mobile", `91${mobile}`);
 
@@ -248,19 +227,19 @@ const Login = () => {
                   activateSendOTPAdornment(true);
                 else activateSendOTPAdornment(false);
               }}
-              adornment={<InputAdornment position="end"></InputAdornment>}
             />
             <InputTextField
               title={"OTP"}
               value={otp}
               onEdit={(e) => {
                 setOtp(e.target.value);
-                if (e.target.value.length === 6)
-                  activateVerifyOTPAdornment(true);
-                else activateVerifyOTPAdornment(false);
               }}
-              adornment={<InputAdornment position="end"></InputAdornment>}
             />
+            <div className="actions">
+              <Button className="btn-primary" onClick={verifyOTP}>
+                LOGIN
+              </Button>
+            </div>
           </div>
         </Grid>
         <Grid item xs={8} className="infographics">

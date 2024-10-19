@@ -1,3 +1,4 @@
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   Button,
   Checkbox,
@@ -5,24 +6,21 @@ import {
   Divider,
   FormControl,
   Grid,
-  Input,
   InputLabel,
   MenuItem,
   OutlinedInput,
   Select,
   TextField,
 } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import TrackOrderComponent from "./trackOrder.component";
-import OrderSummaryComponent from "./orderSummary.component";
-import CustomerDetailComponent from "./customerDetail.component";
-import { useEffect, useState } from "react";
-import { Label } from "@mui/icons-material";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import CustomerDetailComponent from "./customerDetail.component";
+import OrderSummaryComponent from "./orderSummary.component";
+import TrackOrderComponent from "./trackOrder.component";
 
-import SequelLogo from "./sequel_logo.png";
 import DelhiveryLogo from "./delhivery_logo.png";
+import SequelLogo from "./sequel_logo.png";
 
 const ProductCardSmall = ({ orderDetails }) => {
   return (
@@ -62,18 +60,6 @@ const ProductCardSmall = ({ orderDetails }) => {
         <p style={{ margin: 0, fontSize: "1.4rem", fontWeight: 600 }}>
           {orderDetails?.product_name}
         </p>
-        {/* <p
-          style={{
-            margin: 0,
-            marginTop: "auto",
-            color: "gray",
-            lineHeight: "2rem",
-            fontWeight: 500,
-            fontSize: "1.1rem",
-          }}
-        >
-          Size: {orderDetails?.height} {"     "} Quantity: 1
-        </p> */}
         <p
           style={{
             margin: 0,
@@ -129,6 +115,7 @@ const OrderDetail = ({ id }) => {
   const handleClose = () => {
     setOpen(false);
   };
+
   const handleFulfillOrder = async () => {
     if (!trackingNumber) return;
     if (!logistics) return;
@@ -150,13 +137,14 @@ const OrderDetail = ({ id }) => {
     );
     navigate("/orders");
   };
+
   return (
     <div
       style={{
         width: "100%",
         minHeight: "100vh",
         height: "max-content",
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#F8F5F0",
       }}
     >
       <Dialog
@@ -395,13 +383,23 @@ const OrderDetail = ({ id }) => {
           <div
             style={{ padding: "40px", paddingTop: "50px", paddingBottom: 0 }}
           >
-            <p style={{ fontSize: "2rem", fontWeight: 600 }}> Order Status</p>
+            <p
+              style={{
+                fontSize: "2rem",
+                fontWeight: 600,
+                marginBottom: "20px",
+              }}
+            >
+              {" "}
+              Order Status
+            </p>
           </div>
           <TrackOrderComponent />
         </Grid>
         <Grid item xs={4} style={{ marginTop: "30px" }}>
           <CustomerDetailComponent
             userData={orderDetails[0]?.user_address[0]}
+            orderData={orderDetails[0]}
           />
         </Grid>
       </Grid>

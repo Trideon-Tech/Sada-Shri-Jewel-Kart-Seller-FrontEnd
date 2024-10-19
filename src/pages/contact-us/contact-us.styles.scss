@@ -82,7 +82,8 @@
     }
 
     .text {
-      height: calc(80vh-100px);
+      height: 70vh;
+      // height: calc(80vh-100px);
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -101,7 +102,6 @@
 
         .right-block {
           form {
-
             .MuiFormControl-root {
               margin-bottom: 20px;
             }
@@ -109,7 +109,7 @@
             .MuiButton-root {
               align-self: flex-end;
             }
-            
+
             .divider {
               width: 100%;
               height: 2px;

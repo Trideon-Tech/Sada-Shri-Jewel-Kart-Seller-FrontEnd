@@ -111,12 +111,20 @@ const OrderSummaryComponent = ({ orderDetails }) => {
             justifyContent: "space-around",
             alignItems: "center",
             width: "100px",
-            backgroundColor: "#F99B1C59",
+            backgroundColor:
+              orderDetails[0]["shipment_status"] === "ORDER_COMPLETED"
+                ? "#cffbcf"
+                : "#F99B1C59",
             borderRadius: "5px",
-            color: "#F99B1C",
+            color:
+              orderDetails[0]["shipment_status"] === "ORDER_COMPLETED"
+                ? "#008000"
+                : "#F99B1C",
           }}
         >
-          Unfulfilled
+          {orderDetails[0]["shipment_status"] === "ORDER_COMPLETED"
+            ? "Fulfilled"
+            : "Unfulfilled"}
         </div>
       </span>
       {orderDetails?.map((item) => (
@@ -127,7 +135,6 @@ const OrderSummaryComponent = ({ orderDetails }) => {
         style={{
           width: "calc(100% - 20px)",
           padding: "10px",
-          height: "220px",
           borderRadius: "10px",
           border: "1px solid #e7e7e7",
           marginTop: "20px",
@@ -171,57 +178,11 @@ const OrderSummaryComponent = ({ orderDetails }) => {
             <p style={{ textAlign: "left" }}>Discount</p>
           </div>
           <div style={{ width: "60%" }}>
-            <p style={{ textAlign: "left" }}>FIRST10</p>
-          </div>
-          <div style={{ width: "15%" }}>
-            <p style={{ textAlign: "right" }}>- Rs: 59.0</p>
-          </div>
-        </div>
-        <div
-          style={{
-            width: "100%",
-            height: "40px",
-            display: "flex",
-            justifyContent: "space-between",
-            color: "#797979",
-            fontWeight: 500,
-            fontSize: "1rem",
-          }}
-        >
-          <div style={{ width: "25%" }}>
-            <p style={{ textAlign: "left" }}>Shipping</p>
-          </div>
-          <div style={{ width: "60%" }}>
-            <p style={{ textAlign: "left" }}>
-              Standart (0.25g: Item: 0.25g , Package 0.0g)
-            </p>
-          </div>
-          <div style={{ width: "15%" }}>
-            <p style={{ textAlign: "right" }}>Rs: 0.0</p>
-          </div>
-        </div>
-        <div
-          style={{
-            width: "100%",
-            height: "40px",
-            display: "flex",
-            justifyContent: "space-between",
-            color: "#797979",
-            fontWeight: 500,
-            fontSize: "1rem",
-          }}
-        >
-          <div style={{ width: "25%" }}>
-            <p style={{ textAlign: "left" }}>
-              <b>Total</b>
-            </p>
-          </div>
-          <div style={{ width: "60%" }}>
-            <p style={{ textAlign: "left" }}></p>
+            {/* <p style={{ textAlign: "left" }}>FIRST10</p> */}
           </div>
           <div style={{ width: "15%" }}>
             <p style={{ textAlign: "right" }}>
-              <b>Rs: {orderDetails[0]?.amount_due}.00</b>
+              - Rs: {orderDetails[0]?.discount_amount}
             </p>
           </div>
         </div>
@@ -240,14 +201,16 @@ const OrderSummaryComponent = ({ orderDetails }) => {
           }}
         >
           <div style={{ width: "25%" }}>
-            <p style={{ textAlign: "left" }}>Paid</p>
+            <p style={{ textAlign: "left" }}>
+              <b>Total</b>
+            </p>
           </div>
           <div style={{ width: "60%" }}>
             <p style={{ textAlign: "left" }}></p>
           </div>
           <div style={{ width: "15%" }}>
             <p style={{ textAlign: "right" }}>
-              Rs: {orderDetails[0]?.amount_paid}.00
+              <b>Rs: {orderDetails[0]?.amount}.00</b>
             </p>
           </div>
         </div>

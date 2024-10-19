@@ -1,12 +1,9 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   Button,
-  Checkbox,
   Dialog,
-  Divider,
   FormControl,
   Grid,
-  InputLabel,
   MenuItem,
   OutlinedInput,
   Select,
@@ -16,11 +13,10 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CustomerDetailComponent from "./customerDetail.component";
-import OrderSummaryComponent from "./orderSummary.component";
-import TrackOrderComponent from "./trackOrder.component";
-
 import DelhiveryLogo from "./delhivery_logo.png";
+import OrderSummaryComponent from "./orderSummary.component";
 import SequelLogo from "./sequel_logo.png";
+import TrackOrderComponent from "./trackOrder.component";
 
 const ProductCardSmall = ({ orderDetails }) => {
   return (
@@ -45,6 +41,9 @@ const ProductCardSmall = ({ orderDetails }) => {
         <img
           src={`https://api.sadashrijewelkart.com/assets/${orderDetails?.images[0]["file"]}`}
           alt=""
+          style={{
+            borderRadius: "12px",
+          }}
         />
       </div>
       <div
@@ -57,7 +56,14 @@ const ProductCardSmall = ({ orderDetails }) => {
           marginLeft: "30px",
         }}
       >
-        <p style={{ margin: 0, fontSize: "1.4rem", fontWeight: 600 }}>
+        <p
+          style={{
+            margin: 0,
+            fontSize: "1.4rem",
+            fontWeight: 600,
+            fontFamily: '"Work Sans", sans-serif',
+          }}
+        >
           {orderDetails?.product_name}
         </p>
         <p
@@ -67,10 +73,11 @@ const ProductCardSmall = ({ orderDetails }) => {
             fontWeight: 500,
             lineHeight: "2rem",
             fontSize: "1.1rem",
+            fontFamily: '"Work Sans", sans-serif',
           }}
         >
           Price :{" "}
-          <span style={{ color: "black" }}> Rs: {orderDetails?.price}</span>
+          <span style={{ color: "black" }}> Rs. {orderDetails?.price}</span>
         </p>
         <p
           style={{
@@ -78,21 +85,25 @@ const ProductCardSmall = ({ orderDetails }) => {
             color: "gray",
             fontWeight: 500,
             lineHeight: "2rem",
+            fontFamily: '"Work Sans", sans-serif',
           }}
         >
-          Deliver By: 2nd May, 2024
+          Deliver By: {Date(orderDetails?.estimated_date)}
         </p>
       </div>
     </div>
   );
 };
+
 const OrderDetail = ({ id }) => {
+  const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
   const [orderDetails, setOrderDetails] = useState([]);
   const [trackingNumber, setTrackingNumber] = useState("");
   const [logistics, setLogistics] = useState("");
+  const [logs, setLogs] = useState();
 
-  const navigate = useNavigate();
   useEffect(() => {
     (async () => {
       const token = localStorage.getItem("token");
@@ -109,6 +120,8 @@ const OrderDetail = ({ id }) => {
 
       console.log("order summary", data?.response);
       setOrderDetails(data?.response);
+
+      setLogs(JSON.parse(data?.response[0]?.shipment_details));
     })();
   }, []);
 
@@ -172,6 +185,7 @@ const OrderDetail = ({ id }) => {
               margin: 0,
               fontWeight: 600,
               color: "#333333",
+              fontFamily: '"Work Sans", sans-serif',
             }}
           >
             Fulfill Order
@@ -181,7 +195,7 @@ const OrderDetail = ({ id }) => {
               width: "100%",
               height: "max-content",
               minHeight: "150px",
-              maxHeight: "300px",
+              maxHeight: "320px",
               overflowY: "scroll",
               marginBottom: "20px",
             }}
@@ -190,7 +204,15 @@ const OrderDetail = ({ id }) => {
               <ProductCardSmall orderDetails={orderData} />
             ))}
           </div>
-          <p style={{ fontSize: "1.3rem", fontWeight: "bold" }}>
+          <p
+            style={{
+              fontSize: "1.3rem",
+              fontWeight: "bold",
+              fontFamily: '"Work Sans", sans-serif',
+              marginBottom: "14px",
+              marginTop: "10px",
+            }}
+          >
             Tracking Information
           </p>
           <div
@@ -201,16 +223,33 @@ const OrderDetail = ({ id }) => {
             }}
           >
             <div style={{ width: "47%" }}>
-              <p style={{ color: "gray", fontWeight: 600 }}>Tracking Number</p>
+              <p
+                style={{
+                  color: "gray",
+                  fontWeight: 600,
+                  fontFamily: '"Work Sans", sans-serif',
+                  marginBottom: "10px",
+                }}
+              >
+                Tracking Number
+              </p>
               <TextField
                 fullWidth
                 onChange={(e) => setTrackingNumber(e.target.value)}
               ></TextField>
             </div>
             <div style={{ width: "47%" }}>
-              <p style={{ color: "gray", fontWeight: 600 }}>Shipping Carrier</p>
+              <p
+                style={{
+                  color: "gray",
+                  fontWeight: 600,
+                  fontFamily: '"Work Sans", sans-serif',
+                  marginBottom: "10px",
+                }}
+              >
+                Shipping Partner
+              </p>
               <FormControl fullWidth>
-                <InputLabel id="demo-multiple-name-label">Name</InputLabel>
                 <Select
                   labelId="demo-multiple-name-label"
                   id="demo-multiple-name"
@@ -218,8 +257,8 @@ const OrderDetail = ({ id }) => {
                   input={<OutlinedInput label="Name" />}
                 >
                   {[
-                    { name: "Sequel", logo: SequelLogo },
-                    { name: "Delhivery", logo: DelhiveryLogo },
+                    { name: "Sequel Logistics", logo: SequelLogo },
+                    { name: "Delhivery Logistics", logo: DelhiveryLogo },
                   ].map((item) => (
                     <MenuItem key={item.name} value={item.name}>
                       {item.name}
@@ -229,39 +268,17 @@ const OrderDetail = ({ id }) => {
               </FormControl>
             </div>
           </div>
-          <Divider style={{ marginTop: "30px" }} />
-          <p style={{ fontSize: "1.3rem", fontWeight: "bold" }}>
-            Notify customer of shipment
-          </p>
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-          >
-            <Checkbox color="warning" />
-            <p
-              style={{
-                width: "70%",
-                color: "gray",
-                fontSize: "1.2rem",
-                fontWeight: 600,
-              }}
-            >
-              Send shipment details to your customer now
-            </p>
-          </div>
           <div style={{ width: "100%", display: "flex" }}>
             <Button
               style={{
                 marginLeft: "auto",
                 width: "250px",
-                height: "70px",
+                height: "60px",
                 color: "white",
                 backgroundColor: "#A36E29",
                 fontWeight: 600,
+                marginTop: "30px",
+                fontFamily: '"Work Sans", sans-serif',
               }}
               onClick={() => handleFulfillOrder()}
             >
@@ -327,7 +344,10 @@ const OrderDetail = ({ id }) => {
                     fontWeight: 600,
                   }}
                 >
-                  02/10/2024 at 4:15PM
+                  Ordered on :{" "}
+                  {new Date(
+                    orderDetails[0]?.order_created_at
+                  ).toLocaleDateString("en-GB")}
                 </p>
               </div>
             </span>
@@ -394,7 +414,7 @@ const OrderDetail = ({ id }) => {
               Order Status
             </p>
           </div>
-          <TrackOrderComponent />
+          <TrackOrderComponent logs={logs} />
         </Grid>
         <Grid item xs={4} style={{ marginTop: "30px" }}>
           <CustomerDetailComponent

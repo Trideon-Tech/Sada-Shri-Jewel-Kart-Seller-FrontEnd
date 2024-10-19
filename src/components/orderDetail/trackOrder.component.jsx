@@ -3,7 +3,9 @@ import StepButton from "@mui/joy/StepButton";
 import StepIndicator from "@mui/joy/StepIndicator";
 import Stepper from "@mui/joy/Stepper";
 
-const TrackOrderComponent = () => {
+const TrackOrderComponent = ({ logs }) => {
+  console.log(logs);
+
   return (
     <div style={{ paddingLeft: "20px", paddingBottom: "50px" }}>
       <Stepper
@@ -12,9 +14,9 @@ const TrackOrderComponent = () => {
           "--Stepper-verticalGap": "2.5rem",
         }}
       >
-        {[1, 2, 3, 4, 5].map((item) => (
+        {Object.entries(logs).map(([key, value]) => (
           <Step
-            key={item}
+            key={key}
             indicator={
               <div>
                 <StepIndicator
@@ -51,8 +53,7 @@ const TrackOrderComponent = () => {
               >
                 <div style={{ width: "50%", height: "max-content" }}>
                   <p style={{ width: "100%", textAlign: "left" }}>
-                    {" "}
-                    26th April
+                    {new Date(key).toLocaleDateString("en-GB")}
                   </p>
                   <p
                     style={{
@@ -62,7 +63,7 @@ const TrackOrderComponent = () => {
                       fontWeight: "500",
                     }}
                   >
-                    A payment of Rs. 539 was processed on razorpay
+                    {value}
                   </p>
                 </div>
                 <p
@@ -72,7 +73,13 @@ const TrackOrderComponent = () => {
                     color: "#000000bb",
                   }}
                 >
-                  8:46 pm
+                  {(() => {
+                    const date = new Date(key);
+                    const hours = String(date.getHours()).padStart(2, "0");
+                    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+                    return `${hours}:${minutes}`;
+                  })()}
                 </p>
               </div>
             </StepButton>

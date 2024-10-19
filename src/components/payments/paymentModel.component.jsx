@@ -1,19 +1,8 @@
-import {
-  Box,
-  Divider,
-  Modal,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Card,
-  Button,
-} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { Box, Button, Card, Divider, Modal } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+
 const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
   const [payementDetails, setPaymentDetails] = useState({});
   useEffect(() => {
@@ -38,6 +27,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
       setPaymentDetails(data?.response?.payment_list[0]);
     })();
   }, [selectedPaymentId]);
+
   return (
     <Modal
       open={modalOpen}
@@ -52,8 +42,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           border: "0px solid white",
-          width: "70%",
-          height: 1000,
+          width: "60%",
           bgcolor: "background.paper",
           border: "2px solid #fff",
           borderRadius: "20px",
@@ -79,7 +68,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
             }}
           >
             <Button onClick={() => setModalOpen(false)}>
-              <CloseIcon style={{ fontSize: "2.5rem" }} />
+              <CloseIcon style={{ fontSize: "2rem", color: "#A36E29" }} />
             </Button>
           </div>
           <div
@@ -88,23 +77,32 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               height: "100%",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-around",
+              justifyContent: "center",
               alignItems: "flex-start",
               marginRight: "auto",
             }}
           >
-            <p
+            <div
               style={{
                 fontWeight: 800,
                 fontSize: "1.2rem",
                 color: "#333333",
+                fontFamily: '"Work Sans", sans-serif',
               }}
             >
               <b>Order : {payementDetails?.order_id}</b>
-            </p>
-            <p style={{ fontWeight: 800, color: "gray" }}>
-              {payementDetails?.updated_at}
-            </p>
+            </div>
+            <div
+              style={{
+                fontWeight: 800,
+                color: "gray",
+                fontFamily: '"Work Sans", sans-serif',
+              }}
+            >
+              {new Date(payementDetails?.updated_at).toLocaleDateString(
+                "en-GB"
+              )}
+            </div>
           </div>
           <div
             style={{
@@ -117,8 +115,21 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               marginRight: "auto",
             }}
           >
-            <p style={{ fontWeight: 800, color: "gray" }}>SETTLEMENT ID</p>
-            <p style={{ color: "#333333" }}>
+            <p
+              style={{
+                fontWeight: 800,
+                color: "gray",
+                fontFamily: '"Work Sans", sans-serif',
+              }}
+            >
+              SETTLEMENT ID
+            </p>
+            <p
+              style={{
+                color: "#333333",
+                fontFamily: '"Work Sans", sans-serif',
+              }}
+            >
               <b>{payementDetails?.settlement_public_id}</b>
             </p>
           </div>
@@ -142,7 +153,15 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                 alignItems: "center",
               }}
             >
-              <p style={{ fontWeight: 800, color: "gray" }}>STATUS:</p>
+              <p
+                style={{
+                  fontWeight: 800,
+                  color: "gray",
+                  fontFamily: '"Work Sans", sans-serif',
+                }}
+              >
+                STATUS:
+              </p>
               <p
                 style={{
                   backgroundColor:
@@ -155,6 +174,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   paddingRight: "15px",
                   color: "white",
                   borderRadius: "5px",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
                 <b>{payementDetails?.settlement_status}</b>
@@ -168,247 +188,275 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                 alignItems: "center",
               }}
             >
-              <p style={{ fontWeight: 800, color: "gray" }}>PAYMENT:</p>
-              <p style={{ fontSize: "1.2rem", color: "#333333" }}>
-                <b>{payementDetails?.total_amount}</b>
+              <p
+                style={{
+                  fontWeight: 800,
+                  color: "gray",
+                  fontFamily: '"Work Sans", sans-serif',
+                }}
+              >
+                PAYMENT:
+              </p>
+              <p
+                style={{
+                  fontSize: "1.2rem",
+                  color: "#333333",
+                  fontFamily: '"Work Sans", sans-serif',
+                }}
+              >
+                <b>Rs. {payementDetails?.total_amount}</b>
               </p>
             </div>
           </div>
         </div>
         <Divider />
+        {payementDetails?.settlement_status === "NOT_SETTLED" ? null : (
+          <>
+            <div
+              style={{
+                width: "100%",
+
+                padding: "50px",
+                paddingTop: "25px",
+                paddingBottom: "0px",
+              }}
+            >
+              <p
+                style={{
+                  fontWeight: 800,
+                  fontSize: "1.5rem",
+                  color: "#333333",
+                }}
+              >
+                Settlement Details
+              </p>
+            </div>
+
+            <div
+              style={{
+                width: "100%",
+                minHeight: "150px",
+                height: "max-content",
+
+                display: "flex",
+                padding: "50px",
+                paddingTop: "0px",
+                paddingBottom: "0px",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  width: "48%",
+                  height: "150px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <p
+                    style={{
+                      width: "200px",
+                      fontWeight: 800,
+                      color: "gray",
+                      fontSize: "1.1rem",
+                    }}
+                  >
+                    Type
+                  </p>
+                  <p
+                    style={{
+                      width: "75%",
+                      color: "rgba(0,0,0,0.8)",
+                      fontWeight: 500,
+                      fontSize: "1.1rem",
+                    }}
+                  >
+                    Normal Settlement
+                  </p>
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <p
+                    style={{
+                      width: "200px",
+                      fontWeight: 800,
+                      color: "gray",
+                      fontSize: "1.1rem",
+                    }}
+                  >
+                    Period
+                  </p>
+                  <p
+                    style={{
+                      width: "75%",
+                      fontSize: "1.1rem",
+                      color: "rgba(0,0,0,0.8)",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {payementDetails?.created_at}
+                  </p>
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <p
+                    style={{
+                      width: "200px",
+                      fontWeight: 800,
+                      color: "gray",
+                      fontSize: "1.1rem",
+                    }}
+                  >
+                    Account
+                  </p>
+                  <p
+                    style={{
+                      width: "75%",
+                      fontSize: "1.1rem",
+                      color: "rgba(0,0,0,0.8)",
+                      fontWeight: 500,
+                    }}
+                  >
+                    *********SSFDF
+                  </p>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  width: "48%",
+                  height: "150px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <p
+                    style={{
+                      width: "200px",
+                      fontWeight: 800,
+                      color: "gray",
+                      fontSize: "1.1rem",
+                    }}
+                  >
+                    UTR No.
+                  </p>
+                  <p
+                    style={{
+                      width: "75%",
+                      fontSize: "1.1rem",
+                      color: "rgba(0,0,0,0.8)",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {payementDetails?.utr_number}
+                  </p>
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <p
+                    style={{
+                      width: "200px",
+                      fontWeight: 800,
+                      color: "gray",
+                      fontSize: "1.1rem",
+                    }}
+                  >
+                    Setted On
+                  </p>
+                  <p
+                    style={{
+                      width: "75%",
+                      fontSize: "1.1rem",
+                      color: "rgba(0,0,0,0.8)",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {payementDetails?.created_at}
+                  </p>
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <p
+                    style={{
+                      width: "200px",
+                      fontWeight: 800,
+                      color: "gray",
+                      fontSize: "1.1rem",
+                    }}
+                  >
+                    IFSC CODE
+                  </p>
+                  <p
+                    style={{
+                      width: "75%",
+                      color: "rgba(0,0,0,0.8)",
+                      fontWeight: 500,
+                      fontSize: "1.1rem",
+                    }}
+                  >
+                    BOB0VJRAN120
+                  </p>
+                </div>
+              </div>
+            </div>
+            <Divider />
+          </>
+        )}
         <div
           style={{
             width: "100%",
-
             padding: "50px",
             paddingTop: "25px",
-            paddingBottom: "0px",
+            paddingBottom: "25px",
           }}
         >
-          <p style={{ fontWeight: 800, fontSize: "1.5rem", color: "#333333" }}>
-            Settlement Details
-          </p>
-        </div>
-
-        <div
-          style={{
-            width: "100%",
-            minHeight: "150px",
-            height: "max-content",
-
-            display: "flex",
-            padding: "50px",
-            paddingTop: "0px",
-            paddingBottom: "0px",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div
+          <p
             style={{
-              width: "48%",
-              height: "150px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              justifyContent: "space-evenly",
+              fontWeight: 800,
+              fontSize: "1.5rem",
+              color: "#333333",
+              fontFamily: '"Work Sans", sans-serif',
             }}
           >
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <p
-                style={{
-                  width: "200px",
-                  fontWeight: 800,
-                  color: "gray",
-                  fontSize: "1.1rem",
-                }}
-              >
-                Type
-              </p>
-              <p
-                style={{
-                  width: "75%",
-                  color: "rgba(0,0,0,0.8)",
-                  fontWeight: 500,
-                  fontSize: "1.1rem",
-                }}
-              >
-                Normal Settlement
-              </p>
-            </div>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <p
-                style={{
-                  width: "200px",
-                  fontWeight: 800,
-                  color: "gray",
-                  fontSize: "1.1rem",
-                }}
-              >
-                Period
-              </p>
-              <p
-                style={{
-                  width: "75%",
-                  fontSize: "1.1rem",
-                  color: "rgba(0,0,0,0.8)",
-                  fontWeight: 500,
-                }}
-              >
-                {payementDetails?.created_at}
-              </p>
-            </div>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <p
-                style={{
-                  width: "200px",
-                  fontWeight: 800,
-                  color: "gray",
-                  fontSize: "1.1rem",
-                }}
-              >
-                Account
-              </p>
-              <p
-                style={{
-                  width: "75%",
-                  fontSize: "1.1rem",
-                  color: "rgba(0,0,0,0.8)",
-                  fontWeight: 500,
-                }}
-              >
-                *********SSFDF
-              </p>
-            </div>
-          </div>
-
-          <div
-            style={{
-              width: "48%",
-              height: "150px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              justifyContent: "space-evenly",
-            }}
-          >
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <p
-                style={{
-                  width: "200px",
-                  fontWeight: 800,
-                  color: "gray",
-                  fontSize: "1.1rem",
-                }}
-              >
-                UTR No.
-              </p>
-              <p
-                style={{
-                  width: "75%",
-                  fontSize: "1.1rem",
-                  color: "rgba(0,0,0,0.8)",
-                  fontWeight: 500,
-                }}
-              >
-                {payementDetails?.utr_number}
-              </p>
-            </div>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <p
-                style={{
-                  width: "200px",
-                  fontWeight: 800,
-                  color: "gray",
-                  fontSize: "1.1rem",
-                }}
-              >
-                Setted On
-              </p>
-              <p
-                style={{
-                  width: "75%",
-                  fontSize: "1.1rem",
-                  color: "rgba(0,0,0,0.8)",
-                  fontWeight: 500,
-                }}
-              >
-                {payementDetails?.created_at}
-              </p>
-            </div>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <p
-                style={{
-                  width: "200px",
-                  fontWeight: 800,
-                  color: "gray",
-                  fontSize: "1.1rem",
-                }}
-              >
-                IFSC CODE
-              </p>
-              <p
-                style={{
-                  width: "75%",
-                  color: "rgba(0,0,0,0.8)",
-                  fontWeight: 500,
-                  fontSize: "1.1rem",
-                }}
-              >
-                BOB0VJRAN120
-              </p>
-            </div>
-          </div>
-        </div>
-        <Divider />
-
-        <Divider />
-        <div
-          style={{
-            width: "100%",
-
-            padding: "50px",
-            paddingTop: "25px",
-            paddingBottom: "0px",
-          }}
-        >
-          <p style={{ fontWeight: 800, fontSize: "1.5rem", color: "#333333" }}>
             Customer Details
           </p>
         </div>
@@ -416,11 +464,10 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
         <div
           style={{
             width: "100%",
-            minHeight: "150px",
             display: "flex",
             padding: "50px",
             paddingTop: "0px",
-            paddingBottom: "0px",
+            paddingBottom: "30px",
             justifyContent: "space-between",
             alignItems: "center",
           }}
@@ -428,11 +475,10 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
           <div
             style={{
               width: "48%",
-              height: "150px",
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
-              justifyContent: "space-evenly",
+              justifyContent: "center",
             }}
           >
             <div
@@ -440,6 +486,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                 width: "100%",
                 display: "flex",
                 justifyContent: "space-between",
+                marginBottom: "8px",
               }}
             >
               <p
@@ -448,6 +495,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 800,
                   color: "gray",
                   fontSize: "1.1rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
                 Name
@@ -458,6 +506,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontSize: "1.1rem",
                   color: "rgba(0,0,0,0.8)",
                   fontWeight: 500,
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
                 {payementDetails?.user_details?.name}
@@ -468,6 +517,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                 width: "100%",
                 display: "flex",
                 justifyContent: "space-between",
+                marginTop: "8px",
               }}
             >
               <p
@@ -476,6 +526,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 800,
                   color: "gray",
                   fontSize: "1.1rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
                 Email Id
@@ -483,7 +534,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               <p
                 style={{
                   width: "75%",
-
+                  fontFamily: '"Work Sans", sans-serif',
                   fontSize: "1.1rem",
                   color: "rgba(0,0,0,0.8)",
                   fontWeight: 500,
@@ -497,11 +548,10 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
           <div
             style={{
               width: "48%",
-              height: "150px",
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
-              justifyContent: "space-evenly",
+              justifyContent: "center",
             }}
           >
             <div
@@ -509,6 +559,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                 width: "100%",
                 display: "flex",
                 justifyContent: "space-between",
+                marginBottom: "8px",
               }}
             >
               <p
@@ -517,6 +568,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 800,
                   color: "gray",
                   fontSize: "1.1rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
                 Phone
@@ -524,13 +576,13 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               <p
                 style={{
                   width: "75%",
-
+                  fontFamily: '"Work Sans", sans-serif',
                   fontSize: "1.1rem",
                   color: "rgba(0,0,0,0.8)",
                   fontWeight: 500,
                 }}
               >
-                {payementDetails?.user_details?.mobile}
+                +{payementDetails?.user_details?.mobile}
               </p>
             </div>
             <div
@@ -538,6 +590,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                 width: "100%",
                 display: "flex",
                 justifyContent: "space-between",
+                marginTop: "8px",
               }}
             >
               <p
@@ -546,20 +599,23 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 800,
                   color: "gray",
                   fontSize: "1.1rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
-                Mode Of Payment
+                User Since
               </p>
               <p
                 style={{
                   width: "75%",
                   color: "rgba(0,0,0,0.8)",
                   fontWeight: 500,
-
+                  fontFamily: '"Work Sans", sans-serif',
                   fontSize: "1.1rem",
                 }}
               >
-                UPI
+                {new Date(
+                  payementDetails?.user_details?.created_at
+                ).toLocaleDateString("en-GB")}
               </p>
             </div>
           </div>
@@ -568,14 +624,20 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
         <div
           style={{
             width: "100%",
-
             padding: "50px",
             paddingTop: "25px",
             paddingBottom: "0px",
           }}
         >
-          <p style={{ fontWeight: 800, fontSize: "1.5rem", color: "#333333" }}>
-            Settlement Details
+          <p
+            style={{
+              fontWeight: 800,
+              fontSize: "1.5rem",
+              color: "#333333",
+              fontFamily: '"Work Sans", sans-serif',
+            }}
+          >
+            Payment Details
           </p>
         </div>
         <Card
@@ -585,11 +647,11 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
             height: "max-content",
             display: "flex",
             justifyContent: "space-between",
-            minHeight: "250px",
             margin: "auto",
             borderRadius: "10px",
             padding: "40px",
-            marginTop: "40px",
+            marginTop: "20px",
+            marginBottom: "40px",
           }}
         >
           <Box
@@ -616,6 +678,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   color: "gray",
                   width: "250px",
                   fontSize: "1.2rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
                 Payment Received :{" "}
@@ -625,37 +688,10 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 600,
                   color: "green",
                   fontSize: "1.2rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
-                Rs {payementDetails?.settlement_amount}
-              </p>
-            </div>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                paddingTop: "20px",
-                justifyContent: "space-between",
-              }}
-            >
-              <p
-                style={{
-                  fontWeight: 600,
-                  color: "gray",
-                  width: "250px",
-                  fontSize: "1.2rem",
-                }}
-              >
-                Transaction Amount :{" "}
-              </p>
-              <p
-                style={{
-                  fontWeight: 600,
-                  color: "red",
-                  fontSize: "1.2rem",
-                }}
-              >
-                Rs {payementDetails?.settlement_amount}
+                Rs. {payementDetails?.total_amount}
               </p>
             </div>
             <div
@@ -672,6 +708,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   color: "gray",
                   width: "250px",
                   fontSize: "1.2rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
                 Platform Charge :{" "}
@@ -681,6 +718,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 600,
                   color: "red",
                   fontSize: "1.2rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
                 Rs {payementDetails?.commission_perc}
@@ -700,15 +738,17 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   color: "gray",
                   width: "250px",
                   fontSize: "1.2rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
-                Payment Gateway Charge :{" "}
+                PG Charge :
               </p>
               <p
                 style={{
                   fontWeight: 600,
                   color: "red",
                   fontSize: "1.2rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
                 Rs {payementDetails?.commission_gst}
@@ -728,18 +768,20 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   color: "gray",
                   width: "250px",
                   fontSize: "1.2rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
-                Final Amount :{" "}
+                Final Amount :
               </p>
               <p
                 style={{
                   fontWeight: 600,
                   color: "green",
                   fontSize: "1.2rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
-                Rs {payementDetails?.total_amount}
+                Rs {payementDetails?.settlement_amount}
               </p>
             </div>
           </Box>
@@ -764,47 +806,20 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               <p
                 style={{
                   fontWeight: 600,
-                  color: "white",
-                  width: "250px",
-                  fontSize: "1.2rem",
-                }}
-              >
-                l
-              </p>
-              <p
-                style={{
-                  fontWeight: 600,
-                  color: "white",
-                  fontSize: "1.2rem",
-                }}
-              >
-                l
-              </p>
-            </div>
-
-            <div
-              style={{
-                width: "100%",
-                paddingTop: "20px",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <p
-                style={{
-                  fontWeight: 600,
                   color: "gray",
                   width: "250px",
                   fontSize: "1.2rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
-                TDS :{" "}
+                TDS :
               </p>
               <p
                 style={{
                   fontWeight: 600,
                   color: "red",
                   fontSize: "1.2rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
                 Rs {payementDetails?.tds_perc}
@@ -824,44 +839,20 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   color: "gray",
                   width: "250px",
                   fontSize: "1.2rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
-                TCS :{" "}
+                TCS :
               </p>
               <p
                 style={{
                   fontWeight: 600,
                   color: "red",
                   fontSize: "1.2rem",
+                  fontFamily: '"Work Sans", sans-serif',
                 }}
               >
                 Rs {payementDetails?.tcs_perc}
-              </p>
-            </div>
-            <div
-              style={{
-                width: "100%",
-                paddingTop: "20px",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <p
-                style={{
-                  fontWeight: 600,
-                  color: "gray",
-                  width: "250px",
-                  fontSize: "1.2rem",
-                }}
-              ></p>
-              <p
-                style={{
-                  fontWeight: 600,
-                  color: "green",
-                  fontSize: "1.2rem",
-                }}
-              >
-                {" "}
               </p>
             </div>
           </Box>

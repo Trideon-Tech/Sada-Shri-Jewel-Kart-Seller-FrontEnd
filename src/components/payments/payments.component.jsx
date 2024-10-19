@@ -1,59 +1,29 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import {
-  Divider,
-  Paper,
-  TableContainer,
-  Avatar,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TablePagination,
-  createTheme,
-  ThemeProvider,
-  CircularProgress,
-  SwipeableDrawer,
-  Button,
-  IconButton,
-  Box,
-  Typography,
-  Rating,
-  ImageListItem,
-  ImageList,
-  Grid,
-  Checkbox,
-  Modal,
-  Card,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import "react-toastify/dist/ReactToastify.css";
-import {
-  Search,
-  Edit,
-  Delete,
-  Add,
-  AddAPhoto,
-  Done,
-  Restore,
-  KeyboardArrowDown,
-  KeyboardArrowUp,
-  CheckBox,
-} from "@mui/icons-material";
-import axios from "axios";
 import Tab, { tabClasses } from "@mui/joy/Tab";
+import {
+  Box,
+  CircularProgress,
+  createTheme,
+  Paper,
+  SwipeableDrawer,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  ThemeProvider,
+} from "@mui/material";
+import axios from "axios";
+import React, { Fragment, useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./orders.styles.scss";
 
-import InputTextField from "../input-text-field/input-text-field.component";
-import { generalToastStyle } from "../../utils/toast.styles";
-import MetricBoxComponent from "./metricBox.component";
-import { useNavigate } from "react-router-dom";
 import { TabList, Tabs } from "@mui/joy";
-import { borderRadius } from "@mui/system";
-import SettlementModal from "./settlementModel.component";
+import { useNavigate } from "react-router-dom";
 import PaymentModal from "./paymentModel.component";
-import PaymentSettlementModal from "./paymentSettlement.component";
+import SettlementModal from "./settlementModel.component";
 
 const theme = createTheme({
   palette: {
@@ -80,39 +50,10 @@ const theme = createTheme({
   },
 });
 
-function srcset(image, size, rows = 1, cols = 1) {
-  return {
-    src: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format`,
-    srcSet: `${image}?w=${size * cols}&h=${
-      size * rows
-    }&fit=crop&auto=format&dpr=2 2x`,
-  };
-}
-
-const mockOrders = [
-  {
-    id: "SS10922",
-    customerName: "Sushovan Paul",
-    orderDate: "2024-03-12 at 04:18",
-    itemName: "Margaret Gold Ring, 16mm",
-    price: "Rs: 16,777",
-    orderStatus: "Unfulfilled",
-  },
-  {
-    id: "KS10922",
-    customerName: "Paul Sushovan",
-    orderDate: "2024-03-12 at 04:18",
-    itemName: "Margaret Gold Ring, 16mm",
-    price: "Rs: 26,777",
-    orderStatus: "Fulfilled",
-  },
-];
-
 const PaymentsComponent = ({ row }) => {
   const [ordersList, setOrdersList] = useState([]);
   const [orderStats, setOrderStats] = useState({});
   const [selectedPaymentId, setSelectedPaymentId] = useState("");
-  const [selectedPaymentDetail, setSelectedPaymentDetail] = useState({});
 
   const [paymentList, setPaymentList] = useState([]);
   const [settlementList, setSettlementList] = useState([]);
@@ -144,11 +85,14 @@ const PaymentsComponent = ({ row }) => {
       );
       console.log("settlementList", settlementList?.response?.settlement_list);
 
-      // console.log("sdsd", data.response);
       setShowDataLoading(false);
       setOrdersList(data?.response?.payment_list);
 
-      setPaymentList(data?.response?.payment_list);
+      setPaymentList(
+        data?.response?.payment_list.sort((a, b) => {
+          return new Date(b.updated_at) - new Date(a.updated_at); // Sort in descending order by updated_at
+        })
+      );
 
       setSettlementList(settlementList?.response?.settlement_list);
 
@@ -208,10 +152,6 @@ const PaymentsComponent = ({ row }) => {
         <div className="head-txt">Payments</div>
       </div>
 
-      <div className="secondary-div">
-        <div className="secondary-content"></div>
-      </div>
-
       <div>
         {selectedTab === 0 ? (
           <PaymentModal
@@ -226,59 +166,12 @@ const PaymentsComponent = ({ row }) => {
             selectedPaymentId={selectedPaymentId}
           />
         )}
-        <PaymentSettlementModal
-          modalOpen={openSettlementModal}
-          setModalOpen={setOpenSettlementModal}
-          orderList={ordersList}
-        />
       </div>
-      {/* <Grid
-        container
-        spacing={5}
-        style={{
-          width: "100%",
-          height: "300px",
-          paddingLeft: "40px",
-          marginBottom: "25px",
-        }}
-      >
-        <Grid item xs={12 / 5}>
-          <MetricBoxComponent
-            heading={"Total Orders"}
-            metric={orderStats.total_orders}
-          />
-        </Grid>
-        <Grid item xs={12 / 5}>
-          <MetricBoxComponent
-            heading={"Total Sales"}
-            metric={`${
-              Math.round(Number(orderStats.total_price) / 10000) / 100
-            }M`}
-          />
-        </Grid>
-        <Grid item xs={12 / 5}>
-          <MetricBoxComponent heading={"Orders In Progress"} metric={"4"} />
-        </Grid>
-        <Grid item xs={12 / 5}>
-          <MetricBoxComponent
-            heading={"Orders Completed"}
-            metric={orderStats.completed_orders}
-          />
-        </Grid>
-        <Grid item xs={12 / 5}>
-          <MetricBoxComponent
-            heading={"Orders Refunded"}
-            metric={orderStats.refunded_orders}
-          />
-        </Grid>
-      </Grid> */}
-
       <Box
         sx={{
           width: "95%",
           marginLeft: "40px",
           marginRight: "auto",
-          marginTop: "50px",
           marginBottom: "50px",
           display: "flex",
           justifyContent: "space-between",
@@ -291,7 +184,7 @@ const PaymentsComponent = ({ row }) => {
           onChange={(event, value) => {
             setSelectedTab(value);
             if (value === 0) {
-              setOrdersList(paymentList);
+              setOrdersList(() => paymentList);
             }
             if (value === 1) {
               setOrdersList(settlementList);
@@ -329,7 +222,7 @@ const PaymentsComponent = ({ row }) => {
                 borderTopRightRadius: 0,
                 borderBottomRightRadius: 0,
                 border:
-                  selectedTab === 0 ? "2px solid brown" : "2px solid #BEBEBE",
+                  selectedTab === 0 ? "2px solid #A36E29" : "2px solid #BEBEBE",
               }}
             >
               <p
@@ -386,28 +279,10 @@ const PaymentsComponent = ({ row }) => {
             </Tab>
           </TabList>
         </Tabs>
-        {/* <Button
-          style={{
-            width: "max-content",
-            paddingLeft: "60px",
-            paddingRight: "60px",
-            fontWeight: 600,
-            height: "60px",
-            backgroundColor: "#a36e29",
-            color: "white",
-          }}
-          onClick={() => setOpenSettlementModal(true)}
-        >
-          {" "}
-          Settle Payment
-        </Button> */}
       </Box>
 
       <ThemeProvider theme={theme}>
-        <Paper
-          className="table-paper"
-          sx={{ width: "95%", overflow: "hidden", height: 1000 }}
-        >
+        <Paper sx={{ width: "95%", overflow: "hidden", margin: "auto" }}>
           {showDataLoading ? (
             <CircularProgress
               style={{
@@ -421,11 +296,9 @@ const PaymentsComponent = ({ row }) => {
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
-                    <TableCell></TableCell>
-                    <TableCell>Order Id</TableCell>
-                    <TableCell>Customer</TableCell>
                     <TableCell>Date</TableCell>
-                    <TableCell>Order Item</TableCell>
+                    <TableCell>Payment Id</TableCell>
+                    <TableCell>Order Id</TableCell>
                     <TableCell>Total Price</TableCell>
                     <TableCell>Status</TableCell>
                   </TableRow>
@@ -456,17 +329,9 @@ const PaymentsComponent = ({ row }) => {
                                 setModalOpen(true);
                               }}
                             >
-                              <TableCell>
-                                <Checkbox />
-                              </TableCell>
-                              <TableCell>{row?.order_id}</TableCell>
-                              <TableCell>{row?.user}</TableCell>
                               <TableCell>{row?.updated_at}</TableCell>
-                              <TableCell>
-                                {row?.productsArray?.length > 0
-                                  ? row?.productsArray[0]
-                                  : null}
-                              </TableCell>
+                              <TableCell>{row?.payment_public_id}</TableCell>
+                              <TableCell>{row?.order_id}</TableCell>
                               <TableCell>{row?.settlement_amount}</TableCell>
                               <TableCell
                                 style={{
@@ -477,7 +342,7 @@ const PaymentsComponent = ({ row }) => {
                                       : "gray",
                                 }}
                               >
-                                ⬤ {row?.settlement_status}
+                                {row?.settlement_status}
                               </TableCell>
                             </TableRow>
                           </Fragment>
@@ -502,66 +367,5 @@ const PaymentsComponent = ({ row }) => {
     </div>
   );
 };
-
-const itemData = [
-  {
-    img: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e",
-    title: "Breakfast",
-    rows: 2,
-    cols: 2,
-  },
-  {
-    img: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
-    title: "Burger",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1522770179533-24471fcdba45",
-    title: "Camera",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c",
-    title: "Coffee",
-    cols: 2,
-  },
-  {
-    img: "https://images.unsplash.com/photo-1533827432537-70133748f5c8",
-    title: "Hats",
-    cols: 2,
-  },
-  {
-    img: "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62",
-    title: "Honey",
-    author: "@arwinneil",
-    rows: 2,
-    cols: 2,
-  },
-  {
-    img: "https://images.unsplash.com/photo-1516802273409-68526ee1bdd6",
-    title: "Basketball",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1518756131217-31eb79b20e8f",
-    title: "Fern",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1597645587822-e99fa5d45d25",
-    title: "Mushrooms",
-    rows: 2,
-    cols: 2,
-  },
-  {
-    img: "https://images.unsplash.com/photo-1567306301408-9b74779a11af",
-    title: "Tomato basil",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
-    title: "Sea star",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1589118949245-7d38baf380d6",
-    title: "Bike",
-    cols: 2,
-  },
-];
 
 export default PaymentsComponent;

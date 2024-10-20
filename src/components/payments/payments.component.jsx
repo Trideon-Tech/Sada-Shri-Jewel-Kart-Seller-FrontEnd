@@ -242,7 +242,7 @@ const PaymentsComponent = ({ row }) => {
                 padding: "20px",
                 borderRadius: 0,
                 border:
-                  selectedTab === 1 ? "2px solid brown" : "2px solid #BEBEBE",
+                  selectedTab === 0 ? "2px solid #A36E29" : "2px solid #BEBEBE",
               }}
             >
               <p
@@ -264,7 +264,7 @@ const PaymentsComponent = ({ row }) => {
                 borderTopLeftRadius: 0,
                 borderBottomLeftRadius: 0,
                 border:
-                  selectedTab === 2 ? "2px solid brown" : "2px solid #BEBEBE",
+                  selectedTab === 0 ? "2px solid #A36E29" : "2px solid #BEBEBE",
               }}
             >
               <p
@@ -295,13 +295,22 @@ const PaymentsComponent = ({ row }) => {
             <TableContainer style={{ height: "100%" }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Payment Id</TableCell>
-                    <TableCell>Order Id</TableCell>
-                    <TableCell>Total Price</TableCell>
-                    <TableCell>Status</TableCell>
-                  </TableRow>
+                  {selectedTab === 0 ? (
+                    <TableRow>
+                      <TableCell>Date</TableCell>
+                      <TableCell>Payment Id</TableCell>
+                      <TableCell>Order Id</TableCell>
+                      <TableCell>Total Price</TableCell>
+                      <TableCell>Status</TableCell>
+                    </TableRow>
+                  ) : (
+                    <TableRow>
+                      <TableCell>Date</TableCell>
+                      <TableCell>Settlement Id</TableCell>
+                      <TableCell>Settlement Amount</TableCell>
+                      <TableCell>Total Amount</TableCell>
+                    </TableRow>
+                  )}
                 </TableHead>
                 <TableBody>
                   {ordersList?.length > 0 &&
@@ -313,38 +322,64 @@ const PaymentsComponent = ({ row }) => {
                       ?.map((row) => {
                         return (
                           <Fragment key={row.id}>
-                            <TableRow
-                              hover
-                              role="checkbox"
-                              tabIndex={-1}
-                              key={row.id}
-                              onClick={() => {
-                                if (selectedTab === 1) {
-                                  setSelectedPaymentId(
-                                    row?.settlement_public_id
-                                  );
-                                } else {
-                                  setSelectedPaymentId(row?.order_record_id);
-                                }
-                                setModalOpen(true);
-                              }}
-                            >
-                              <TableCell>{row?.updated_at}</TableCell>
-                              <TableCell>{row?.payment_public_id}</TableCell>
-                              <TableCell>{row?.order_id}</TableCell>
-                              <TableCell>{row?.settlement_amount}</TableCell>
-                              <TableCell
-                                style={{
-                                  fontWeight: 800,
-                                  color:
-                                    row?.settlement_status !== "NOT_SETTLED"
-                                      ? "green"
-                                      : "gray",
+                            {selectedTab === 0 ? (
+                              <TableRow
+                                hover
+                                role="checkbox"
+                                tabIndex={-1}
+                                key={row.id}
+                                onClick={() => {
+                                  if (selectedTab === 1) {
+                                    setSelectedPaymentId(
+                                      row?.settlement_public_id
+                                    );
+                                  } else {
+                                    setSelectedPaymentId(row?.order_record_id);
+                                  }
+                                  setModalOpen(true);
                                 }}
                               >
-                                {row?.settlement_status}
-                              </TableCell>
-                            </TableRow>
+                                <TableCell>{row?.updated_at}</TableCell>
+                                <TableCell>{row?.payment_public_id}</TableCell>
+                                <TableCell>{row?.order_id}</TableCell>
+                                <TableCell>{row?.settlement_amount}</TableCell>
+                                <TableCell
+                                  style={{
+                                    fontWeight: 800,
+                                    color:
+                                      row?.settlement_status !== "NOT_SETTLED"
+                                        ? "green"
+                                        : "gray",
+                                  }}
+                                >
+                                  {row?.settlement_status}
+                                </TableCell>
+                              </TableRow>
+                            ) : (
+                              <TableRow
+                                hover
+                                role="checkbox"
+                                tabIndex={-1}
+                                key={row.id}
+                                onClick={() => {
+                                  if (selectedTab === 1) {
+                                    setSelectedPaymentId(
+                                      row?.settlement_public_id
+                                    );
+                                  } else {
+                                    setSelectedPaymentId(row?.order_record_id);
+                                  }
+                                  setModalOpen(true);
+                                }}
+                              >
+                                <TableCell>{row?.updated_at}</TableCell>
+                                <TableCell>
+                                  {row?.settlement_public_id}
+                                </TableCell>
+                                <TableCell>{row?.settlement_amount}</TableCell>
+                                <TableCell>{row?.total_amount}</TableCell>
+                              </TableRow>
+                            )}
                           </Fragment>
                         );
                       })}

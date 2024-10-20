@@ -1,5 +1,8 @@
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Box,
+  Button,
+  Card,
   Divider,
   Modal,
   Table,
@@ -8,19 +11,19 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Card,
-  Button,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import { useEffect, useState } from "react";
+
 const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
   const [payementDetails, setPaymentDetails] = useState({});
   const [orderList, setOrderList] = useState([]);
+
   useEffect(() => {
     (async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
+
       const { data } = await axios.get(
         `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=settlement_detail&settlement_public_id=${selectedPaymentId}`,
         {
@@ -29,13 +32,6 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
             "Content-Type": "multipart/form-data",
           },
         }
-      );
-      console.log(
-        "data?.response?.payment_list[0]",
-        data?.response?.settlement
-      );
-      console.log(
-        Object.values(data?.response?.settlement?.orders).map((item) => item[0])
       );
 
       setPaymentDetails(data?.response?.settlement);
@@ -58,7 +54,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: "70%",
+          width: "60%",
           height: 800,
           borderRadius: "20px",
           bgcolor: "background.paper",
@@ -86,7 +82,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
             }}
           >
             <Button onClick={() => setModalOpen(false)}>
-              <CloseIcon style={{ fontSize: "2.5rem" }} />
+              <CloseIcon style={{ fontSize: "2rem", color: "#A36E29" }} />
             </Button>
           </div>
           <div
@@ -95,16 +91,30 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               height: "100%",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-around",
+              justifyContent: "center",
               alignItems: "flex-start",
               marginRight: "auto",
             }}
           >
-            <p style={{ fontWeight: 800, color: "#333333" }}>
+            <p
+              style={{
+                fontWeight: 800,
+                color: "#333333",
+                fontFamily: '"Work Sans", sans-serif',
+              }}
+            >
               <b>Settlement : {payementDetails?.settlement_public_id}</b>
             </p>
-            <p style={{ fontWeight: 800, color: "gray" }}>
-              {payementDetails?.updated_at}
+            <p
+              style={{
+                fontWeight: 800,
+                color: "gray",
+                fontFamily: '"Work Sans", sans-serif',
+              }}
+            >
+              {new Date(payementDetails?.updated_at).toLocaleDateString(
+                "en-GB"
+              )}
             </p>
           </div>
           <div
@@ -113,13 +123,26 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               height: "100%",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-around",
+              justifyContent: "center",
               alignItems: "flex-start",
               marginRight: "auto",
             }}
           >
-            <p style={{ fontWeight: 800, color: "gray" }}>SETTLEMENT ID</p>
-            <p style={{ color: "#333333" }}>
+            <p
+              style={{
+                fontWeight: 800,
+                color: "gray",
+                fontFamily: '"Work Sans", sans-serif',
+              }}
+            >
+              Settlement ID
+            </p>
+            <p
+              style={{
+                color: "#333333",
+                fontFamily: '"Work Sans", sans-serif',
+              }}
+            >
               <b>{payementDetails?.settlement_public_id} </b>
             </p>
           </div>
@@ -129,51 +152,29 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               height: "100%",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-around",
+              justifyContent: "center",
               alignItems: "flex-start",
               marginLeft: "auto",
               marginRight: "20px",
             }}
           >
-            <div
+            <p
               style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
+                fontWeight: 800,
+                color: "gray",
+                fontFamily: '"Work Sans", sans-serif',
               }}
             >
-              <p style={{ fontWeight: 800, color: "gray" }}>STATUS:</p>
-              <p
-                style={{
-                  backgroundColor:
-                    payementDetails?.settlement_status === "NOT_SETTLED"
-                      ? "#F99B1CDF"
-                      : "#87c914",
-                  marginLeft: "20px",
-                  padding: "7px",
-                  paddingLeft: "15px",
-                  paddingRight: "15px",
-                  color: "white",
-                  borderRadius: "5px",
-                }}
-              >
-                <b>{payementDetails?.settlement_status}</b>
-              </p>
-            </div>
-            <div
+              Amount
+            </p>
+            <p
               style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
+                color: "#333333",
+                fontFamily: '"Work Sans", sans-serif',
               }}
             >
-              <p style={{ fontWeight: 800, color: "gray" }}>PAYMENT:</p>
-              <p style={{}}>
-                <b>{payementDetails?.total_amount}</b>
-              </p>
-            </div>
+              <b>{payementDetails?.settlement_amount} </b>
+            </p>
           </div>
         </div>
         <Divider />

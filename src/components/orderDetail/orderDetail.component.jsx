@@ -108,6 +108,10 @@ const OrderDetail = ({ id }) => {
     (async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
+
+      console.log(
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=order_details&order_id=${id}`
+      );
       const { data } = await axios.get(
         `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=order_details&order_id=${id}`,
         {
@@ -399,7 +403,13 @@ const OrderDetail = ({ id }) => {
           </div>
         </Grid>
         <Grid item xs={8} style={{ marginTop: "30px" }}>
-          <OrderSummaryComponent orderDetails={orderDetails} />
+          <OrderSummaryComponent
+            orderDetails={
+              typeof orderDetails === "undefined" || orderDetails === null
+                ? []
+                : orderDetails
+            }
+          />
           <div
             style={{ padding: "40px", paddingTop: "50px", paddingBottom: 0 }}
           >
@@ -414,7 +424,9 @@ const OrderDetail = ({ id }) => {
               Order Status
             </p>
           </div>
-          <TrackOrderComponent logs={logs} />
+          <TrackOrderComponent
+            logs={typeof logs === "undefined" || logs === null ? {} : logs}
+          />
         </Grid>
         <Grid item xs={4} style={{ marginTop: "30px" }}>
           <CustomerDetailComponent

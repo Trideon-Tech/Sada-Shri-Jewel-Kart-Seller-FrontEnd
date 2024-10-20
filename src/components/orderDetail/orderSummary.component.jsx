@@ -112,17 +112,17 @@ const OrderSummaryComponent = ({ orderDetails }) => {
             alignItems: "center",
             width: "100px",
             backgroundColor:
-              orderDetails[0]?.shipment_status === "ORDER_COMPLETED"
+              orderDetails[0]?.shipment_status !== "ORDER_CREATED"
                 ? "#cffbcf"
                 : "#F99B1C59",
             borderRadius: "5px",
             color:
-              orderDetails[0]?.shipment_status === "ORDER_COMPLETED"
+              orderDetails[0]?.shipment_status !== "ORDER_CREATED"
                 ? "#008000"
                 : "#F99B1C",
           }}
         >
-          {orderDetails[0]?.shipment_status === "ORDER_COMPLETED"
+          {orderDetails[0]?.shipment_status !== "ORDER_CREATED"
             ? "Fulfilled"
             : "Unfulfilled"}
         </div>

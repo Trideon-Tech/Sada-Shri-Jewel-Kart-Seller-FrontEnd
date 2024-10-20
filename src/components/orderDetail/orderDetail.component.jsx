@@ -104,14 +104,24 @@ const OrderDetail = ({ id }) => {
   const [logistics, setLogistics] = useState("");
   const [logs, setLogs] = useState();
 
+  const deliveryPartners = [
+    {
+      name: "Sequel Logistics",
+      logo: SequelLogo,
+      value: "sequel",
+    },
+    {
+      name: "Delhivery Logistics",
+      logo: DelhiveryLogo,
+      value: "delhivery",
+    },
+  ];
+
   useEffect(() => {
     (async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      console.log(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=order_details&order_id=${id}`
-      );
       const { data } = await axios.get(
         `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=order_details&order_id=${id}`,
         {
@@ -137,12 +147,19 @@ const OrderDetail = ({ id }) => {
     if (!trackingNumber) return;
     if (!logistics) return;
 
+    let orderDetailIds = orderDetails
+      .map((o) => o["order_detail_id"])
+      .join(",");
+
+    console.log(logistics);
+
     const formData = new FormData();
     formData.append("type", "create_shipment");
-    formData.append("shipment_id", trackingNumber);
+    formData.append("tracking_number", trackingNumber);
     formData.append("logistics", logistics);
+    formData.append("order_detail_ids", orderDetailIds);
 
-    const { data } = await axios.post(
+    await axios.post(
       `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php`,
       formData,
       {
@@ -152,7 +169,23 @@ const OrderDetail = ({ id }) => {
         },
       }
     );
-    navigate("/orders");
+
+    const { data } = await axios.get(
+      `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=order_details&order_id=${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    console.log("order summary", data?.response);
+    setOrderDetails(data?.response);
+
+    setLogs(JSON.parse(data?.response[0]?.shipment_details));
+
+    // navigate("/orders");
   };
 
   return (
@@ -257,13 +290,17 @@ const OrderDetail = ({ id }) => {
                 <Select
                   labelId="demo-multiple-name-label"
                   id="demo-multiple-name"
-                  onChange={(event) => setLogistics(event.target.value)}
+                  onChange={(event) => {
+                    setLogistics(
+                      () =>
+                        deliveryPartners.find(
+                          (e) => e["name"] === event.target.value
+                        )["value"]
+                    );
+                  }}
                   input={<OutlinedInput label="Name" />}
                 >
-                  {[
-                    { name: "Sequel Logistics", logo: SequelLogo },
-                    { name: "Delhivery Logistics", logo: DelhiveryLogo },
-                  ].map((item) => (
+                  {deliveryPartners.map((item) => (
                     <MenuItem key={item.name} value={item.name}>
                       {item.name}
                     </MenuItem>
@@ -389,13 +426,28 @@ const OrderDetail = ({ id }) => {
             </div>
             <Button
               variant="contained"
-              style={{
-                marginLeft: "auto",
-                width: "300px",
-                height: "62px",
-                fontWeight: 700,
-                backgroundColor: "#A36E29",
-              }}
+              style={
+                orderDetails[0]?.shipment_status !== "ORDER_CREATED"
+                  ? {
+                      marginLeft: "auto",
+                      width: "300px",
+                      height: "62px",
+                      fontWeight: 700,
+                      backgroundColor: "#d5d5d5",
+                    }
+                  : {
+                      marginLeft: "auto",
+                      width: "300px",
+                      height: "62px",
+                      fontWeight: 700,
+                      backgroundColor: "#A36E29",
+                    }
+              }
+              disabled={
+                orderDetails[0]?.shipment_status !== "ORDER_CREATED"
+                  ? true
+                  : false
+              }
               onClick={() => setOpen(true)}
             >
               FulFill Order

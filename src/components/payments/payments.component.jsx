@@ -90,11 +90,15 @@ const PaymentsComponent = ({ row }) => {
 
       setPaymentList(
         data?.response?.payment_list.sort((a, b) => {
-          return new Date(b.updated_at) - new Date(a.updated_at); // Sort in descending order by updated_at
+          return new Date(b.updated_at) - new Date(a.updated_at);
         })
       );
 
-      setSettlementList(settlementList?.response?.settlement_list);
+      setSettlementList(
+        settlementList?.response?.settlement_list.sort((a, b) => {
+          return new Date(b.updated_at) - new Date(a.updated_at);
+        })
+      );
 
       setRefundList(
         data?.response?.payment_list?.filter(

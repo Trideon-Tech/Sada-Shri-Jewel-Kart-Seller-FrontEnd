@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+import { Done } from "@mui/icons-material";
 import {
   Button,
+  CircularProgress,
+  createTheme,
   Grid,
   InputAdornment,
-  CircularProgress,
   ThemeProvider,
-  createTheme,
 } from "@mui/material";
-import { Done } from "@mui/icons-material";
+import axios from "axios";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 import "./registration-user-details.styles.scss";
 
@@ -39,23 +39,7 @@ const RegistrationUserDetails = () => {
   const [verifyOTPAdornment, activateVerifyOTPAdornment] = useState(false);
   const [nextStepLoading, activateNextStepLoading] = useState(false);
 
-  // const sendOTP = () => {
-  //   // API to send OTP
-  //   toast("OTP Sent Successfully!", generalToastStyle);
-  //   activateSendOTPAdornment(false);
-  //   setOTPSent(true);
-  // };
-
-  // const verifyOTP = () => {
-  //   // API to verify OTP
-  //   toast("OTP Verified Successfully!", generalToastStyle);
-  //   activateVerifyOTPAdornment(false);
-  //   setOTPVerified(true);
-  // };
-
   const sendOTP = () => {
-    // API to send OTP
-    console.log("otp", otp);
     sendOTPHandler();
     toast("OTP Sent Successfully!", generalToastStyle);
     activateSendOTPAdornment(false);
@@ -63,20 +47,14 @@ const RegistrationUserDetails = () => {
   };
 
   const verifyOTP = () => {
-    console.log("otp", otp);
     verifyOTPHandler();
-    // API to verify OTP
-
-    // setOTPVerified(true);
   };
 
   const sendOTPHandler = () => {
     const formData = new FormData();
-    // setotpSent(true);
     formData.append("type", "generate_otp");
     formData.append("mobile", `91${mobile}`);
 
-    //call API for OTP verification
     axios
       .post("https://api.sadashrijewelkart.com/v1.0.0/user/otp.php", formData, {
         headers: {
@@ -86,88 +64,19 @@ const RegistrationUserDetails = () => {
       .then((response) => {
         console.log(response);
         if (response.data.success === 1) {
-          // setotpSent(false);
         }
       })
       .catch((error) => {
         console.error("Error:", error);
-      });
-  };
-
-  const verifyOTPHandler1 = () => {
-    const formData = new FormData();
-    // setotpSent(true);
-    formData.append("type", "verify_otp");
-    formData.append("mobile", `91${mobile}`);
-    formData.append("otp", otp);
-
-    //call API for OTP verification
-    axios
-      .get(
-        `https://api.sadashrijewelkart.com/v1.0.0/user/otp.php?type=verify_otp&otp=${otp}&mobile=${`${mobile}`}`,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-      .then((response) => {
-        console.log("userdata=====================================", response);
-        if (response?.data?.response?.type === "success") {
-          toast("OTP Verified Successfully!", generalToastStyle);
-          localStorage.setItem("mobile", mobile);
-          navigate("/register/company");
-        }
-        if (
-          response.data.success === 1 &&
-          response?.data?.response?.user_details
-        ) {
-          setOTPVerified(true);
-          if (response?.data?.response?.user_details?.user_exists) {
-          }
-          if (response.data.response.user_details.user_exists) {
-            localStorage.setItem(
-              "user_id",
-              response.data.response.user_details.user_details.id
-            );
-            localStorage.setItem(
-              "token",
-              response.data.response.user_details.user_details.token
-            );
-            localStorage.setItem(
-              "user_name",
-              response.data.response.user_details.user_details.name
-            );
-            localStorage.setItem(
-              "user_email",
-              response.data.response.user_details.user_details.email
-            );
-            localStorage.setItem(
-              "user_data",
-              response.data.response.user_details.user_details
-            );
-            navigate("/register/company");
-            toast("OTP Verified Successfully!", generalToastStyle);
-            activateVerifyOTPAdornment(false);
-          } else {
-            toast("OTP Verification Failed !", generalToastStyle);
-          }
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        toast("OTP Verification Failed !", generalToastStyle);
       });
   };
 
   const verifyOTPHandler = () => {
     const formData = new FormData();
-    // setotpSent(true);
     formData.append("type", "verify_otp");
     formData.append("mobile", `91${mobile}`);
     formData.append("otp", otp);
 
-    //call API for OTP verification
     axios
       .get(
         `https://api.sadashrijewelkart.com/v1.0.0/seller/otp.php?type=verify_otp&otp=${otp}&mobile=${`${mobile}`}`,
@@ -178,16 +87,10 @@ const RegistrationUserDetails = () => {
         }
       )
       .then((response) => {
-        console.log(
-          "userdata=====================================",
-          response,
-          response?.data?.response?.seller_details?.seller_details
-            ?.seller_exists
-        );
         setOTPVerified(true);
 
         if (response.data.success === 1) {
-          if (response?.data?.response?.seller_details?.seller_exists) {
+          if (!response?.data?.response?.seller_details?.seller_exists) {
             toast("OTP Verified Successfully!", generalToastStyle);
             localStorage.setItem("mobile", mobile);
             navigate("/register/company");

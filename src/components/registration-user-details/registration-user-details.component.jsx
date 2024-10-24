@@ -93,7 +93,28 @@ const RegistrationUserDetails = () => {
           if (!response?.data?.response?.seller_details?.seller_exists) {
             toast("OTP Verified Successfully!", generalToastStyle);
             localStorage.setItem("mobile", mobile);
-            navigate("/register/company");
+
+            const formData = new FormData();
+            formData.append("type", "register_seller");
+            formData.append("mobile", mobile);
+            formData.append("name", `${firstName} ${lastName}`);
+
+            axios
+              .post(
+                "https://api.sadashrijewelkart.com/v1.0.0/seller/register.php",
+                formData,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                  },
+                }
+              )
+              .then((response) => {
+                navigate("/register/company");
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+              });
           } else if (response?.data?.response?.seller_details?.seller_exists) {
             return toast("User Already Exists | Login", generalToastStyle);
           }
@@ -103,6 +124,7 @@ const RegistrationUserDetails = () => {
         console.error("Error:", error);
       });
   };
+
   const onNext = () => {
     if (firstName === "" || typeof firstName === "undefined") {
       toast.warn("First Name is required!", generalToastStyle);

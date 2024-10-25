@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
 import {
   Button,
+  CircularProgress,
+  createTheme,
   Divider,
   Paper,
-  TableContainer,
   Table,
-  Typography,
-  TableHead,
   TableBody,
-  TableRow,
   TableCell,
+  TableContainer,
+  TableHead,
   TablePagination,
-  createTheme,
+  TableRow,
   ThemeProvider,
-  CircularProgress,
+  Typography,
 } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 
-import { Edit, Delete } from "@mui/icons-material";
-import { generalToastStyle } from "../../utils/toast.styles";
-import "./products.styles.scss";
+import { Delete, Edit } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { generalToastStyle } from "../../utils/toast.styles";
+import "./products.styles.scss";
 
 const theme = createTheme({
   palette: {
@@ -59,7 +59,7 @@ const Products = () => {
       })
       .catch((error) => {
         console.log(error);
-        toast.warn(error.response.data.message, generalToastStyle);
+        // toast.warn(error.response.data.message, generalToastStyle);
         setProductsLoaded(true);
       });
   };
@@ -203,6 +203,7 @@ const Products = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
+                boxShadow: "none",
               }}
             >
               <img

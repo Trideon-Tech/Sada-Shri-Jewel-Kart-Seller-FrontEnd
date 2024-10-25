@@ -21,7 +21,6 @@ import "react-toastify/dist/ReactToastify.css";
 import "./orders.styles.scss";
 
 import { TabList, Tabs } from "@mui/joy";
-import { useNavigate } from "react-router-dom";
 import PaymentModal from "./paymentModel.component";
 import SettlementModal from "./settlementModel.component";
 
@@ -85,7 +84,6 @@ const PaymentsComponent = ({ row }) => {
       );
       console.log("settlementList", settlementList?.response?.settlement_list);
 
-      setShowDataLoading(false);
       setOrdersList(data?.response?.payment_list);
 
       setPaymentList(
@@ -100,21 +98,15 @@ const PaymentsComponent = ({ row }) => {
         })
       );
 
-      setRefundList(
-        data?.response?.payment_list?.filter(
-          (item) => item?.shipment_status === "REFUND_LIST"
-        )
-      );
+      setRefundList([]);
 
       setOrderStats(data?.response?.dashboard_details);
+
+      setShowDataLoading(false);
     })();
   }, []);
 
-  const navigate = useNavigate();
-  const admin = JSON.parse(localStorage.getItem("admin"));
-  const [openSettlementModal, setOpenSettlementModal] = useState(false);
-
-  const [showLoading, setShowLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(true);
 
   const [page, setPage] = useState(0);
 
@@ -187,14 +179,15 @@ const PaymentsComponent = ({ row }) => {
           defaultValue={0}
           onChange={(event, value) => {
             setSelectedTab(value);
+            console.log(refundList);
             if (value === 0) {
               setOrdersList(() => paymentList);
             }
             if (value === 1) {
               setOrdersList(settlementList);
             }
-            if (value === 3) {
-              setOrdersList(refundList);
+            if (value === 2) {
+              setOrdersList(() => refundList);
             }
           }}
           sx={{
@@ -286,7 +279,10 @@ const PaymentsComponent = ({ row }) => {
       </Box>
 
       <ThemeProvider theme={theme}>
-        <Paper sx={{ width: "95%", overflow: "hidden", margin: "auto" }}>
+        <Paper
+          className="table-paper"
+          sx={{ width: "95%", overflow: "hidden", height: 950 }}
+        >
           {showDataLoading ? (
             <CircularProgress
               style={{
@@ -296,7 +292,7 @@ const PaymentsComponent = ({ row }) => {
               }}
             />
           ) : (
-            <TableContainer style={{ height: "100%" }}>
+            <TableContainer style={{ height: "90%" }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   {selectedTab === 0 ? (

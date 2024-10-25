@@ -76,12 +76,10 @@ const Login = () => {
 
   const verifyOTPHandler = () => {
     const formData = new FormData();
-    // setotpSent(true);
     formData.append("type", "verify_otp");
     formData.append("mobile", `91${mobile}`);
     formData.append("otp", otp);
 
-    //call API for OTP verification
     axios
       .get(
         `https://api.sadashrijewelkart.com/v1.0.0/seller/otp.php?type=verify_otp&otp=${otp}&mobile=${`${mobile}`}`,
@@ -92,12 +90,6 @@ const Login = () => {
         }
       )
       .then((response) => {
-        console.log(
-          "userdata=====================================",
-          response,
-          response?.data?.response?.seller_details?.seller_details
-            ?.seller_exists
-        );
         setOTPVerified(true);
 
         if (response.data.success === 1) {
@@ -133,7 +125,7 @@ const Login = () => {
               "user_data",
               response.data.response.seller_details.seller_details
             );
-            navigate("/dashboard");
+            navigate("/profile");
           } else {
             // navigate("/user-details");
           }
@@ -142,48 +134,6 @@ const Login = () => {
       .catch((error) => {
         console.error("Error:", error);
       });
-  };
-
-  const onNext = () => {
-    // verifyOTP();
-    // if (!otpVerified) return;
-    if (mobile === "" || typeof mobile === "undefined") {
-      toast.warn("Mobile Number is required!", generalToastStyle);
-    } else if (otp === "" || typeof otp === "undefined") {
-      toast.warn("OTP is required!", generalToastStyle);
-    } else {
-      activateNextStepLoading(true);
-      axios
-        .get(
-          `https://api.sadashrijewelkart.com/v1.0.0/seller/login.php?mobile=${mobile}`,
-          {
-            headers: {
-              Authorization:
-                "Bearer CWcyi9M3OIIi17umJNZi5YlXTnHrmsDhYbAP3N0BuZuzNwIQNpRcUvdeiJjPlVxy",
-            },
-          }
-        )
-        .then((response) => {
-          const token = response.data.response.token;
-          const logoUrl = response.data.response.organization.logo;
-          console.log("login successful");
-          localStorage.setItem("logoUrl", JSON.stringify(logoUrl));
-          localStorage.setItem(
-            "seller",
-            JSON.stringify(response.data.response)
-          );
-          localStorage.setItem("token", token);
-          localStorage.setItem("seller_id", response.data.response);
-
-          navigate("/dashboard");
-        })
-        .catch((error) => {
-          console.error("Login failed:", error.message);
-        })
-        .finally(() => {
-          activateNextStepLoading(false);
-        });
-    }
   };
 
   const handleLogoClick = () => {

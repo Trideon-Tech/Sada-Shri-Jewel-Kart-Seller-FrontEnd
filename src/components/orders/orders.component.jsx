@@ -13,6 +13,7 @@ import {
   TablePagination,
   TableRow,
   ThemeProvider,
+  Typography,
 } from "@mui/material";
 import axios from "axios";
 import React, { Fragment, useEffect, useState } from "react";
@@ -68,20 +69,22 @@ const OrdersComponent = ({ row }) => {
         }
       );
 
-      console.log("sdsd", data.response);
       setOrderStats(data?.response?.dashboard_details);
-      setOrdersList(
-        data?.response?.order_list.sort((a, b) => {
-          return new Date(b.updated_at) - new Date(a.updated_at); // Sort in descending order by updated_at
-        })
-      );
+      if (data?.response?.order_list !== null) {
+        setOrdersList(
+          data?.response?.order_list.sort((a, b) => {
+            return new Date(b.updated_at) - new Date(a.updated_at); // Sort in descending order by updated_at
+          })
+        );
+      }
+
+      setShowLoading(false);
     })();
   }, []);
 
   const navigate = useNavigate();
-  const admin = JSON.parse(localStorage.getItem("admin"));
 
-  const [showLoading, setShowLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(true);
 
   const [page, setPage] = useState(0);
 
@@ -149,7 +152,7 @@ const OrdersComponent = ({ row }) => {
           />
         </Grid>
         <Grid item xs={12 / 5}>
-          <MetricBoxComponent heading={"Orders In Progress"} metric={"4"} />
+          <MetricBoxComponent heading={"Orders In Progress"} metric={"0"} />
         </Grid>
         <Grid item xs={12 / 5}>
           <MetricBoxComponent
@@ -171,7 +174,7 @@ const OrdersComponent = ({ row }) => {
           className="table-paper"
           sx={{ width: "95%", overflow: "hidden", height: 950 }}
         >
-          {ordersList?.length === 0 ? (
+          {showLoading ? (
             <CircularProgress
               style={{
                 margin: "auto",
@@ -179,7 +182,7 @@ const OrdersComponent = ({ row }) => {
                 height: "100%",
               }}
             />
-          ) : (
+          ) : ordersList && ordersList?.length > 0 ? (
             <TableContainer style={{ height: "90%" }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
@@ -238,6 +241,26 @@ const OrdersComponent = ({ row }) => {
                 </TableBody>
               </Table>
             </TableContainer>
+          ) : (
+            <Paper
+              style={{
+                height: "50vh",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "none",
+              }}
+            >
+              <img
+                src="https://cdn.dribbble.com/users/1753953/screenshots/3818675/animasi-emptystate.gif"
+                alt="No products added"
+                style={{ width: "150px", marginBottom: "16px" }}
+              />
+              <Typography variant="h4" style={{ fontWeight: "bold" }}>
+                No Orders Yet
+              </Typography>
+            </Paper>
           )}
           <TablePagination
             sx={{ position: "sticky", zIndex: 2 }}

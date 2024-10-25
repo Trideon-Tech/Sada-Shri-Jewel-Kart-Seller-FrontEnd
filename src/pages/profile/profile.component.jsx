@@ -221,6 +221,7 @@ const Profile = () => {
                 <img
                   src={`https://api.sadashrijewelkart.com/assets/${coverImage}`}
                   style={{ width: "100%" }}
+                  alt="Cover Image not found!"
                 />
               </Box>
             </Paper>

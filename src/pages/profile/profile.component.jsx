@@ -1,30 +1,15 @@
-import React, { useEffect, useState } from "react";
-import {
-  Paper,
-  Avatar,
-  IconButton,
-  createTheme,
-  ThemeProvider,
-  Box,
-  Button,
-  TextField,
-} from "@mui/material";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import EditIcon from "@mui/icons-material/Edit";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import "./productpage.styles.scss";
-import CustomDrawer from "../../components/drawer/drawer.component";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import SaveIcon from "@mui/icons-material/Save";
+import { Box, Button, Paper, TextField } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import CustomDrawer from "../../components/drawer/drawer.component";
+import "./productpage.styles.scss";
 
-import { borderRadius, display, height, positions, width } from "@mui/system";
 import axios from "axios";
-import zIndex from "@mui/material/styles/zIndex";
-import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const [editProfile, setEditProfile] = useState(true);
-  const navigate = useNavigate();
 
   const [gstIn, setGstIn] = useState("asdf12325df");
   const [firstName, setFirstName] = useState("Sushovan");
@@ -32,9 +17,9 @@ const Profile = () => {
   const [lastName, setLastName] = useState("Paul");
   const [emailId, setEmailId] = useState("sushovanpaul07@gmail.com");
   const [phone, setPhone] = useState("8102535095");
-  const [password, setPassword] = useState("abcd1234");
   const [coverImage, setCoverImage] = useState("");
   const [profileImage, setProfileImage] = useState("");
+  const [details, setDetails] = useState();
 
   useEffect(() => {
     let data = new FormData();
@@ -52,16 +37,20 @@ const Profile = () => {
     axios
       .request(config)
       .then((response) => {
-        console.log(JSON.stringify(response.data));
-
-        setGstIn(response?.data?.response?.gstin);
-        setFirstName(response?.data?.response?.name);
-        setLastName(response?.data?.response?.name);
-        setEmailId(response?.data?.response?.contact_email);
-        setPhone(response?.data?.response?.mobile);
-        setCompanyTradeName(response?.data?.response?.company_name);
-        setCoverImage(response?.data?.response?.cover_image);
-        setProfileImage(response?.data?.response?.logo);
+        setDetails(response?.data?.response);
+        setGstIn(response?.data?.response?.organization?.gstin);
+        setFirstName(response?.data?.response?.name.split(/\s+/)[0]);
+        setLastName(response?.data?.response?.name.split(/\s+/)[1]);
+        setEmailId(response?.data?.response?.organization?.contact_email);
+        setPhone(`+${response?.data?.response?.mobile}`);
+        setCompanyTradeName(
+          response?.data?.response?.organization?.name?.length > 20
+            ? response?.data?.response?.organization?.name.substring(0, 20) +
+                "..."
+            : response?.data?.response?.organization?.name
+        );
+        setCoverImage(response?.data?.response?.organization?.cover_image);
+        setProfileImage(response?.data?.response?.organization?.logo);
       })
       .catch((error) => {
         console.log(error);
@@ -69,7 +58,6 @@ const Profile = () => {
   }, []);
 
   const updateProfileDetails = () => {
-    console.log("heu");
     const FormData = require("form-data");
     let data = new FormData();
     data.append("name", `${firstName} ${lastName}`);
@@ -77,7 +65,6 @@ const Profile = () => {
     data.append("email", `${emailId}`);
     data.append("type", "update_seller");
 
-    //call API for OTP verification
     axios
       .post(
         "https://api.sadashrijewelkart.com/v1.0.0/seller/register.php",
@@ -90,9 +77,7 @@ const Profile = () => {
         }
       )
       .then((response) => {
-        console.log(response);
         if (response.data.success === 1) {
-          // navigate(0);
         }
       })
       .catch((error) => {
@@ -419,6 +404,146 @@ const Profile = () => {
                   </p>
                 </>
               )}
+            </Box>
+          </Paper>
+          <Paper
+            elevation={3}
+            style={{
+              width: "100%",
+              minHeight: "100px",
+              height: "max-content",
+              borderRadius: "10px",
+              marginTop: "30px",
+              padding: "30px",
+              display: "flex",
+              justifyContent: "space-around",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Box
+              style={{
+                width: "95%",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <p style={{ fontSize: "1.5rem", fontWeight: 600 }}>
+                Address Details
+              </p>
+            </Box>
+
+            <Box
+              style={{
+                width: "95%",
+                marginTop: "40px",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <p style={{ fontSize: "1.2rem", width: "60%" }}>
+                <b style={{ color: "rgba(0,0,0,0.8)" }}>Add. Line 1 : </b>
+                {details?.organization?.addresses[0]?.add_line_1}
+              </p>
+              <p style={{ fontSize: "1.2rem", marginRight: "auto" }}>
+                <b style={{ color: "rgba(0,0,0,0.8)" }}>Add. Line 2 : </b>
+                {details?.organization?.addresses[0]?.add_line_2}
+              </p>
+            </Box>
+            <Box
+              style={{
+                width: "95%",
+                marginTop: "40px",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <p style={{ fontSize: "1.2rem", width: "60%" }}>
+                <b style={{ color: "rgba(0,0,0,0.8)" }}>City : </b>
+                {details?.organization?.addresses[0]?.city}
+              </p>
+              <p style={{ fontSize: "1.2rem", marginRight: "auto" }}>
+                <b style={{ color: "rgba(0,0,0,0.8)" }}>State : </b>
+                {details?.organization?.addresses[0]?.state}
+              </p>
+            </Box>
+            <Box
+              style={{
+                width: "95%",
+                marginTop: "40px",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <p style={{ fontSize: "1.2rem", width: "60%" }}>
+                <b style={{ color: "rgba(0,0,0,0.8)" }}>Pincode : </b>
+                {details?.organization?.addresses[0]?.pincode}
+              </p>
+            </Box>
+          </Paper>
+          <Paper
+            elevation={3}
+            style={{
+              width: "100%",
+              minHeight: "100px",
+              height: "max-content",
+              borderRadius: "10px",
+              marginTop: "30px",
+              padding: "30px",
+              display: "flex",
+              justifyContent: "space-around",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Box
+              style={{
+                width: "95%",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <p style={{ fontSize: "1.5rem", fontWeight: 600 }}>
+                Bank Details
+              </p>
+            </Box>
+            <Box
+              style={{
+                width: "95%",
+                marginTop: "40px",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <p style={{ fontSize: "1.2rem", width: "60%" }}>
+                <b style={{ color: "rgba(0,0,0,0.8)" }}>
+                  Account Holder Name :{" "}
+                </b>
+                {details?.organization?.banks[0]?.ac_holder_name}
+              </p>
+              <p style={{ fontSize: "1.2rem", marginRight: "auto" }}>
+                <b style={{ color: "rgba(0,0,0,0.8)" }}>Account Number : </b>
+                {details?.organization?.banks[0]?.ac_number}
+              </p>
+            </Box>
+            <Box
+              style={{
+                width: "95%",
+                marginTop: "40px",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <p style={{ fontSize: "1.2rem", width: "60%" }}>
+                <b style={{ color: "rgba(0,0,0,0.8)" }}>IFSC Code : </b>
+                {details?.organization?.banks[0]?.ac_ifsc}
+              </p>
+              <p style={{ fontSize: "1.2rem", marginRight: "auto" }}>
+                <b style={{ color: "rgba(0,0,0,0.8)" }}>Bank Name : </b>
+                {details?.organization?.banks[0]?.ac_bank_name}
+              </p>
             </Box>
           </Paper>
         </Box>

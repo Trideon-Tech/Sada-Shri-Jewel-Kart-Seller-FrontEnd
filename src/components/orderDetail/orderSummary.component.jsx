@@ -24,24 +24,76 @@ const OrderInfoCard = ({ orderDetail }) => {
         <img
           src={`https://api.sadashrijewelkart.com/assets/${orderDetail.images[0]["file"]}`}
           alt=""
+          style={{ width: "100%" }}
         />
       </div>
       <div
         style={{
           display: "flex",
-          width: "50%",
+          height: "160px",
+          width: "80%",
           display: "flex",
           flexDirection: "column",
           marginLeft: "30px",
         }}
       >
-        <p style={{ margin: 0, fontSize: "1.4rem", fontWeight: 600 }}>
-          {orderDetail?.product_name}
-        </p>
-        <p
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ margin: 0, fontSize: "1.4rem", fontWeight: 600 }}>
+            {orderDetail?.product_name}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-around",
+              alignItems: "center",
+              width: "100px",
+              padding: "5px",
+              border:
+                orderDetail?.shipment_status === "ADMIN_INSPECTION_FAILED"
+                  ? "1px solid red"
+                  : orderDetail?.shipment_status === "ORDER_CREATED" ||
+                    orderDetail?.shipment_status === "SELLER_VERIFIED" ||
+                    orderDetail?.shipment_status === "ADMIN_RECEIVED" ||
+                    orderDetail?.shipment_status ===
+                      "INSPECTION_FAILED_ORDER_RECEIVED_BY_SELLER"
+                  ? "1px solid #F99B1C59"
+                  : "1px solid #cffbcf",
+              borderRadius: "5px",
+              color:
+                orderDetail?.shipment_status === "ADMIN_INSPECTION_FAILED"
+                  ? "red"
+                  : orderDetail?.shipment_status === "ORDER_CREATED" ||
+                    orderDetail?.shipment_status === "SELLER_VERIFIED" ||
+                    orderDetail?.shipment_status === "ADMIN_RECEIVED" ||
+                    orderDetail?.shipment_status ===
+                      "INSPECTION_FAILED_ORDER_RECEIVED_BY_SELLER"
+                  ? "#F99B1C"
+                  : "#008000",
+            }}
+          >
+            {orderDetail?.shipment_status === "ADMIN_INSPECTION_FAILED"
+              ? "Returned"
+              : orderDetail?.shipment_status === "ORDER_CREATED" ||
+                orderDetail?.shipment_status ===
+                  "INSPECTION_FAILED_ORDER_RECEIVED_BY_SELLER"
+              ? "Unfullfilled"
+              : orderDetail?.shipment_status === "SELLER_VERIFIED"
+              ? "On it's way"
+              : orderDetail?.shipment_status === "ADMIN_RECEIVED"
+              ? "Received"
+              : "Fullfilled"}
+          </div>
+        </div>
+        <div
           style={{
             margin: 0,
-            marginTop: "auto",
+            marginTop: "10px",
             color: "gray",
             lineHeight: "2rem",
             fontWeight: 500,
@@ -49,7 +101,7 @@ const OrderInfoCard = ({ orderDetail }) => {
           }}
         >
           Quantity: {orderDetail?.quantity} pcs.
-        </p>
+        </div>
         <p
           style={{
             margin: 0,
@@ -105,27 +157,6 @@ const OrderSummaryComponent = ({ orderDetails }) => {
         >
           Order Summary
         </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-around",
-            alignItems: "center",
-            width: "100px",
-            backgroundColor:
-              orderDetails[0]?.shipment_status !== "ORDER_CREATED"
-                ? "#cffbcf"
-                : "#F99B1C59",
-            borderRadius: "5px",
-            color:
-              orderDetails[0]?.shipment_status !== "ORDER_CREATED"
-                ? "#008000"
-                : "#F99B1C",
-          }}
-        >
-          {orderDetails[0]?.shipment_status !== "ORDER_CREATED"
-            ? "Fulfilled"
-            : "Unfulfilled"}
-        </div>
       </span>
       {orderDetails?.map((item) => (
         <OrderInfoCard orderDetail={item} />
@@ -159,7 +190,10 @@ const OrderSummaryComponent = ({ orderDetails }) => {
           </div>
           <div style={{ width: "15%" }}>
             <p style={{ textAlign: "right" }}>
-              Rs: {orderDetails[0]?.amount}.0
+              Rs:{" "}
+              {orderDetails
+                .reduce((sum, item) => sum + parseFloat(item.price), 0)
+                .toFixed(2)}
             </p>
           </div>
         </div>
@@ -177,12 +211,18 @@ const OrderSummaryComponent = ({ orderDetails }) => {
           <div style={{ width: "25%" }}>
             <p style={{ textAlign: "left" }}>Discount</p>
           </div>
-          <div style={{ width: "60%" }}>
-            {/* <p style={{ textAlign: "left" }}>FIRST10</p> */}
-          </div>
+          <div style={{ width: "60%" }}></div>
           <div style={{ width: "15%" }}>
             <p style={{ textAlign: "right" }}>
-              - Rs: {orderDetails[0]?.discount_amount}
+              - Rs:{" "}
+              {(
+                parseFloat(orderDetails[0]?.discount_amount) +
+                parseFloat(
+                  orderDetails[0]?.wallet_transaction?.find(
+                    (t) => t.transaction_type === "debit"
+                  )?.amount || 0
+                )
+              ).toFixed(2)}
             </p>
           </div>
         </div>

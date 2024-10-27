@@ -227,12 +227,14 @@ const OrdersComponent = ({ row }) => {
                                 style={{
                                   fontWeight: 800,
                                   color:
-                                    row?.shipment_status !== "ORDER_CREATED"
+                                    row?.shipment_status === "ADMIN_VERIFIED"
                                       ? "green"
                                       : "gray",
                                 }}
                               >
-                                ⬤ {row?.shipment_status}
+                                {row?.shipment_status === "ADMIN_VERIFIED"
+                                  ? "Fullfilled"
+                                  : "Unfullfilled"}
                               </TableCell>
                             </TableRow>
                           </Fragment>

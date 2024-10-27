@@ -12,6 +12,9 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { generalToastStyle } from "../../utils/toast.styles";
 import CustomerDetailComponent from "./customerDetail.component";
 import DelhiveryLogo from "./delhivery_logo.png";
 import OrderSummaryComponent from "./orderSummary.component";
@@ -103,6 +106,7 @@ const OrderDetail = ({ id }) => {
   const [trackingNumber, setTrackingNumber] = useState("");
   const [logistics, setLogistics] = useState("");
   const [logs, setLogs] = useState();
+  const [openReceivedDialog, setOpenReceivedDialog] = useState(false);
 
   const deliveryPartners = [
     {
@@ -184,8 +188,46 @@ const OrderDetail = ({ id }) => {
     setOrderDetails(data?.response);
 
     setLogs(JSON.parse(data?.response[0]?.shipment_details));
+  };
 
-    // navigate("/orders");
+  // Receive Product
+  const receiveProduct = async (orderDetail) => {
+    const formData = new FormData();
+    formData.append("type", "receive_inspection_failed_orders");
+    formData.append("order_detail_id", orderDetail?.order_detail_id);
+
+    const { data } = await axios.post(
+      `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (data?.success === 0) {
+      toast(data.message, generalToastStyle);
+    } else {
+      (async () => {
+        const { data } = await axios.get(
+          `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=order_details&order_id=${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        setOrderDetails(data?.response);
+
+        setLogs(JSON.parse(data?.response[0]?.shipment_details));
+
+        setOpenReceivedDialog(false);
+      })();
+    }
   };
 
   return (
@@ -197,6 +239,8 @@ const OrderDetail = ({ id }) => {
         backgroundColor: "#F8F5F0",
       }}
     >
+      <ToastContainer />
+
       <Dialog
         maxWidth={"lg"}
         style={{
@@ -237,7 +281,7 @@ const OrderDetail = ({ id }) => {
               marginBottom: "20px",
             }}
           >
-            {orderDetails.map((orderData) => (
+            {orderDetails.filter(orderData => orderData.shipment_status !== "ADMIN_VERIFIED").map((orderData) => (
               <ProductCardSmall orderDetails={orderData} />
             ))}
           </div>
@@ -328,6 +372,156 @@ const OrderDetail = ({ id }) => {
           </div>
         </div>
       </Dialog>
+
+      <Dialog
+        maxWidth={"lg"}
+        style={{
+          width: "100%",
+          height: "max-content",
+          margin: "auto",
+        }}
+        open={openReceivedDialog}
+        onClose={() => setOpenReceivedDialog(false)}
+      >
+        <div
+          style={{
+            backgroundColor: "white",
+            padding: "30px",
+            height: "max-content",
+            width: "759px",
+            borderRadius: "10px",
+          }}
+        >
+          <p style={{ fontSize: "1.7rem", margin: 0, fontWeight: "bold" }}>
+            Receive Order
+          </p>
+          <div style={{ width: "100%", overflowY: "scroll" }}>
+            {orderDetails
+              .filter(
+                (orderDetails) =>
+                  orderDetails.shipment_status === "ADMIN_INSPECTION_FAILED"
+              )
+              .map((orderDetails) => (
+                <div
+                  style={{
+                    width: "100%",
+                    marginTop: "30px",
+                    height: "max-content",
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "130px",
+                      height: "130px",
+                      borderRadius: "12px",
+                      border: "1px solid #e7e7e7",
+                    }}
+                  >
+                    <img
+                      src={`https://api.sadashrijewelkart.com/assets/${orderDetails?.images[0]["file"]}`}
+                      alt=""
+                      style={{
+                        borderRadius: "12px",
+                        height: "130px",
+                      }}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      height: "130px",
+                      width: "50%",
+                      display: "flex",
+                      flexDirection: "column",
+                      marginLeft: "30px",
+                    }}
+                  >
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "1.4rem",
+                        fontWeight: 600,
+                        fontFamily: '"Work Sans", sans-serif',
+                      }}
+                    >
+                      {orderDetails?.product_name}
+                    </p>
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "gray",
+                        fontWeight: 500,
+                        lineHeight: "2rem",
+                        fontSize: "1.1rem",
+                        fontFamily: '"Work Sans", sans-serif',
+                      }}
+                    >
+                      Price :{" "}
+                      <span style={{ color: "black" }}>
+                        {" "}
+                        Rs. {orderDetails?.price}
+                      </span>
+                    </p>
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "gray",
+                        fontWeight: 500,
+                        lineHeight: "2rem",
+                        fontFamily: '"Work Sans", sans-serif',
+                      }}
+                    >
+                      Deliver By: {Date(orderDetails?.estimated_date)}
+                    </p>
+                  </div>
+                  {orderDetails?.shipment_status === "ADMIN_RECEIVED" ? (
+                    <Button
+                      variant="outlined"
+                      style={{
+                        marginLeft: "auto",
+                        marginTop: "auto",
+                        width: "180px",
+                        height: "52px",
+                        textTransform: "none",
+                        fontSize: "1rem",
+                        fontWeight: 600,
+                        fontFamily: '"Work Sans", sans-serif',
+                        border: "none",
+                        color: "#A36E29",
+                      }}
+                    >
+                      Marked as Received
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      style={{
+                        marginLeft: "auto",
+                        marginTop: "auto",
+                        width: "180px",
+                        height: "52px",
+                        backgroundColor: "#A36E29",
+                        textTransform: "none",
+                        fontSize: "1rem",
+                        fontWeight: 600,
+                        fontFamily: '"Work Sans", sans-serif',
+                      }}
+                      onClick={() => {
+                        receiveProduct(orderDetails);
+                      }}
+                    >
+                      Received
+                    </Button>
+                  )}
+                </div>
+              ))}
+          </div>
+        </div>
+      </Dialog>
+
       <Grid
         spacing={5}
         container
@@ -424,34 +618,70 @@ const OrderDetail = ({ id }) => {
               </span>
               {orderDetails[0]?.amount_paid == 0 ? "Unpaid" : "Paid"}
             </div>
-            <Button
-              variant="contained"
-              style={
-                orderDetails[0]?.shipment_status !== "ORDER_CREATED"
-                  ? {
-                      marginLeft: "auto",
-                      width: "300px",
-                      height: "62px",
-                      fontWeight: 700,
-                      backgroundColor: "#d5d5d5",
-                    }
-                  : {
-                      marginLeft: "auto",
-                      width: "300px",
-                      height: "62px",
-                      fontWeight: 700,
-                      backgroundColor: "#A36E29",
-                    }
-              }
-              disabled={
-                orderDetails[0]?.shipment_status !== "ORDER_CREATED"
-                  ? true
-                  : false
-              }
-              onClick={() => setOpen(true)}
-            >
-              FulFill Order
-            </Button>
+            {orderDetails.some(
+              (order) =>
+                order.shipment_status ===
+                "INSPECTION_FAILED_ORDER_RECEIVED_BY_SELLER"
+            ) ? (
+              <Button
+                variant="contained"
+                style={{
+                  marginLeft: "auto",
+                  width: "300px",
+                  height: "62px",
+                  fontWeight: 700,
+                  backgroundColor: "#A36E29",
+                }}
+                onClick={() => setOpen(true)}
+              >
+                FulFill Order
+              </Button>
+            ) : orderDetails.some(
+                (order) => order.shipment_status === "ADMIN_INSPECTION_FAILED"
+              ) ? (
+              <Button
+                variant="contained"
+                style={{
+                  marginLeft: "auto",
+                  width: "300px",
+                  height: "62px",
+                  fontWeight: 700,
+                  backgroundColor: "#A36E29",
+                }}
+                onClick={() => setOpenReceivedDialog(true)}
+              >
+                Receive Order
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                style={
+                  orderDetails[0]?.shipment_status !== "ORDER_CREATED"
+                    ? {
+                        marginLeft: "auto",
+                        width: "300px",
+                        height: "62px",
+                        fontWeight: 700,
+                        backgroundColor: "#d5d5d5",
+                      }
+                    : {
+                        marginLeft: "auto",
+                        width: "300px",
+                        height: "62px",
+                        fontWeight: 700,
+                        backgroundColor: "#A36E29",
+                      }
+                }
+                disabled={
+                  orderDetails[0]?.shipment_status !== "ORDER_CREATED"
+                    ? true
+                    : false
+                }
+                onClick={() => setOpen(true)}
+              >
+                FulFill Order
+              </Button>
+            )}
           </div>
         </Grid>
         <Grid item xs={8} style={{ marginTop: "30px" }}>

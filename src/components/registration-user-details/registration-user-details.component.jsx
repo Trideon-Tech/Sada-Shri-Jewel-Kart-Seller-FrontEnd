@@ -116,7 +116,7 @@ const RegistrationUserDetails = () => {
                 console.error("Error:", error);
               });
           } else if (response?.data?.response?.seller_details?.seller_exists) {
-            return toast("User Already Exists | Login", generalToastStyle);
+            return toast("Seller Already Exists | Login", generalToastStyle);
           }
         }
       })

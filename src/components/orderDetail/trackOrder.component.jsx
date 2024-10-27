@@ -4,8 +4,6 @@ import StepIndicator from "@mui/joy/StepIndicator";
 import Stepper from "@mui/joy/Stepper";
 
 const TrackOrderComponent = ({ logs }) => {
-  console.log(logs);
-
   return (
     <div style={{ paddingLeft: "20px", paddingBottom: "50px" }}>
       <Stepper

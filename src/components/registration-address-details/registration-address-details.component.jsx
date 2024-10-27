@@ -1,14 +1,14 @@
-import React, { useState } from "react";
 import {
-  Grid,
   Button,
-  ThemeProvider,
-  createTheme,
   CircularProgress,
+  createTheme,
+  Grid,
+  ThemeProvider,
 } from "@mui/material";
+import axios from "axios";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import axios from "axios";
 
 import "./registration-address-details.styles.scss";
 

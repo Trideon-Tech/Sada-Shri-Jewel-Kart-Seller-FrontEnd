@@ -37,10 +37,9 @@ import axios from "axios";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import InputTextField from "../../components/input-text-field/input-text-field.component";
-import { generalToastStyle } from "../../utils/toast.styles";
 import "./addNewProduct.styles.scss";
 import MaterialSelector from "./materialSelector.component";
 
@@ -99,44 +98,75 @@ const AddNewProduct = () => {
 
   const [availableCustomizations, setAvailableCustomizations] = useState([]);
 
-  const [combinationsValues, setCombinationValues] = React.useState([]);
+  const [combinationsValues, setCombinationValues] = useState([]);
+  const [dropdownValues, setDropdownValues] = useState();
+  const [metalType, setMetalType] = useState();
+  const [quantity, setQuantity] = useState();
+  const [grossWeight, setGrossWeight] = useState();
+  const [stoneWeight, setStoneWeight] = useState();
+  const [netWeight, setNetWeight] = useState();
+  const [wastagePercent, setWastagePercent] = useState();
+  const [wastageWeight, setWastageWeight] = useState(0);
+  const [netWeightAfterWastage, setNetWeightAfterWastage] = useState();
+  const [makingChargeType, setMakingChargeType] = useState();
+  const [makingChargeValue, setMakingChargeValue] = useState();
+  const [makingChargeAmount, setMakingChargeAmount] = useState();
+  const [stoneAmount, setStoneAmount] = useState();
+  const [hallmarkCharge, setHallmarkCharge] = useState();
+  const [rodiumCharge, setRodiumCharge] = useState();
+  const [gstPercent, setGstPercent] = useState();
+  const [rates, setRates] = useState([]);
+  const [rate, setRate] = useState(0);
+  const [amount, setAmount] = useState(0);
+  const [stoneTotalAmount, setStoneTotalAmount] = useState(0);
+  const [stoneType, setStoneType] = useState();
+  const [stoneClass, setStoneClass] = useState();
+  const [stoneCut, setStoneCut] = useState();
+  const [stonePieces, setStonePieces] = useState();
+  const [stoneCarat, setStoneCarat] = useState();
+  const [stoneClarity, setStoneClarity] = useState();
+  const [stoneRate, setStoneRate] = useState();
+  const [stoneInternalWeight, setStoneInternalWeight] = useState();
+  const [stoneGSTPercent, setStoneGSTPercent] = useState();
+  const [qualityName, setQualityName] = useState();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    axios
-      .get(
+
+    Promise.all([
+      axios.get(
         "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/all.php?type=product_add_template",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
-      .then((response) => {
-        const categories = response.data.response || [];
-        // setCategoriesData(categories);
-      })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
-      });
-  }, []);
-
-  useEffect(() => {
-    axios
-      .get(
+      ),
+      axios.get(
         "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php?type=category",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
-      .then((response) => {
-        const categories = response.data.response || [];
+      ),
+      axios.get(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/jewelleryInventory/jewellryInventory.php?type=get_latest",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      ),
+    ])
+      .then(([dropdownResponse, categoriesResponse, ratesResponse]) => {
+        setDropdownValues(dropdownResponse.data.response);
+        const categories = categoriesResponse.data.response || [];
         setCategoriesData(categories);
+        setRates(ratesResponse.data.response.jewelry_prices);
       })
       .catch((error) => {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching data:", error);
       });
   }, []);
 
@@ -152,6 +182,49 @@ const AddNewProduct = () => {
       getAllCustomizationOptionsPerField();
     }
   }, [selectedCustomizationTypeId]);
+
+  useEffect(() => {
+    let baseAmount = 0;
+
+    if (makingChargeType == 8) {
+      setAmount(parseFloat(makingChargeAmount || 0));
+      return;
+    }
+
+    // Calculate base amount based on weight
+    if (netWeightAfterWastage) {
+      baseAmount = netWeightAfterWastage * rate;
+    } else if (netWeight) {
+      baseAmount = netWeight * rate;
+    } else if (grossWeight) {
+      baseAmount = grossWeight * rate;
+    }
+
+    // Add additional charges
+    let totalAmount = baseAmount;
+    if (makingChargeAmount) totalAmount += parseFloat(makingChargeAmount);
+    if (hallmarkCharge) totalAmount += parseFloat(hallmarkCharge);
+    if (rodiumCharge) totalAmount += parseFloat(rodiumCharge);
+    if (stoneAmount) totalAmount += parseFloat(stoneAmount);
+
+    // Add GST if present
+    if (gstPercent) {
+      totalAmount += (totalAmount * parseFloat(gstPercent)) / 100;
+    }
+
+    setAmount(totalAmount);
+  }, [
+    netWeightAfterWastage,
+    netWeight,
+    grossWeight,
+    rate,
+    makingChargeAmount,
+    hallmarkCharge,
+    rodiumCharge,
+    stoneAmount,
+    gstPercent,
+    makingChargeType,
+  ]);
 
   const getAllCustomizationFields = () => {
     axios
@@ -363,116 +436,129 @@ const AddNewProduct = () => {
   };
 
   const handleProductSave = async () => {
-    if (productName === "" || typeof productName === "undefined") {
-      toast.warn("Product Name is required!", generalToastStyle);
-    } else if (desc === "" || typeof desc === "undefined") {
-      toast.warn("Description is required!", generalToastStyle);
-    } else if (weight === "" || typeof weight === "undefined") {
-      toast.warn("Weight is required!", generalToastStyle);
-    } else if (price === "" || typeof price === "undefined") {
-      toast.warn("Price is required!", generalToastStyle);
-    } else if (height === "" || typeof height === "undefined") {
-      toast.warn("Height is required!", generalToastStyle);
-    } else if (width === "" || typeof width === "undefined") {
-      toast.warn("Width is required!", generalToastStyle);
-    } else if (purity === "" || typeof purity === "undefined") {
-      toast.warn("Purity is required!", generalToastStyle);
-    } else {
-      axios
-        .post(
-          "https://api.sadashrijewelkart.com/v1.0.0/seller/product/addProduct.php",
-          {
-            type: "item",
-            name: productName,
-            description: desc,
-            category: selectedCategory,
-            sub_category: selectedSubcategory,
-            price: price,
-            weight: weight,
-            height: height,
-            width: width,
-            purity: purity,
-            customization: combinationsValues,
+    const formData = {
+      type: "item",
+      category: selectedCategory,
+      sub_category: selectedSubcategory,
+      name: productName,
+      desc: desc,
+      customization_option: [quantity, makingChargeType, stoneType]
+        .filter((val) => val !== null && val !== 0)
+        .join(","),
+      metal: {
+        metal: metalType,
+        quality: qualityName,
+        quantity: quantity,
+        gross_wt: grossWeight,
+        stone_wt: stoneWeight,
+        net_wt: netWeight,
+        wastage_prec: wastagePercent,
+        wastage_wt: wastageWeight,
+        net_wt_after_wastage: netWeightAfterWastage,
+        making_charge_type: makingChargeType,
+        making_charge_value: makingChargeValue,
+        making_charge_amount: makingChargeAmount,
+        stone_amount: stoneAmount,
+        hallmark_charge: hallmarkCharge,
+        rodium_charge: rodiumCharge,
+        gst_perc: gstPercent,
+      },
+      stone: {
+        stone_type: stoneType,
+        class: stoneClass,
+        clarity: stoneClarity,
+        cut: stoneCut,
+        pieces: stonePieces,
+        carat: stoneCarat,
+        stone_wt: stoneInternalWeight,
+        stone_rate: stoneRate,
+        gst_perc: stoneGSTPercent,
+      },
+    };
+
+    console.log(formData);
+
+    axios
+      .post(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/addProduct.php",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        )
-        .then((response) => {
-          productId = response.data.response.id;
+        }
+      )
+      .then((response) => {
+        productId = response.data.response.id;
 
-          const promises = [];
+        const promises = [];
 
-          images.forEach((image, index) => {
-            const formData = new FormData();
-            formData.append("type", "infographics");
-            formData.append("product", productId);
-            formData.append("is_primary", index === 0 ? true : false);
-            formData.append("file_type", "img");
-            formData.append("file", image);
-            console.log(formData);
-            promises.push(
-              axios.post(
-                "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-                formData,
-                {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                  },
-                }
-              )
-            );
-          });
-
-          if (video) {
-            const videoFormData = new FormData();
-            videoFormData.append("type", "infographics");
-            videoFormData.append("product", productId);
-            videoFormData.append("is_primary", false);
-            videoFormData.append("file_type", "vid");
-            videoFormData.append("file", video);
-
-            promises.push(
-              axios.post(
-                "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-                videoFormData,
-                {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                  },
-                }
-              )
-            );
-          }
-
-          Promise.all(promises)
-            .then((responses) => {
-              console.log(
-                "All Details, images and videos uploaded successfully:",
-                responses
-              );
-              navigate("/products");
-            })
-            .catch((error) => {
-              console.error("Error uploading images and videos:", error);
-            });
-        })
-        .catch((error) => {
-          console.error("Error saving initial product details:", error);
+        images.forEach((image, index) => {
+          const formData = new FormData();
+          formData.append("type", "infographics");
+          formData.append("product", productId);
+          formData.append("is_primary", index === 0 ? true : false);
+          formData.append("file_type", "img");
+          formData.append("file", image);
+          console.log(formData);
+          promises.push(
+            axios.post(
+              "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              }
+            )
+          );
         });
-    }
+
+        if (video) {
+          const videoFormData = new FormData();
+          videoFormData.append("type", "infographics");
+          videoFormData.append("product", productId);
+          videoFormData.append("is_primary", false);
+          videoFormData.append("file_type", "vid");
+          videoFormData.append("file", video);
+
+          promises.push(
+            axios.post(
+              "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+              videoFormData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              }
+            )
+          );
+        }
+
+        Promise.all(promises)
+          .then((responses) => {
+            console.log(
+              "All Details, images and videos uploaded successfully:",
+              responses
+            );
+            navigate("/products");
+          })
+          .catch((error) => {
+            console.error("Error uploading images and videos:", error);
+          });
+      })
+      .catch((error) => {
+        console.error("Error saving initial product details:", error);
+      });
   };
 
   const handleCategoryChange = (e) => {
     const categoryId = e.target.value;
-    setSelectedCategory(categoryId); // Change #3
-    // Reset subcategory when changing category
-    setSelectedSubcategory(""); // Change #4
+    setSelectedCategory(categoryId);
+    setSelectedSubcategory("");
     console.log(selectedCategory);
   };
 
@@ -604,46 +690,6 @@ const AddNewProduct = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={6}>
-              <InputTextField
-                title={"Price"}
-                value={price}
-                onEdit={(e) => setPrice(e.target.value)}
-                adornmentType="rupees"
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <InputTextField
-                title={"Weight"}
-                value={weight}
-                onEdit={(e) => setWeight(e.target.value)}
-                adornmentType="grams"
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <InputTextField
-                title={"Height"}
-                value={height}
-                onEdit={(e) => setHeight(e.target.value)}
-                adornmentType="mm"
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <InputTextField
-                title={"Width"}
-                value={width}
-                onEdit={(e) => setWidth(e.target.value)}
-                adornmentType="mm"
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <InputTextField
-                title={"Purity"}
-                value={purity}
-                onEdit={(e) => setPurity(e.target.value)}
-                adornmentType="kt"
-              />
-            </Grid>
             <Grid
               item
               xs={6}
@@ -694,9 +740,702 @@ const AddNewProduct = () => {
                 value={desc}
                 onChange={(value) => {
                   setDesc(value);
-                  console.log(value);
                 }}
               />
+            </Grid>
+          </Grid>
+        </Paper>
+      </ThemeProvider>
+
+      {/* Product metal input */}
+      <ThemeProvider theme={theme}>
+        <Paper
+          elevation={3}
+          className="detail-paper"
+          style={{ marginTop: "50px" }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div className="heading">Metal Details</div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <div style={{ marginRight: "20px" }}>
+                <div>Rate</div>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {rate.toFixed(2)}
+                </div>
+              </div>
+              <div>
+                <div>Amount</div>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {amount.toFixed(2)}
+                </div>
+              </div>
+            </div>
+          </div>
+          <Divider />
+          <Grid container spacing={0}>
+            <Grid item xs={12}>
+              <div className="label">Type</div>
+              <FormControl
+                fullWidth
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <Select
+                  value={metalType}
+                  onChange={(e) => setMetalType(e.target.value)}
+                >
+                  <MenuItem value="gold">Gold</MenuItem>
+                  <MenuItem value="silver">Silver</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Quality</div>
+              <FormControl fullWidth>
+                <Select
+                  value={purity}
+                  onChange={(e) => {
+                    setPurity(e.target.value);
+
+                    // Get the selected option name
+                    let selectedOption;
+                    if (metalType === "gold") {
+                      selectedOption = dropdownValues?.[0]?.customization_fields
+                        .find((field) => field.name === "gold_quality")
+                        ?.property_value.find(
+                          (opt) => opt.id === e.target.value
+                        )?.name;
+                    } else if (metalType === "silver") {
+                      selectedOption = dropdownValues?.[1]?.customization_fields
+                        .find((field) => field.name === "silver_quality")
+                        ?.property_value.find(
+                          (opt) => opt.id === e.target.value
+                        )?.name;
+                    }
+
+                    setQualityName(selectedOption);
+
+                    if (selectedOption) {
+                      setRate(rates[selectedOption]);
+                    }
+                  }}
+                >
+                  {metalType === "gold" &&
+                    dropdownValues?.[0]?.customization_fields
+                      .find((field) => field.name === "gold_quality")
+                      ?.property_value.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.display_name}
+                        </MenuItem>
+                      ))}
+                  {metalType === "silver" &&
+                    dropdownValues?.[1]?.customization_fields
+                      .find((field) => field.name === "silver_quality")
+                      ?.property_value.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.display_name}
+                        </MenuItem>
+                      ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Quantity</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  fullWidth
+                  placeholder="Enter quantity"
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Gross Weight</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={grossWeight}
+                  onChange={(e) => {
+                    setGrossWeight(e.target.value);
+                    setNetWeight(e.target.value - stoneWeight);
+                    setNetWeightAfterWastage(
+                      e.target.value - stoneWeight + wastageWeight
+                    );
+                  }}
+                  fullWidth
+                  placeholder="Enter gross weight"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Stone Weight</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={stoneWeight}
+                  onChange={(e) => {
+                    setStoneWeight(e.target.value);
+                    setNetWeight(grossWeight - e.target.value);
+                    setNetWeightAfterWastage(
+                      grossWeight - e.target.value + wastageWeight
+                    );
+                  }}
+                  fullWidth
+                  placeholder="Enter stone weight"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Net Weight</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={netWeight}
+                  disabled
+                  fullWidth
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Wastage Percentage</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={wastagePercent}
+                  onChange={(e) => {
+                    setWastagePercent(e.target.value);
+                    setWastageWeight(
+                      (grossWeight - stoneWeight) * (e.target.value / 100)
+                    );
+                    setNetWeightAfterWastage(
+                      (grossWeight - stoneWeight) * (1 + e.target.value / 100)
+                    );
+                  }}
+                  fullWidth
+                  placeholder="Enter wastage percentage"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">%</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Wastage Weight</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={wastageWeight}
+                  disabled
+                  fullWidth
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Net Weight After Wastage</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={netWeightAfterWastage}
+                  disabled
+                  fullWidth
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Making Charge Type</div>
+              <FormControl fullWidth>
+                <Select
+                  value={makingChargeType}
+                  onChange={(e) => {
+                    setMakingChargeType(e.target.value);
+                    setMakingChargeValue();
+                  }}
+                >
+                  {metalType === "gold" &&
+                    dropdownValues?.[0]?.customization_fields
+                      .find((field) => field.name === "making_charge_type")
+                      ?.property_value.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.display_name}
+                        </MenuItem>
+                      ))}
+                  {metalType === "silver" &&
+                    dropdownValues?.[1]?.customization_fields
+                      .find((field) => field.name === "making_charge_type")
+                      ?.property_value.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.display_name}
+                        </MenuItem>
+                      ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Making Charge Value</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={makingChargeValue}
+                  onChange={(e) => {
+                    setMakingChargeValue(e.target.value);
+
+                    console.log(e.target.value);
+                    if (makingChargeType == 6) {
+                      setMakingChargeAmount(
+                        (
+                          parseFloat(e.target.value) *
+                          parseFloat(netWeightAfterWastage)
+                        ).toFixed(2)
+                      );
+                    } else if (makingChargeType == 7) {
+                      setMakingChargeAmount(
+                        parseFloat(e.target.value).toFixed(2)
+                      );
+                    } else if (makingChargeType == 8) {
+                      setMakingChargeAmount(
+                        parseFloat(e.target.value).toFixed(2)
+                      );
+                    } else if (makingChargeType == 9) {
+                      setMakingChargeAmount(
+                        parseFloat(
+                          e.target.value *
+                            (rate / 100) *
+                            (netWeightAfterWastage || netWeight)
+                        ).toFixed(2)
+                      );
+                    }
+                  }}
+                  fullWidth
+                  placeholder="Enter making charge value"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        {makingChargeType == 9 ? "%" : "₹"}
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Making Charge Amount</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={makingChargeAmount}
+                  onChange={(e) => setMakingChargeAmount(e.target.value)}
+                  fullWidth
+                  placeholder="Enter making charge amount"
+                  disabled
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">₹</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Stone Amount</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={stoneAmount}
+                  onChange={(e) => setStoneAmount(e.target.value)}
+                  fullWidth
+                  placeholder="Enter stone amount"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">₹</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Hallmark Charge</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={hallmarkCharge}
+                  onChange={(e) => setHallmarkCharge(e.target.value)}
+                  fullWidth
+                  placeholder="Enter hallmark charge"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">₹</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Rodium Charge</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={rodiumCharge}
+                  onChange={(e) => setRodiumCharge(e.target.value)}
+                  fullWidth
+                  placeholder="Enter rodium charge"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">₹</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">GST Percentage</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={gstPercent}
+                  onChange={(e) => setGstPercent(e.target.value)}
+                  fullWidth
+                  placeholder="Enter GST percentage"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">%</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+          </Grid>
+        </Paper>
+      </ThemeProvider>
+
+      {/* Product stone input */}
+      <ThemeProvider theme={theme}>
+        <Paper
+          elevation={3}
+          className="detail-paper"
+          style={{ marginTop: "50px" }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div className="heading">Stone Details</div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <div>
+                <div>Amount</div>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {parseFloat(stoneTotalAmount).toFixed(2)}
+                </div>
+              </div>
+            </div>
+          </div>
+          <Divider />
+          <Grid container spacing={0}>
+            <Grid item xs={12}>
+              <div className="label">Type</div>
+              <FormControl
+                fullWidth
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <Select
+                  value={stoneType}
+                  onChange={(e) => setStoneType(e.target.value)}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "stone_type")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Class</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={stoneClass}
+                  onChange={(e) => setStoneClass(e.target.value)}
+                  fullWidth
+                  placeholder="Enter class"
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Clarity</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={stoneClarity}
+                  onChange={(e) => setStoneClarity(e.target.value)}
+                  fullWidth
+                  placeholder="Enter clarity"
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Cut</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={stoneCut}
+                  onChange={(e) => setStoneCut(e.target.value)}
+                  fullWidth
+                  placeholder="Enter cut"
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Pieces</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={stonePieces}
+                  onChange={(e) => {
+                    setStonePieces(e.target.value);
+                    const weight =
+                      e.target.value && stoneCarat
+                        ? (stoneCarat * 0.2 * e.target.value).toFixed(2)
+                        : "";
+                    setStoneInternalWeight(weight);
+                  }}
+                  fullWidth
+                  placeholder="Enter number of pieces"
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Carat</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={stoneCarat}
+                  onChange={(e) => {
+                    setStoneCarat(e.target.value);
+                    const weight =
+                      e.target.value && stonePieces
+                        ? (e.target.value * 0.2 * stonePieces).toFixed(2)
+                        : "";
+                    setStoneInternalWeight(weight);
+                  }}
+                  fullWidth
+                  placeholder="Enter carat"
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Weight (gm)</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={stoneInternalWeight}
+                  disabled
+                  fullWidth
+                  placeholder="Auto-calculated weight"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Rate</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={stoneRate}
+                  onChange={(e) => {
+                    setStoneRate(e.target.value);
+                    const total =
+                      stoneInternalWeight && e.target.value
+                        ? (
+                            parseFloat(stoneInternalWeight) *
+                            parseFloat(e.target.value)
+                          ).toFixed(2)
+                        : 0;
+                    setStoneTotalAmount(total);
+                  }}
+                  fullWidth
+                  placeholder="Enter rate"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">₹</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">GST Percentage</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={stoneGSTPercent}
+                  onChange={(e) => {
+                    setStoneGSTPercent(e.target.value);
+                    const baseAmount =
+                      stoneInternalWeight && stoneRate
+                        ? parseFloat(stoneInternalWeight) *
+                          parseFloat(stoneRate)
+                        : 0;
+                    const gstAmount =
+                      baseAmount * (parseFloat(e.target.value) / 100);
+                    const total = (baseAmount + gstAmount).toFixed(2);
+                    setStoneTotalAmount(total);
+                  }}
+                  fullWidth
+                  placeholder="Enter GST percentage"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">%</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
             </Grid>
           </Grid>
         </Paper>

@@ -2,6 +2,7 @@ import {
   Button,
   Checkbox,
   Chip,
+  Collapse,
   createTheme,
   Dialog,
   DialogActions,
@@ -30,6 +31,8 @@ import React, { useEffect, useState } from "react";
 import {
   Add,
   Delete,
+  ExpandLess,
+  ExpandMore,
   PhotoCamera,
   VideoCameraFront,
 } from "@mui/icons-material";
@@ -129,6 +132,10 @@ const AddNewProduct = () => {
   const [stoneInternalWeight, setStoneInternalWeight] = useState();
   const [stoneGSTPercent, setStoneGSTPercent] = useState();
   const [qualityName, setQualityName] = useState();
+  const [size, setSize] = useState();
+  const [hsnCode, setHsnCode] = useState();
+  const [stoneDetailsExpanded, setStoneDetailsExpanded] = useState(false);
+  const [metalDetailsExpanded, setMetalDetailsExpanded] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -438,45 +445,45 @@ const AddNewProduct = () => {
   const handleProductSave = async () => {
     const formData = {
       type: "item",
-      category: selectedCategory,
-      sub_category: selectedSubcategory,
-      name: productName,
-      desc: desc,
+      category: selectedCategory || "",
+      sub_category: selectedSubcategory || "",
+      name: productName || "",
+      desc: desc || "",
       customization_option: [quantity, makingChargeType, stoneType]
         .filter((val) => val !== null && val !== 0)
         .join(","),
+      size: size || "",
+      hsn: hsnCode || "",
       metal: {
-        metal: metalType,
-        quality: qualityName,
-        quantity: quantity,
-        gross_wt: grossWeight,
-        stone_wt: stoneWeight,
-        net_wt: netWeight,
-        wastage_prec: wastagePercent,
-        wastage_wt: wastageWeight,
-        net_wt_after_wastage: netWeightAfterWastage,
-        making_charge_type: makingChargeType,
-        making_charge_value: makingChargeValue,
-        making_charge_amount: makingChargeAmount,
-        stone_amount: stoneAmount,
-        hallmark_charge: hallmarkCharge,
-        rodium_charge: rodiumCharge,
-        gst_perc: gstPercent,
+        metal: metalType || "",
+        quality: qualityName || "",
+        quantity: quantity || "",
+        gross_wt: grossWeight || "",
+        stone_wt: stoneWeight || "",
+        net_wt: netWeight || "",
+        wastage_prec: wastagePercent || "",
+        wastage_wt: wastageWeight || "",
+        net_wt_after_wastage: netWeightAfterWastage || "",
+        making_charge_type: makingChargeType || "",
+        making_charge_value: makingChargeValue || "",
+        making_charge_amount: makingChargeAmount || "",
+        stone_amount: stoneAmount || "",
+        hallmark_charge: hallmarkCharge || "",
+        rodium_charge: rodiumCharge || "",
+        gst_perc: gstPercent || "",
       },
       stone: {
-        stone_type: stoneType,
-        class: stoneClass,
-        clarity: stoneClarity,
-        cut: stoneCut,
-        pieces: stonePieces,
-        carat: stoneCarat,
-        stone_wt: stoneInternalWeight,
-        stone_rate: stoneRate,
-        gst_perc: stoneGSTPercent,
+        stone_type: stoneType || "",
+        class: stoneClass || "",
+        clarity: stoneClarity || "",
+        cut: stoneCut || "",
+        pieces: stonePieces || "",
+        carat: stoneCarat || "",
+        stone_wt: stoneInternalWeight || "",
+        stone_rate: stoneRate || "",
+        gst_perc: stoneGSTPercent || "",
       },
     };
-
-    console.log(formData);
 
     axios
       .post(
@@ -681,25 +688,40 @@ const AddNewProduct = () => {
           <div className="heading">Product Details</div>
           <Divider />
           <Grid container spacing={0}>
-            <Grid item xs={6}>
+            <Grid item xs={3}>
               <InputTextField
                 title={"Name"}
                 value={productName}
                 onEdit={(e) => {
                   setProductName(e.target.value);
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    document.querySelector('select[name="category"]')?.focus();
+                  }
+                }}
               />
             </Grid>
             <Grid
               item
-              xs={6}
+              xs={3}
               style={{ marginBottom: "20px", paddingRight: "50px" }}
             >
               <div className="label">Category</div>
               <FormControl fullWidth>
                 <Select
+                  name="category"
                   value={selectedCategory}
                   onChange={handleCategoryChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('select[name="subcategory"]')
+                        ?.focus();
+                    }
+                  }}
                 >
                   {categoriesData.map((category) => (
                     <MenuItem key={category.id} value={category.id}>
@@ -711,14 +733,21 @@ const AddNewProduct = () => {
             </Grid>
             <Grid
               item
-              xs={6}
+              xs={3}
               style={{ marginBottom: "20px", paddingRight: "50px" }}
             >
               <div className="label">Sub-Category</div>
               <FormControl fullWidth>
                 <Select
+                  name="subcategory"
                   value={selectedSubcategory}
                   onChange={(e) => setSelectedSubcategory(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document.querySelector('input[name="size"]')?.focus();
+                    }
+                  }}
                 >
                   {selectedCategory &&
                     categoriesData
@@ -728,6 +757,59 @@ const AddNewProduct = () => {
                           {subcategory.name}
                         </MenuItem>
                       ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={3}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Size</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="size"
+                  value={size}
+                  onChange={(e) => setSize(e.target.value)}
+                  fullWidth
+                  placeholder="Enter size"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document.querySelector('select[name="hsnCode"]')?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={3}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">HSN Code</div>
+              <FormControl fullWidth>
+                <Select
+                  name="hsnCode"
+                  value={hsnCode}
+                  onChange={(e) => setHsnCode(e.target.value)}
+                  fullWidth
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector(".quill-container .ql-editor")
+                        ?.focus();
+                    }
+                  }}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "hsn")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.name} value={option.name}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
                 </Select>
               </FormControl>
             </Grid>
@@ -775,435 +857,580 @@ const AddNewProduct = () => {
                   {rate.toFixed(2)}
                 </div>
               </div>
-              <div>
+              <div style={{ marginRight: "20px" }}>
                 <div>Amount</div>
                 <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
                   {amount.toFixed(2)}
                 </div>
               </div>
+              <IconButton
+                onClick={() => setMetalDetailsExpanded(!metalDetailsExpanded)}
+              >
+                {metalDetailsExpanded ? <ExpandLess /> : <ExpandMore />}
+              </IconButton>
             </div>
           </div>
           <Divider />
-          <Grid container spacing={0}>
-            <Grid item xs={12}>
-              <div className="label">Type</div>
-              <FormControl
-                fullWidth
+          <Collapse in={metalDetailsExpanded}>
+            <Grid container spacing={0}>
+              <Grid item xs={3}>
+                <div className="label">Type</div>
+                <FormControl
+                  fullWidth
+                  style={{ marginBottom: "20px", paddingRight: "50px" }}
+                >
+                  <Select
+                    name="metalType"
+                    value={metalType}
+                    onChange={(e) => setMetalType(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('select[name="purity"]')
+                          ?.focus();
+                      }
+                    }}
+                  >
+                    <MenuItem value="gold">Gold</MenuItem>
+                    <MenuItem value="silver">Silver</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
-                <Select
-                  value={metalType}
-                  onChange={(e) => setMetalType(e.target.value)}
-                >
-                  <MenuItem value="gold">Gold</MenuItem>
-                  <MenuItem value="silver">Silver</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Quality</div>
-              <FormControl fullWidth>
-                <Select
-                  value={purity}
-                  onChange={(e) => {
-                    setPurity(e.target.value);
+                <div className="label">Quality</div>
+                <FormControl fullWidth>
+                  <Select
+                    name="purity"
+                    value={purity}
+                    onChange={(e) => {
+                      setPurity(e.target.value);
 
-                    // Get the selected option name
-                    let selectedOption;
-                    if (metalType === "gold") {
-                      selectedOption = dropdownValues?.[0]?.customization_fields
+                      let selectedOption;
+                      if (metalType === "gold") {
+                        selectedOption =
+                          dropdownValues?.[0]?.customization_fields
+                            .find((field) => field.name === "gold_quality")
+                            ?.property_value.find(
+                              (opt) => opt.id === e.target.value
+                            )?.name;
+                      } else if (metalType === "silver") {
+                        selectedOption =
+                          dropdownValues?.[1]?.customization_fields
+                            .find((field) => field.name === "silver_quality")
+                            ?.property_value.find(
+                              (opt) => opt.id === e.target.value
+                            )?.name;
+                      }
+
+                      setQualityName(selectedOption);
+
+                      if (selectedOption) {
+                        setRate(rates[selectedOption]);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="quantity"]')
+                          ?.focus();
+                      }
+                    }}
+                  >
+                    {metalType === "gold" &&
+                      dropdownValues?.[0]?.customization_fields
                         .find((field) => field.name === "gold_quality")
-                        ?.property_value.find(
-                          (opt) => opt.id === e.target.value
-                        )?.name;
-                    } else if (metalType === "silver") {
-                      selectedOption = dropdownValues?.[1]?.customization_fields
+                        ?.property_value.map((option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.display_name}
+                          </MenuItem>
+                        ))}
+                    {metalType === "silver" &&
+                      dropdownValues?.[1]?.customization_fields
                         .find((field) => field.name === "silver_quality")
-                        ?.property_value.find(
-                          (opt) => opt.id === e.target.value
-                        )?.name;
-                    }
+                        ?.property_value.map((option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.display_name}
+                          </MenuItem>
+                        ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Quantity</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="quantity"
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    fullWidth
+                    placeholder="Enter quantity"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="grossWeight"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Gross Weight</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="grossWeight"
+                    type="number"
+                    value={grossWeight}
+                    onChange={(e) => {
+                      setGrossWeight(e.target.value);
+                      setNetWeight(e.target.value - stoneWeight);
+                      setNetWeightAfterWastage(
+                        e.target.value - stoneWeight + wastageWeight
+                      );
+                    }}
+                    fullWidth
+                    placeholder="Enter gross weight"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">gm</InputAdornment>
+                      ),
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="stoneWeight"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Stone Weight</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="stoneWeight"
+                    type="number"
+                    value={stoneWeight}
+                    onChange={(e) => {
+                      setStoneWeight(e.target.value);
+                      setNetWeight(grossWeight - e.target.value);
+                      setNetWeightAfterWastage(
+                        grossWeight - e.target.value + wastageWeight
+                      );
+                    }}
+                    fullWidth
+                    placeholder="Enter stone weight"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">gm</InputAdornment>
+                      ),
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="netWeight"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Net Weight</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="netWeight"
+                    type="number"
+                    value={netWeight}
+                    disabled
+                    fullWidth
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">gm</InputAdornment>
+                      ),
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="wastagePercent"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Wastage Percentage</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="wastagePercent"
+                    type="number"
+                    value={wastagePercent}
+                    onChange={(e) => {
+                      setWastagePercent(e.target.value);
+                      setWastageWeight(
+                        (grossWeight - stoneWeight) * (e.target.value / 100)
+                      );
+                      setNetWeightAfterWastage(
+                        (grossWeight - stoneWeight) * (1 + e.target.value / 100)
+                      );
+                    }}
+                    fullWidth
+                    placeholder="Enter wastage percentage"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">%</InputAdornment>
+                      ),
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="wastageWeight"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Wastage Weight</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="wastageWeight"
+                    type="number"
+                    value={wastageWeight}
+                    disabled
+                    fullWidth
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">gm</InputAdornment>
+                      ),
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="netWeightAfterWastage"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Net Weight After Wastage</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="netWeightAfterWastage"
+                    type="number"
+                    value={netWeightAfterWastage}
+                    disabled
+                    fullWidth
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">gm</InputAdornment>
+                      ),
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('select[name="makingChargeType"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Making Charge Type</div>
+                <FormControl fullWidth>
+                  <Select
+                    name="makingChargeType"
+                    value={makingChargeType}
+                    onChange={(e) => {
+                      setMakingChargeType(e.target.value);
+                      setMakingChargeValue();
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="makingChargeValue"]')
+                          ?.focus();
+                      }
+                    }}
+                  >
+                    {metalType === "gold" &&
+                      dropdownValues?.[0]?.customization_fields
+                        .find((field) => field.name === "making_charge_type")
+                        ?.property_value.map((option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.display_name}
+                          </MenuItem>
+                        ))}
+                    {metalType === "silver" &&
+                      dropdownValues?.[1]?.customization_fields
+                        .find((field) => field.name === "making_charge_type")
+                        ?.property_value.map((option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.display_name}
+                          </MenuItem>
+                        ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Making Charge Value</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="makingChargeValue"
+                    type="number"
+                    value={makingChargeValue}
+                    onChange={(e) => {
+                      setMakingChargeValue(e.target.value);
 
-                    setQualityName(selectedOption);
-
-                    if (selectedOption) {
-                      setRate(rates[selectedOption]);
-                    }
-                  }}
-                >
-                  {metalType === "gold" &&
-                    dropdownValues?.[0]?.customization_fields
-                      .find((field) => field.name === "gold_quality")
+                      console.log(e.target.value);
+                      if (makingChargeType == 6) {
+                        setMakingChargeAmount(
+                          (
+                            parseFloat(e.target.value) *
+                            parseFloat(netWeightAfterWastage)
+                          ).toFixed(2)
+                        );
+                      } else if (makingChargeType == 7) {
+                        setMakingChargeAmount(
+                          parseFloat(e.target.value).toFixed(2)
+                        );
+                      } else if (makingChargeType == 8) {
+                        setMakingChargeAmount(
+                          parseFloat(e.target.value).toFixed(2)
+                        );
+                      } else if (makingChargeType == 9) {
+                        setMakingChargeAmount(
+                          parseFloat(
+                            e.target.value *
+                              (rate / 100) *
+                              (netWeightAfterWastage || netWeight)
+                          ).toFixed(2)
+                        );
+                      }
+                    }}
+                    fullWidth
+                    placeholder="Enter making charge value"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {makingChargeType == 9 ? "%" : "₹"}
+                        </InputAdornment>
+                      ),
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="makingChargeAmount"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Making Charge Amount</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="makingChargeAmount"
+                    type="number"
+                    value={makingChargeAmount}
+                    onChange={(e) => setMakingChargeAmount(e.target.value)}
+                    fullWidth
+                    placeholder="Enter making charge amount"
+                    disabled
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">₹</InputAdornment>
+                      ),
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="stoneAmount"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Stone Amount</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="stoneAmount"
+                    type="number"
+                    value={stoneAmount}
+                    onChange={(e) => setStoneAmount(e.target.value)}
+                    fullWidth
+                    placeholder="Enter stone amount"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">₹</InputAdornment>
+                      ),
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="hallmarkCharge"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Hallmark Charge</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="hallmarkCharge"
+                    type="number"
+                    value={hallmarkCharge}
+                    onChange={(e) => setHallmarkCharge(e.target.value)}
+                    fullWidth
+                    placeholder="Enter hallmark charge"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">₹</InputAdornment>
+                      ),
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="rodiumCharge"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Rodium Cg. | Certificate Cg.</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="rodiumCharge"
+                    type="number"
+                    value={rodiumCharge}
+                    onChange={(e) => setRodiumCharge(e.target.value)}
+                    fullWidth
+                    placeholder="Enter rodium charge"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">₹</InputAdornment>
+                      ),
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('select[name="gstPercent"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">GST Percentage</div>
+                <FormControl fullWidth>
+                  <Select
+                    name="gstPercent"
+                    value={gstPercent}
+                    onChange={(e) => setGstPercent(e.target.value)}
+                    fullWidth
+                  >
+                    {dropdownValues?.[0]?.customization_fields
+                      .find((field) => field.name === "gst")
                       ?.property_value.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
+                        <MenuItem key={option.name} value={option.name}>
                           {option.display_name}
                         </MenuItem>
                       ))}
-                  {metalType === "silver" &&
-                    dropdownValues?.[1]?.customization_fields
-                      .find((field) => field.name === "silver_quality")
-                      ?.property_value.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option.display_name}
-                        </MenuItem>
-                      ))}
-                </Select>
-              </FormControl>
+                  </Select>
+                </FormControl>
+              </Grid>
             </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Quantity</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  fullWidth
-                  placeholder="Enter quantity"
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Gross Weight</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={grossWeight}
-                  onChange={(e) => {
-                    setGrossWeight(e.target.value);
-                    setNetWeight(e.target.value - stoneWeight);
-                    setNetWeightAfterWastage(
-                      e.target.value - stoneWeight + wastageWeight
-                    );
-                  }}
-                  fullWidth
-                  placeholder="Enter gross weight"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">gm</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Stone Weight</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={stoneWeight}
-                  onChange={(e) => {
-                    setStoneWeight(e.target.value);
-                    setNetWeight(grossWeight - e.target.value);
-                    setNetWeightAfterWastage(
-                      grossWeight - e.target.value + wastageWeight
-                    );
-                  }}
-                  fullWidth
-                  placeholder="Enter stone weight"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">gm</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Net Weight</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={netWeight}
-                  disabled
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">gm</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Wastage Percentage</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={wastagePercent}
-                  onChange={(e) => {
-                    setWastagePercent(e.target.value);
-                    setWastageWeight(
-                      (grossWeight - stoneWeight) * (e.target.value / 100)
-                    );
-                    setNetWeightAfterWastage(
-                      (grossWeight - stoneWeight) * (1 + e.target.value / 100)
-                    );
-                  }}
-                  fullWidth
-                  placeholder="Enter wastage percentage"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">%</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Wastage Weight</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={wastageWeight}
-                  disabled
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">gm</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Net Weight After Wastage</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={netWeightAfterWastage}
-                  disabled
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">gm</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Making Charge Type</div>
-              <FormControl fullWidth>
-                <Select
-                  value={makingChargeType}
-                  onChange={(e) => {
-                    setMakingChargeType(e.target.value);
-                    setMakingChargeValue();
-                  }}
-                >
-                  {metalType === "gold" &&
-                    dropdownValues?.[0]?.customization_fields
-                      .find((field) => field.name === "making_charge_type")
-                      ?.property_value.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option.display_name}
-                        </MenuItem>
-                      ))}
-                  {metalType === "silver" &&
-                    dropdownValues?.[1]?.customization_fields
-                      .find((field) => field.name === "making_charge_type")
-                      ?.property_value.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option.display_name}
-                        </MenuItem>
-                      ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Making Charge Value</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={makingChargeValue}
-                  onChange={(e) => {
-                    setMakingChargeValue(e.target.value);
-
-                    console.log(e.target.value);
-                    if (makingChargeType == 6) {
-                      setMakingChargeAmount(
-                        (
-                          parseFloat(e.target.value) *
-                          parseFloat(netWeightAfterWastage)
-                        ).toFixed(2)
-                      );
-                    } else if (makingChargeType == 7) {
-                      setMakingChargeAmount(
-                        parseFloat(e.target.value).toFixed(2)
-                      );
-                    } else if (makingChargeType == 8) {
-                      setMakingChargeAmount(
-                        parseFloat(e.target.value).toFixed(2)
-                      );
-                    } else if (makingChargeType == 9) {
-                      setMakingChargeAmount(
-                        parseFloat(
-                          e.target.value *
-                            (rate / 100) *
-                            (netWeightAfterWastage || netWeight)
-                        ).toFixed(2)
-                      );
-                    }
-                  }}
-                  fullWidth
-                  placeholder="Enter making charge value"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        {makingChargeType == 9 ? "%" : "₹"}
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Making Charge Amount</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={makingChargeAmount}
-                  onChange={(e) => setMakingChargeAmount(e.target.value)}
-                  fullWidth
-                  placeholder="Enter making charge amount"
-                  disabled
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">₹</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Stone Amount</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={stoneAmount}
-                  onChange={(e) => setStoneAmount(e.target.value)}
-                  fullWidth
-                  placeholder="Enter stone amount"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">₹</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Hallmark Charge</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={hallmarkCharge}
-                  onChange={(e) => setHallmarkCharge(e.target.value)}
-                  fullWidth
-                  placeholder="Enter hallmark charge"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">₹</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Rodium Charge</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={rodiumCharge}
-                  onChange={(e) => setRodiumCharge(e.target.value)}
-                  fullWidth
-                  placeholder="Enter rodium charge"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">₹</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">GST Percentage</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={gstPercent}
-                  onChange={(e) => setGstPercent(e.target.value)}
-                  fullWidth
-                  placeholder="Enter GST percentage"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">%</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-          </Grid>
+          </Collapse>
         </Paper>
       </ThemeProvider>
 
@@ -1212,7 +1439,8 @@ const AddNewProduct = () => {
         <Paper
           elevation={3}
           className="detail-paper"
-          style={{ marginTop: "50px" }}
+          style={{ marginTop: "50px", cursor: "pointer" }}
+          onClick={() => setStoneDetailsExpanded(!stoneDetailsExpanded)}
         >
           <div
             style={{
@@ -1229,215 +1457,275 @@ const AddNewProduct = () => {
                 alignItems: "center",
               }}
             >
-              <div>
+              <div style={{ marginRight: "20px" }}>
                 <div>Amount</div>
                 <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
                   {parseFloat(stoneTotalAmount).toFixed(2)}
                 </div>
               </div>
+              <IconButton>
+                {stoneDetailsExpanded ? <ExpandLess /> : <ExpandMore />}
+              </IconButton>
             </div>
           </div>
           <Divider />
-          <Grid container spacing={0}>
-            <Grid item xs={12}>
-              <div className="label">Type</div>
-              <FormControl
-                fullWidth
+          <Collapse in={stoneDetailsExpanded}>
+            <Grid container spacing={0}>
+              <Grid item xs={3}>
+                <div className="label">Type</div>
+                <FormControl
+                  fullWidth
+                  style={{ marginBottom: "20px", paddingRight: "50px" }}
+                >
+                  <Select
+                    name="stoneType"
+                    value={stoneType}
+                    onChange={(e) => setStoneType(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="stoneClass"]')
+                          ?.focus();
+                      }
+                    }}
+                  >
+                    {dropdownValues?.[0]?.customization_fields
+                      .find((field) => field.name === "stone_type")
+                      ?.property_value.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.display_name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
-                <Select
-                  value={stoneType}
-                  onChange={(e) => setStoneType(e.target.value)}
-                >
-                  {dropdownValues?.[0]?.customization_fields
-                    .find((field) => field.name === "stone_type")
-                    ?.property_value.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
-                        {option.display_name}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
+                <div className="label">Class</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="stoneClass"
+                    type="text"
+                    value={stoneClass}
+                    onChange={(e) => setStoneClass(e.target.value)}
+                    fullWidth
+                    placeholder="Enter class"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="stoneClarity"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Clarity</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="stoneClarity"
+                    type="text"
+                    value={stoneClarity}
+                    onChange={(e) => setStoneClarity(e.target.value)}
+                    fullWidth
+                    placeholder="Enter clarity"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="stoneCut"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Cut</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="stoneCut"
+                    type="text"
+                    value={stoneCut}
+                    onChange={(e) => setStoneCut(e.target.value)}
+                    fullWidth
+                    placeholder="Enter cut"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="stonePieces"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Pieces</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="stonePieces"
+                    type="number"
+                    value={stonePieces}
+                    onChange={(e) => {
+                      setStonePieces(e.target.value);
+                      const weight =
+                        e.target.value && stoneCarat
+                          ? (stoneCarat * 0.2 * e.target.value).toFixed(2)
+                          : "";
+                      setStoneInternalWeight(weight);
+                    }}
+                    fullWidth
+                    placeholder="Enter number of pieces"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="stoneCarat"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Carat</div>
+                <FormControl fullWidth>
+                  <TextField
+                    name="stoneCarat"
+                    type="number"
+                    value={stoneCarat}
+                    onChange={(e) => {
+                      setStoneCarat(e.target.value);
+                      const weight =
+                        e.target.value && stonePieces
+                          ? (e.target.value * 0.2 * stonePieces).toFixed(2)
+                          : "";
+                      setStoneInternalWeight(weight);
+                    }}
+                    fullWidth
+                    placeholder="Enter carat"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document
+                          .querySelector('input[name="stoneInternalWeight"]')
+                          ?.focus();
+                      }
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Weight (gm)</div>
+                <FormControl fullWidth>
+                  <TextField
+                    type="number"
+                    value={stoneInternalWeight}
+                    disabled
+                    fullWidth
+                    placeholder="Auto-calculated weight"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">gm</InputAdornment>
+                      ),
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">Rate</div>
+                <FormControl fullWidth>
+                  <TextField
+                    type="number"
+                    value={stoneRate}
+                    onChange={(e) => {
+                      setStoneRate(e.target.value);
+                      const total =
+                        stoneInternalWeight && e.target.value
+                          ? (
+                              parseFloat(stoneInternalWeight) *
+                              parseFloat(e.target.value)
+                            ).toFixed(2)
+                          : 0;
+                      setStoneTotalAmount(total);
+                    }}
+                    fullWidth
+                    placeholder="Enter rate"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">₹</InputAdornment>
+                      ),
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                style={{ marginBottom: "20px", paddingRight: "50px" }}
+              >
+                <div className="label">GST Percentage</div>
+                <FormControl fullWidth>
+                  <Select
+                    value={stoneGSTPercent}
+                    onChange={(e) => {
+                      setStoneGSTPercent(e.target.value);
+                      const baseAmount =
+                        stoneInternalWeight && stoneRate
+                          ? parseFloat(stoneInternalWeight) *
+                            parseFloat(stoneRate)
+                          : 0;
+                      const gstAmount =
+                        baseAmount * (parseFloat(e.target.value) / 100);
+                      const total = (baseAmount + gstAmount).toFixed(2);
+                      setStoneTotalAmount(total);
+                    }}
+                    fullWidth
+                  >
+                    {dropdownValues?.[0]?.customization_fields
+                      .find((field) => field.name === "gst")
+                      ?.property_value.map((option) => (
+                        <MenuItem key={option.name} value={option.name}>
+                          {option.display_name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </Grid>
             </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Class</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="text"
-                  value={stoneClass}
-                  onChange={(e) => setStoneClass(e.target.value)}
-                  fullWidth
-                  placeholder="Enter class"
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Clarity</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="text"
-                  value={stoneClarity}
-                  onChange={(e) => setStoneClarity(e.target.value)}
-                  fullWidth
-                  placeholder="Enter clarity"
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Cut</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="text"
-                  value={stoneCut}
-                  onChange={(e) => setStoneCut(e.target.value)}
-                  fullWidth
-                  placeholder="Enter cut"
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Pieces</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={stonePieces}
-                  onChange={(e) => {
-                    setStonePieces(e.target.value);
-                    const weight =
-                      e.target.value && stoneCarat
-                        ? (stoneCarat * 0.2 * e.target.value).toFixed(2)
-                        : "";
-                    setStoneInternalWeight(weight);
-                  }}
-                  fullWidth
-                  placeholder="Enter number of pieces"
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Carat</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={stoneCarat}
-                  onChange={(e) => {
-                    setStoneCarat(e.target.value);
-                    const weight =
-                      e.target.value && stonePieces
-                        ? (e.target.value * 0.2 * stonePieces).toFixed(2)
-                        : "";
-                    setStoneInternalWeight(weight);
-                  }}
-                  fullWidth
-                  placeholder="Enter carat"
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Weight (gm)</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={stoneInternalWeight}
-                  disabled
-                  fullWidth
-                  placeholder="Auto-calculated weight"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">gm</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Rate</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={stoneRate}
-                  onChange={(e) => {
-                    setStoneRate(e.target.value);
-                    const total =
-                      stoneInternalWeight && e.target.value
-                        ? (
-                            parseFloat(stoneInternalWeight) *
-                            parseFloat(e.target.value)
-                          ).toFixed(2)
-                        : 0;
-                    setStoneTotalAmount(total);
-                  }}
-                  fullWidth
-                  placeholder="Enter rate"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">₹</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">GST Percentage</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={stoneGSTPercent}
-                  onChange={(e) => {
-                    setStoneGSTPercent(e.target.value);
-                    const baseAmount =
-                      stoneInternalWeight && stoneRate
-                        ? parseFloat(stoneInternalWeight) *
-                          parseFloat(stoneRate)
-                        : 0;
-                    const gstAmount =
-                      baseAmount * (parseFloat(e.target.value) / 100);
-                    const total = (baseAmount + gstAmount).toFixed(2);
-                    setStoneTotalAmount(total);
-                  }}
-                  fullWidth
-                  placeholder="Enter GST percentage"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">%</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-          </Grid>
+          </Collapse>
         </Paper>
       </ThemeProvider>
 

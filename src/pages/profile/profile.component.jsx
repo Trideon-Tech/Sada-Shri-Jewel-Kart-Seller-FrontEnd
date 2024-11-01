@@ -87,7 +87,7 @@ const Profile = () => {
 
   return (
     <div className="product-component">
-      <CustomDrawer section={"orders"} />
+      <CustomDrawer section={""} />
 
       <div
         style={{

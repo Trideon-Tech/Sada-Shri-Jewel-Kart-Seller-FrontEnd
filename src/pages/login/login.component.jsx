@@ -1,4 +1,4 @@
-import { AppBar, Button, createTheme, Grid, Toolbar } from "@mui/material";
+import { AppBar, Button, Grid, Toolbar } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,14 +9,6 @@ import "./login.styles.scss";
 
 import InputTextField from "../../components/input-text-field/input-text-field.component";
 import { generalToastStyle } from "../../utils/toast.styles";
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#ffffff",
-    },
-  },
-});
 
 const Login = () => {
   let navigate = useNavigate();

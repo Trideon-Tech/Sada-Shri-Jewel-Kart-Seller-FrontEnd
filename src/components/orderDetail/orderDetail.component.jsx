@@ -139,7 +139,11 @@ const OrderDetail = ({ id }) => {
       console.log("order summary", data?.response);
       setOrderDetails(data?.response);
 
-      setLogs(JSON.parse(data?.response[0]?.shipment_details));
+      const parsedLogs = JSON.parse(data?.response[0]?.shipment_details);
+      const sortedLogs = Object.entries(parsedLogs || {})
+        .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA))
+        .reduce((acc, [date, status]) => ({ ...acc, [date]: status }), {});
+      setLogs(sortedLogs);
     })();
   }, []);
 
@@ -154,8 +158,6 @@ const OrderDetail = ({ id }) => {
     let orderDetailIds = orderDetails
       .map((o) => o["order_detail_id"])
       .join(",");
-
-    console.log(logistics);
 
     const formData = new FormData();
     formData.append("type", "create_shipment");
@@ -184,10 +186,11 @@ const OrderDetail = ({ id }) => {
       }
     );
 
-    console.log("order summary", data?.response);
     setOrderDetails(data?.response);
 
     setLogs(JSON.parse(data?.response[0]?.shipment_details));
+
+    setOpen(false);
   };
 
   // Receive Product
@@ -281,9 +284,13 @@ const OrderDetail = ({ id }) => {
               marginBottom: "20px",
             }}
           >
-            {orderDetails.filter(orderData => orderData.shipment_status !== "ADMIN_VERIFIED").map((orderData) => (
-              <ProductCardSmall orderDetails={orderData} />
-            ))}
+            {orderDetails
+              .filter(
+                (orderData) => orderData.shipment_status !== "ADMIN_VERIFIED"
+              )
+              .map((orderData) => (
+                <ProductCardSmall orderDetails={orderData} />
+              ))}
           </div>
           <p
             style={{

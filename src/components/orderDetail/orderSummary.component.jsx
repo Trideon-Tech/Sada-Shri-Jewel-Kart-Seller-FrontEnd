@@ -55,7 +55,8 @@ const OrderInfoCard = ({ orderDetail }) => {
               width: "100px",
               padding: "5px",
               border:
-                orderDetail?.shipment_status === "ADMIN_INSPECTION_FAILED"
+                orderDetail?.shipment_status === "ADMIN_INSPECTION_FAILED" ||
+                orderDetail?.shipment_status === "ORDER_CANCELED"
                   ? "1px solid red"
                   : orderDetail?.shipment_status === "ORDER_CREATED" ||
                     orderDetail?.shipment_status === "SELLER_VERIFIED" ||
@@ -66,7 +67,8 @@ const OrderInfoCard = ({ orderDetail }) => {
                   : "1px solid #cffbcf",
               borderRadius: "5px",
               color:
-                orderDetail?.shipment_status === "ADMIN_INSPECTION_FAILED"
+                orderDetail?.shipment_status === "ADMIN_INSPECTION_FAILED" ||
+                orderDetail?.shipment_status === "ORDER_CANCELED"
                   ? "red"
                   : orderDetail?.shipment_status === "ORDER_CREATED" ||
                     orderDetail?.shipment_status === "SELLER_VERIFIED" ||
@@ -77,7 +79,9 @@ const OrderInfoCard = ({ orderDetail }) => {
                   : "#008000",
             }}
           >
-            {orderDetail?.shipment_status === "ADMIN_INSPECTION_FAILED"
+            {orderDetail?.shipment_status === "ORDER_CANCELED"
+              ? "Cancelled"
+              : orderDetail?.shipment_status === "ADMIN_INSPECTION_FAILED"
               ? "Returned"
               : orderDetail?.shipment_status === "ORDER_CREATED" ||
                 orderDetail?.shipment_status ===

@@ -1439,8 +1439,7 @@ const AddNewProduct = () => {
         <Paper
           elevation={3}
           className="detail-paper"
-          style={{ marginTop: "50px", cursor: "pointer" }}
-          onClick={() => setStoneDetailsExpanded(!stoneDetailsExpanded)}
+          style={{ marginTop: "50px" }}
         >
           <div
             style={{
@@ -1463,7 +1462,9 @@ const AddNewProduct = () => {
                   {parseFloat(stoneTotalAmount).toFixed(2)}
                 </div>
               </div>
-              <IconButton>
+              <IconButton
+                onClick={() => setStoneDetailsExpanded(!stoneDetailsExpanded)}
+              >
                 {stoneDetailsExpanded ? <ExpandLess /> : <ExpandMore />}
               </IconButton>
             </div>

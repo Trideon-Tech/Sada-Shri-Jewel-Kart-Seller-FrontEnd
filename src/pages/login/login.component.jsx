@@ -164,10 +164,15 @@ const Login = () => {
               title={"Mobile"}
               value={mobile}
               onEdit={(e) => {
-                setMobile(e.target.value);
-                if (e.target.value.length === 10)
-                  activateSendOTPAdornment(true);
-                else activateSendOTPAdornment(false);
+                const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                if (value.length <= 10) { // Only allow up to 10 digits
+                  setMobile(value);
+                  if (value.length === 10) {
+                    activateSendOTPAdornment(true);
+                  } else {
+                    activateSendOTPAdornment(false);
+                  }
+                }
               }}
             />
             <InputTextField

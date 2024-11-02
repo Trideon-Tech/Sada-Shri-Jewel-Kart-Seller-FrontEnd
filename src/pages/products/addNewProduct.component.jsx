@@ -1,35 +1,21 @@
 import {
   Button,
-  Checkbox,
-  Chip,
   Collapse,
   createTheme,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
   FormControl,
   Grid,
   IconButton,
-  Input,
   InputAdornment,
   MenuItem,
   Paper,
   Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   ThemeProvider,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import {
-  Add,
   Delete,
   ExpandLess,
   ExpandMore,
@@ -44,7 +30,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import InputTextField from "../../components/input-text-field/input-text-field.component";
 import "./addNewProduct.styles.scss";
-import MaterialSelector from "./materialSelector.component";
 
 const theme = createTheme({
   palette: {
@@ -1439,7 +1424,9 @@ const AddNewProduct = () => {
         <Paper
           elevation={3}
           className="detail-paper"
-          style={{ marginTop: "50px" }}
+          style={{
+            marginTop: "50px",
+          }}
         >
           <div
             style={{
@@ -1730,8 +1717,7 @@ const AddNewProduct = () => {
         </Paper>
       </ThemeProvider>
 
-      {/* Customization input */}
-      <div className="product-customization-wrapper">
+      {/* <div className="product-customization-wrapper">
         <ThemeProvider theme={theme}>
           <Paper
             className="customization-paper"
@@ -1758,12 +1744,6 @@ const AddNewProduct = () => {
                 setCombinationValues={setCombinationValues}
               />
             </div>
-            {/* <Button
-              className="button"
-              onClick={() => setOpenCustomizationInputDialog(true)}
-            >
-              <Add /> Add New Customization
-            </Button> */}
             {selectedOptions === null || !showCustomizationTable ? (
               <></>
             ) : (
@@ -1846,7 +1826,6 @@ const AddNewProduct = () => {
               </div>
             )}
 
-            {/* Apply customization dialog */}
             <Dialog
               open={openCustomizationInputDialog}
               onClose={() => setOpenCustomizationInputDialog(false)}
@@ -1939,7 +1918,6 @@ const AddNewProduct = () => {
               </ThemeProvider>
             </Dialog>
 
-            {/* Add customization field  dialog */}
             <Dialog
               open={openAddNewCustomizationTypeInputDialog}
               onClose={() => setOpenAddNewCustomizationTypeInputDialog(false)}
@@ -1994,7 +1972,6 @@ const AddNewProduct = () => {
               </ThemeProvider>
             </Dialog>
 
-            {/* Add customization option dialog */}
             <Dialog
               open={openAddNewCustomizationOptionInputDialog}
               onClose={() => setOpenAddNewCustomizationOptionInputDialog(false)}
@@ -2050,7 +2027,7 @@ const AddNewProduct = () => {
             </Dialog>
           </Paper>
         </ThemeProvider>
-      </div>
+      </div> */}
     </div>
   );
 };

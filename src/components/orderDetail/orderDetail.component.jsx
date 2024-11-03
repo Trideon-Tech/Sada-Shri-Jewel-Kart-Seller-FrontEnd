@@ -139,8 +139,12 @@ const OrderDetail = ({ id }) => {
       console.log("order summary", data?.response);
       setOrderDetails(data?.response);
 
-      const parsedLogs = JSON.parse(data?.response[0]?.shipment_details);
-      const sortedLogs = Object.entries(parsedLogs || {})
+      const allLogs = data?.response.reduce((acc, order) => {
+        const parsedLogs = JSON.parse(order?.shipment_details || '{}');
+        return { ...acc, ...parsedLogs };
+      }, {});
+      
+      const sortedLogs = Object.entries(allLogs)
         .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA))
         .reduce((acc, [date, status]) => ({ ...acc, [date]: status }), {});
       setLogs(sortedLogs);
@@ -286,7 +290,10 @@ const OrderDetail = ({ id }) => {
           >
             {orderDetails
               .filter(
-                (orderData) => orderData.shipment_status !== "ADMIN_VERIFIED"
+                (orderData) =>
+                  orderData.shipment_status === "ORDER_CREATED" ||
+                  orderData.shipment_status ===
+                    "INSPECTION_FAILED_ORDER_RECEIVED_BY_SELLER"
               )
               .map((orderData) => (
                 <ProductCardSmall orderDetails={orderData} />
@@ -628,7 +635,8 @@ const OrderDetail = ({ id }) => {
             {orderDetails.some(
               (order) =>
                 order.shipment_status ===
-                "INSPECTION_FAILED_ORDER_RECEIVED_BY_SELLER"
+                  "INSPECTION_FAILED_ORDER_RECEIVED_BY_SELLER" ||
+                order.shipment_status === "ORDER_CREATED"
             ) ? (
               <Button
                 variant="contained"
@@ -659,36 +667,7 @@ const OrderDetail = ({ id }) => {
               >
                 Receive Order
               </Button>
-            ) : (
-              <Button
-                variant="contained"
-                style={
-                  orderDetails[0]?.shipment_status !== "ORDER_CREATED"
-                    ? {
-                        marginLeft: "auto",
-                        width: "300px",
-                        height: "62px",
-                        fontWeight: 700,
-                        backgroundColor: "#d5d5d5",
-                      }
-                    : {
-                        marginLeft: "auto",
-                        width: "300px",
-                        height: "62px",
-                        fontWeight: 700,
-                        backgroundColor: "#A36E29",
-                      }
-                }
-                disabled={
-                  orderDetails[0]?.shipment_status !== "ORDER_CREATED"
-                    ? true
-                    : false
-                }
-                onClick={() => setOpen(true)}
-              >
-                FulFill Order
-              </Button>
-            )}
+            ) : null}
           </div>
         </Grid>
         <Grid item xs={8} style={{ marginTop: "30px" }}>

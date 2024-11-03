@@ -201,7 +201,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                 fontFamily: '"Work Sans", sans-serif',
               }}
             >
-              <b>{payementDetails?.total_settled_amount} </b>
+              <b>{Number(payementDetails?.total_settled_amount).toFixed(2)} </b>
             </p>
           </div>
         </div>
@@ -510,16 +510,20 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                     <TableCell align="left">{row?.created_at}</TableCell>
                     <TableCell align="left">{row?.order_id}</TableCell>
                     <TableCell align="left">
-                      {row?.productsArray.length > 1
-                        ? `${row.productsArray[0]} + ${
-                            row.productsArray.length - 1
-                          } others`
-                        : row.productsArray[0]}
+                      {row?.productsArray?.length > 0
+                        ? row.productsArray.length > 1
+                          ? `${row.productsArray[0]} + ${
+                              row.productsArray.length - 1
+                            } others`
+                          : row.productsArray[0]
+                        : "-"}
                     </TableCell>
                     <TableCell align="left">
-                      Rs. {row?.settlement_amount}
+                      Rs. {Number(row?.settlement_amount).toFixed(2)}
                     </TableCell>
-                    <TableCell align="left">Rs. {row?.total_amount}</TableCell>
+                    <TableCell align="left">
+                      Rs. {Number(row?.total_amount).toFixed(2)}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

@@ -839,6 +839,7 @@ const AddNewProduct = () => {
               <div style={{ marginRight: "20px" }}>
                 <div>Rate</div>
                 <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {console.log("Rate:", rate)}
                   {rate.toFixed(2)}
                 </div>
               </div>
@@ -915,7 +916,13 @@ const AddNewProduct = () => {
                       setQualityName(selectedOption);
 
                       if (selectedOption) {
-                        setRate(rates[selectedOption]);
+                        setRate(
+                          rates[
+                            selectedOption === "silver22"
+                              ? "silver"
+                              : selectedOption
+                          ]
+                        );
                       }
                     }}
                     onKeyDown={(e) => {

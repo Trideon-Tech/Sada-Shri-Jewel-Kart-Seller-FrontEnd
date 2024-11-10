@@ -172,7 +172,7 @@ const OrdersComponent = ({ row }) => {
       <ThemeProvider theme={theme}>
         <Paper
           className="table-paper"
-          sx={{ width: "95%", overflow: "hidden", height: 950 }}
+          sx={{ width: "95%", overflow: "hidden", height: 900 }}
         >
           {showLoading ? (
             <CircularProgress
@@ -183,7 +183,7 @@ const OrdersComponent = ({ row }) => {
               }}
             />
           ) : ordersList && ordersList?.length > 0 ? (
-            <TableContainer style={{ height: "90%" }}>
+            <TableContainer style={{ height: "88%" }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
@@ -229,11 +229,30 @@ const OrdersComponent = ({ row }) => {
                                   color:
                                     row?.shipment_status === "ADMIN_VERIFIED"
                                       ? "green"
+                                      : row?.shipment_status ===
+                                          "PARTIALLY_CANCELED" ||
+                                        row?.shipment_status ===
+                                          "PARTIALLY_RETURNED"
+                                      ? "brown"
+                                      : row?.shipment_status ===
+                                          "ORDER_CANCELED" ||
+                                        row?.shipment_status === "RETURNED"
+                                      ? "red"
                                       : "gray",
                                 }}
                               >
                                 {row?.shipment_status === "ADMIN_VERIFIED"
                                   ? "Fullfilled"
+                                  : row?.shipment_status ===
+                                    "PARTIALLY_CANCELED"
+                                  ? "Partially Cancelled"
+                                  : row?.shipment_status === "ORDER_CANCELED"
+                                  ? "Cancelled"
+                                  : row?.shipment_status ===
+                                    "PARTIALLY_RETURNED"
+                                  ? "Partially Returned"
+                                  : row?.shipment_status === "RETURNED"
+                                  ? "Returned"
                                   : "Unfullfilled"}
                               </TableCell>
                             </TableRow>

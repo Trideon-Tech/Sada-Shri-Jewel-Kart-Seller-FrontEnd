@@ -1,15 +1,15 @@
+import { AppBar, Button, Grid, Toolbar } from "@mui/material";
 import React from "react";
-import { AppBar, Toolbar, Button, Grid } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 
 import "./register.styles.scss";
 
-import RegistrationOutlineComponent from "../../components/registration-outline-item/registration-outline-item.component";
-import RegistrationUserDetails from "../../components/registration-user-details/registration-user-details.component";
-import RegistrationCompanyDetails from "../../components/registration-company-details/registration-company-details.component";
-import RegistrationStoreDetails from "../../components/registration-store-details/registration-store-details.component";
 import RegistrationAddressDetails from "../../components/registration-address-details/registration-address-details.component";
 import RegistrationBankDetails from "../../components/registration-bank-details/registration-bank-details.component";
+import RegistrationCompanyDetails from "../../components/registration-company-details/registration-company-details.component";
+import RegistrationOutlineComponent from "../../components/registration-outline-item/registration-outline-item.component";
+import RegistrationStoreDetails from "../../components/registration-store-details/registration-store-details.component";
+import RegistrationUserDetails from "../../components/registration-user-details/registration-user-details.component";
 
 const Register = () => {
   let { step } = useParams();
@@ -79,7 +79,17 @@ const Register = () => {
             showTrailingLine={false}
             selectedIndex={selectedIndex}
           />
-          <div className="helper-text">Seller Registration Guide</div>
+          <div
+            className="helper-text"
+            onClick={() =>
+              window.open(
+                "https://blogs.sadashrijewelkart.com/seller-registration-guide/",
+                "_blank"
+              )
+            }
+          >
+            Seller Registration Guide
+          </div>
         </Grid>
         <Grid item xs={8} className="inputs">
           {step === "user" ? (

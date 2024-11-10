@@ -7,6 +7,8 @@ import CustomDrawer from "../../components/drawer/drawer.component";
 import "./productpage.styles.scss";
 
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import { generalToastStyle } from "../../utils/toast.styles";
 
 const Profile = () => {
   const [editProfile, setEditProfile] = useState(true);
@@ -20,8 +22,10 @@ const Profile = () => {
   const [coverImage, setCoverImage] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const [details, setDetails] = useState();
+  const [newProfileImage, setNewProfileImage] = useState(null);
+  const [newCoverImage, setNewCoverImage] = useState(null);
 
-  useEffect(() => {
+  const getProfileDetails = () => {
     let data = new FormData();
 
     let config = {
@@ -55,38 +59,107 @@ const Profile = () => {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  useEffect(() => {
+    getProfileDetails();
   }, []);
 
-  const updateProfileDetails = () => {
-    const FormData = require("form-data");
-    let data = new FormData();
-    data.append("name", `${firstName} ${lastName}`);
-    data.append("mobile", `${phone}`);
-    data.append("email", `${emailId}`);
-    data.append("type", "update_seller");
+  const handleProfileImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setNewProfileImage(file);
+    }
+  };
 
-    axios
-      .post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/register.php",
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-      .then((response) => {
-        if (response.data.success === 1) {
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+  const handleCoverImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setNewCoverImage(file);
+    }
+  };
+
+  const updateProfileDetails = () => {
+    console.log(
+      firstName !== details?.name?.split(" ")[0] ||
+        lastName !== details?.name?.split(" ")[1]
+    );
+    if (newProfileImage || newCoverImage || emailId) {
+      const FormData = require("form-data");
+      let imageData = new FormData();
+      imageData.append("mobile", phone.replace("+91", ""));
+      imageData.append("key", "update_company");
+      imageData.append("contact", emailId);
+
+      if (newProfileImage) {
+        imageData.append("logo", newProfileImage);
+      }
+      if (newCoverImage) {
+        imageData.append("cover_image", newCoverImage);
+      }
+
+      axios
+        .post(
+          "https://api.sadashrijewelkart.com/v1.0.0/seller/add.php",
+          imageData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          if (response.data.success === 1) {
+            getProfileDetails();
+            setEditProfile(true);
+            setNewProfileImage(null);
+            setNewCoverImage(null);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+
+    if (
+      firstName !== details?.name?.split(" ")[0] ||
+      lastName !== details?.name?.split(" ")[1]
+    ) {
+      const FormData = require("form-data");
+      let data = new FormData();
+      data.append("name", `${firstName} ${lastName}`);
+      data.append("mobile", phone.replace("+91", ""));
+      data.append("type", "update_seller");
+
+      axios
+        .post(
+          "https://api.sadashrijewelkart.com/v1.0.0/seller/register.php",
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          if (response.data.success === 1) {
+            getProfileDetails();
+            setEditProfile(true);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+
+    toast("Update success!", generalToastStyle);
   };
 
   return (
     <div className="product-component">
+      <ToastContainer />
       <CustomDrawer section={""} />
 
       <div
@@ -148,7 +221,11 @@ const Profile = () => {
                       marginLeft: "auto",
                       marginRight: "10px",
                     }}
-                    onClick={() => setEditProfile(!editProfile)}
+                    onClick={() => {
+                      setEditProfile(!editProfile);
+                      setNewProfileImage(null);
+                      setNewCoverImage(null);
+                    }}
                   >
                     <DoDisturbAltIcon
                       style={{ fontSize: "1.5rem", color: "#a36e29" }}
@@ -202,14 +279,31 @@ const Profile = () => {
                     backgroundColor: "white",
                     borderRadius: "150px",
                     marginLeft: "40px",
-
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
+                    cursor: !editProfile ? "pointer" : "default",
+                  }}
+                  onClick={() => {
+                    if (!editProfile) {
+                      document.getElementById("profile-image-input").click();
+                    }
                   }}
                 >
+                  <input
+                    type="file"
+                    id="profile-image-input"
+                    hidden
+                    accept="image/*"
+                    onChange={handleProfileImageChange}
+                    disabled={editProfile}
+                  />
                   <img
-                    src={`https://api.sadashrijewelkart.com/assets/${profileImage}`}
+                    src={
+                      newProfileImage
+                        ? URL.createObjectURL(newProfileImage)
+                        : `https://api.sadashrijewelkart.com/assets/${profileImage}`
+                    }
                     style={{
                       width: "130px",
                       height: "130px",
@@ -218,11 +312,35 @@ const Profile = () => {
                     }}
                   />
                 </Box>
-                <img
-                  src={`https://api.sadashrijewelkart.com/assets/${coverImage}`}
-                  style={{ width: "100%" }}
-                  alt="Cover Image not found!"
-                />
+                <Box
+                  style={{
+                    width: "100%",
+                    cursor: !editProfile ? "pointer" : "default",
+                  }}
+                  onClick={() => {
+                    if (!editProfile) {
+                      document.getElementById("cover-image-input").click();
+                    }
+                  }}
+                >
+                  <input
+                    type="file"
+                    id="cover-image-input"
+                    hidden
+                    accept="image/*"
+                    onChange={handleCoverImageChange}
+                    disabled={editProfile}
+                  />
+                  <img
+                    src={
+                      newCoverImage
+                        ? URL.createObjectURL(newCoverImage)
+                        : `https://api.sadashrijewelkart.com/assets/${coverImage}`
+                    }
+                    style={{ width: "100%" }}
+                    alt="Cover Image not found!"
+                  />
+                </Box>
               </Box>
             </Paper>
             <Box
@@ -236,7 +354,7 @@ const Profile = () => {
               {!editProfile ? (
                 <>
                   <TextField
-                    id="outlined-controlled"
+                    variant="outlined"
                     label="GSTIN"
                     value={gstIn}
                     disabled
@@ -244,9 +362,20 @@ const Profile = () => {
                       setGstIn(event.target.value);
                     }}
                     style={{ marginRight: "40%", width: "30%" }}
+                    InputProps={{
+                      style: {
+                        fontFamily: '"Work Sans", sans-serif',
+                        color: "#000",
+                      },
+                    }}
+                    InputLabelProps={{
+                      style: {
+                        fontFamily: '"Work Sans", sans-serif',
+                      },
+                    }}
                   />
                   <TextField
-                    id="outlined-controlled"
+                    variant="outlined"
                     label="COMPANY TRADE NAME"
                     value={companyTradeName}
                     disabled
@@ -254,6 +383,17 @@ const Profile = () => {
                       setCompanyTradeName(event.target.value);
                     }}
                     style={{ marginRight: "auto", width: "30%" }}
+                    InputProps={{
+                      style: {
+                        fontFamily: '"Work Sans", sans-serif',
+                        color: "#000",
+                      },
+                    }}
+                    InputLabelProps={{
+                      style: {
+                        fontFamily: '"Work Sans", sans-serif',
+                      },
+                    }}
                   />
                 </>
               ) : (
@@ -287,19 +427,30 @@ const Profile = () => {
               {!editProfile ? (
                 <>
                   <TextField
-                    id="outlined-controlled"
-                    label="EMAILID"
+                    variant="outlined"
+                    label="EMAIL ID"
                     value={emailId}
                     onChange={(event) => {
                       setEmailId(event.target.value);
                     }}
                     style={{ marginRight: "40%", width: "30%" }}
+                    InputProps={{
+                      style: {
+                        fontFamily: '"Work Sans", sans-serif',
+                        color: "#000",
+                      },
+                    }}
+                    InputLabelProps={{
+                      style: {
+                        fontFamily: '"Work Sans", sans-serif',
+                      },
+                    }}
                   />
                 </>
               ) : (
                 <>
                   <p style={{ fontSize: "1.2rem", width: "60%" }}>
-                    <b style={{ color: "rgba(0,0,0,0.8)" }}>EMAILID : </b>
+                    <b style={{ color: "rgba(0,0,0,0.8)" }}>EMAIL ID : </b>
                     {emailId}
                   </p>
                 </>
@@ -345,22 +496,44 @@ const Profile = () => {
               {!editProfile ? (
                 <>
                   <TextField
-                    id="outlined-controlled"
+                    variant="outlined"
                     label="FIRST NAME"
                     value={firstName}
                     onChange={(event) => {
                       setFirstName(event.target.value);
                     }}
                     style={{ marginRight: "40%", width: "30%" }}
+                    InputProps={{
+                      style: {
+                        fontFamily: '"Work Sans", sans-serif',
+                        color: "#000",
+                      },
+                    }}
+                    InputLabelProps={{
+                      style: {
+                        fontFamily: '"Work Sans", sans-serif',
+                      },
+                    }}
                   />
                   <TextField
-                    id="outlined-controlled"
+                    variant="outlined"
                     label="LAST NAME"
                     value={lastName}
                     onChange={(event) => {
                       setLastName(event.target.value);
                     }}
                     style={{ marginRight: "auto", width: "30%" }}
+                    InputProps={{
+                      style: {
+                        fontFamily: '"Work Sans", sans-serif',
+                        color: "#000",
+                      },
+                    }}
+                    InputLabelProps={{
+                      style: {
+                        fontFamily: '"Work Sans", sans-serif',
+                      },
+                    }}
                   />
                 </>
               ) : (

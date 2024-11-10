@@ -1,15 +1,15 @@
-import React, { useState } from "react";
 import {
   Button,
+  CircularProgress,
+  createTheme,
   Grid,
   ThemeProvider,
-  createTheme,
-  CircularProgress,
 } from "@mui/material";
+import axios from "axios";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
 
 import "./registration-store-details.styles.scss";
 
@@ -38,10 +38,13 @@ const RegistrationStoreDetails = () => {
   let registeredMobile = localStorage.getItem("mobile");
   let gstIn = localStorage.getItem("gstIn");
   let companyTradeName = localStorage.getItem("companyTradeName");
+  let pan = localStorage.getItem("panCard");
 
   const [emailId, setEmailId] = useState();
   const [selectedLogoImage, setSelectedLogoImage] = useState();
   const [selectedCoverImage, setSelectedCoverImage] = useState();
+  const [selectedBisCertificate, setSelectedBisCertificate] = useState();
+  const [selectedBrandProof, setSelectedBrandProof] = useState();
   const [nextStepLoading, activateNextStepLoading] = useState(false);
 
   const handleLogoSelection = (event) => {
@@ -58,11 +61,29 @@ const RegistrationStoreDetails = () => {
     }
   };
 
+  const handleBisCertificateSelection = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedBisCertificate(file);
+    }
+  };
+
+  const handleBrandProofSelection = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedBrandProof(file);
+    }
+  };
+
   const onNext = () => {
     if (emailId === "" || typeof emailId === "undefined") {
       toast.warn("Email Address is required!", generalToastStyle);
     } else if (!selectedLogoImage) {
       toast.warn("Logo is required!", generalToastStyle);
+    } else if (!selectedBisCertificate) {
+      toast.warn("BIS Certificate is required!", generalToastStyle);
+    } else if (!selectedBrandProof) {
+      toast.warn("Brand Proof is required!", generalToastStyle);
     } else {
       activateNextStepLoading(true);
 
@@ -71,24 +92,21 @@ const RegistrationStoreDetails = () => {
       }
 
       const formData = new FormData();
+      formData.append("mobile", registeredMobile);
+      formData.append("key", "company");
+      formData.append("gstin", gstIn);
+      formData.append("company_name", companyTradeName);
+      formData.append("contact", emailId);
+      formData.append("logo", selectedLogoImage);
+      formData.append("bis", selectedBisCertificate);
+      formData.append("brand_proof", selectedBrandProof);
+      formData.append("pan", pan);
+
       if (selectedCoverImage) {
-        // Cover image is available
-        formData.append("mobile", registeredMobile);
-        formData.append("key", "company");
-        formData.append("gstin", gstIn);
-        formData.append("company_name", companyTradeName);
-        formData.append("contact", emailId);
-        formData.append("logo", selectedLogoImage);
         formData.append("cover_image", selectedCoverImage);
-      } else {
-        // Cover image unavilable
-        formData.append("mobile", registeredMobile);
-        formData.append("key", "company");
-        formData.append("gstin", gstIn);
-        formData.append("company_name", companyTradeName);
-        formData.append("contact", emailId);
-        formData.append("logo", selectedLogoImage);
       }
+
+      console.log(formData);
 
       axios
         .post(
@@ -117,7 +135,7 @@ const RegistrationStoreDetails = () => {
       <ToastContainer />
       <div className="step-text">Step 3/5</div>
       <div className="heading">Store Details</div>
-      <Grid container spacing={0}>
+      <Grid container spacing={0} rowGap={4}>
         <Grid item xs={12}>
           <InputTextField
             title={"Email Id"}
@@ -182,6 +200,56 @@ const RegistrationStoreDetails = () => {
               alt="Selected Cover"
               className="selected-image"
             />
+          )}
+        </Grid>
+        <Grid item xs={1} />
+        <Grid item xs={5} className="image-item">
+          <div className="info">
+            <div className="label">BIS Certificate</div>
+            <input
+              type="file"
+              id="bis-certificate"
+              style={{
+                display: "none",
+              }}
+              onChange={handleBisCertificateSelection}
+              accept=".pdf,.jpg,.jpeg,.png"
+            />
+            <label htmlFor="bis-certificate">
+              <Button className="action" variant="contained" component="span">
+                Select
+              </Button>
+            </label>
+          </div>
+          {selectedBisCertificate && (
+            <div className="label">
+              Selected BIS Certificate: {selectedBisCertificate.name}
+            </div>
+          )}
+        </Grid>
+        <Grid item xs={1} />
+        <Grid item xs={5} className="image-item">
+          <div className="info">
+            <div className="label">Brand Proof (Trademark Certificate)</div>
+            <input
+              type="file"
+              id="brand-proof"
+              style={{
+                display: "none",
+              }}
+              onChange={handleBrandProofSelection}
+              accept=".pdf,.jpg,.jpeg,.png"
+            />
+            <label htmlFor="brand-proof">
+              <Button className="action" variant="contained" component="span">
+                Select
+              </Button>
+            </label>
+          </div>
+          {selectedBrandProof && (
+            <div className="label">
+              Selected Brand Proof: {selectedBrandProof.name}
+            </div>
           )}
         </Grid>
         <Grid item xs={1} />

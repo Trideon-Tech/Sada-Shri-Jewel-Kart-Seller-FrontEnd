@@ -13,9 +13,9 @@ import { ToastContainer, toast } from "react-toastify";
 
 import "./registration-company-details.styles.scss";
 
+import axios from "axios";
 import { generalToastStyle } from "../../utils/toast.styles";
 import InputTextField from "../input-text-field/input-text-field.component";
-import axios from "axios";
 
 const theme = createTheme({
   palette: {
@@ -29,27 +29,16 @@ const RegistrationCompanyDetails = () => {
   let navigate = useNavigate();
 
   const [gstIn, setGstIn] = useState();
-  const [gstInOtp, setGstInOtp] = useState();
   const [companyTradeName, setCompanyTradeName] = useState();
+  const [panCard, setPanCard] = useState();
   const [otpSent, setOTPSent] = useState(false);
-  const [otpVerified, setOTPVerified] = useState(false);
   const [sendOTPAdornment, activateSendOTPAdornment] = useState(false);
-  const [verifyOTPAdornment, activateVerifyOTPAdornment] = useState(false);
   const [nextStepLoading, activateNextStepLoading] = useState(false);
 
-  const sendOTP = async () => {
+  const triggerVerifyGST = async () => {
     await verifyGSTIN();
-    // API to send OTP
-    // toast("OTP Sent Successfully!", generalToastStyle);
     activateSendOTPAdornment(false);
     setOTPSent(true);
-  };
-
-  const verifyOTP = () => {
-    // API to verify OTP
-    toast("OTP Verified Successfully!", generalToastStyle);
-    activateVerifyOTPAdornment(false);
-    setOTPVerified(true);
   };
 
   const verifyGSTIN = async () => {
@@ -71,15 +60,14 @@ const RegistrationCompanyDetails = () => {
 
     axios(config)
       .then(function (response) {
-        console.log("==================>", response?.data?.data?.gstin_status);
+        console.log("==================>", response?.data?.data);
         if (response?.data?.data?.gstin_status === "Active") {
           toast("GSTIN Verified", generalToastStyle);
           setCompanyTradeName(response?.data?.data?.business_name);
+          setPanCard(response?.data?.data?.pan_number);
           return;
         }
         toast.warn("GSTIN Invalid", generalToastStyle);
-
-        // if(response?.data)
       })
       .catch(function (error) {
         console.log(error);
@@ -105,6 +93,7 @@ const RegistrationCompanyDetails = () => {
       activateNextStepLoading(true);
       localStorage.setItem("gstIn", gstIn);
       localStorage.setItem("companyTradeName", companyTradeName);
+      localStorage.setItem("panCard", panCard);
       navigate("/register/store");
     }
   };
@@ -129,13 +118,20 @@ const RegistrationCompanyDetails = () => {
                   className={
                     sendOTPAdornment ? "adornment-active" : "adornment-inactive"
                   }
-                  onClick={sendOTP}
+                  onClick={triggerVerifyGST}
                 />
               </InputAdornment>
             }
           />
         </Grid>
-        <Grid item xs={6}></Grid>
+        <Grid item xs={6}>
+          <InputTextField
+            title={"PAN Card"}
+            value={panCard}
+            disabled={true}
+            adornment={<InputAdornment position="end"></InputAdornment>}
+          />
+        </Grid>
         <Grid item xs={12}>
           <InputTextField
             title={"Company Trade Name"}

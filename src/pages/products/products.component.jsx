@@ -1,8 +1,10 @@
 import {
+  Box,
   Button,
   CircularProgress,
   createTheme,
   Divider,
+  Modal,
   Paper,
   Table,
   TableBody,
@@ -17,7 +19,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
-import { Delete, Edit } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { generalToastStyle } from "../../utils/toast.styles";
@@ -41,6 +43,8 @@ const Products = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [productsLoaded, setProductsLoaded] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   const getProductList = () => {
     axios
@@ -90,6 +94,7 @@ const Products = () => {
         toast(err.response.data.message, generalToastStyle);
       });
   };
+
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
@@ -102,6 +107,21 @@ const Products = () => {
 
   const handleAddNewProduct = () => {
     navigate("/products/add");
+  };
+
+  const openDeleteDialog = (productId) => {
+    setProductToDelete(productId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setProductToDelete(null);
+  };
+
+  const confirmDelete = () => {
+    handleDeleteProduct(productToDelete);
+    handleCloseDeleteDialog();
   };
 
   useEffect(() => {
@@ -137,10 +157,11 @@ const Products = () => {
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Total Variants</TableCell>
-                    <TableCell>Price</TableCell>
                     <TableCell>Created On</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Price</TableCell>
+                    <TableCell>Admin Verified</TableCell>
+                    <TableCell>View in Store</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -155,6 +176,7 @@ const Products = () => {
                           tabIndex={-1}
                           key={row.id}
                         >
+                          <TableCell>{row.created_at}</TableCell>
                           <TableCell
                             className="name-content"
                             onClick={() => rowClicked(row)}
@@ -170,23 +192,50 @@ const Products = () => {
                             />
                             {row.name}
                           </TableCell>
-                          <TableCell>{row.id}</TableCell>
-                          <TableCell>{row.price}</TableCell>
-                          <TableCell>{row.created_at}</TableCell>
-                          <TableCell className="actions-content">
-                            <Edit
-                              className="allow"
-                              onClick={() =>
-                                navigate(
-                                  `/products/edit/${row.hash}/${row.name}`
-                                )
-                              }
-                            />
-                            <Delete
-                              className="delete"
-                              onClick={() => {
-                                handleDeleteProduct(row.id);
+                          <TableCell>
+                            ₹{row.customizations.variants.options[0]?.price}
+                          </TableCell>
+                          <TableCell>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                padding: "5px 15px",
+                                backgroundColor:
+                                  row.admin_verified === "1"
+                                    ? "#cffbcf"
+                                    : "#ffcfcf",
+                                borderRadius: "5px",
+                                color:
+                                  row.admin_verified === "1"
+                                    ? "#008000"
+                                    : "#ff0000",
+                                height: "24px",
+                                width: "fit-content",
                               }}
+                            >
+                              {row.admin_verified === "1" ? "Yes" : "No"}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <a
+                              href={`https://sadashrijewelkart.com/item/${row.category}/${row.name}-${row.hash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                color: "#a36e29",
+                                textDecoration: "none",
+                              }}
+                            >
+                              View
+                            </a>
+                          </TableCell>
+
+                          <TableCell className="actions-content">
+                            <Close
+                              className="block"
+                              onClick={() => openDeleteDialog(row.id)}
                             />
                           </TableCell>
                         </TableRow>
@@ -228,6 +277,69 @@ const Products = () => {
           />
         </Paper>
       </ThemeProvider>
+
+      <Modal open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            borderRadius: "10px",
+            width: 400,
+            backgroundColor: "white",
+            p: 4,
+          }}
+        >
+          <Typography
+            style={{
+              fontWeight: 700,
+              marginBottom: "20px",
+              fontFamily: '"Open Sans", sans-serif',
+              fontSize: "1.2rem",
+              textAlign: "center",
+            }}
+          >
+            Are you sure you want to delete this product? This action cannot be
+            undone.
+          </Typography>
+          <Box
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: "30px",
+            }}
+          >
+            <Button
+              variant="outlined"
+              style={{
+                width: "48%",
+                fontWeight: "bold",
+                border: "2px solid #a36e29",
+                color: "#a36e29",
+                fontFamily: '"Open Sans", sans-serif',
+                fontSize: "0.8rem",
+              }}
+              onClick={handleCloseDeleteDialog}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              style={{
+                width: "48%",
+                fontWeight: "bold",
+                background: "#a36e29",
+                fontFamily: '"Open Sans", sans-serif',
+                fontSize: "0.8rem",
+              }}
+              onClick={confirmDelete}
+            >
+              Delete
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </div>
   );
 };

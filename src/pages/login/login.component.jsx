@@ -27,7 +27,6 @@ const Login = () => {
 
   const sendOTP = () => {
     sendOTPHandler();
-    toast("OTP Sent Successfully!", generalToastStyle);
     activateSendOTPAdornment(false);
     setOTPSent(true);
   };
@@ -42,7 +41,7 @@ const Login = () => {
   const sendOTPHandler = () => {
     const formData = new FormData();
     formData.append("type", "generate_otp");
-    formData.append("mobile", `91${mobile}`);
+    formData.append("mobile", mobile);
 
     //call API for OTP verification
     axios
@@ -58,11 +57,14 @@ const Login = () => {
       .then((response) => {
         console.log(response);
         if (response.data.success === 1) {
-          // setotpSent(false);
+          toast.success("OTP sent successfully", generalToastStyle);
+        } else {
+          toast.success("Seller doesn't exist", generalToastStyle);
         }
       })
       .catch((error) => {
         console.error("Error:", error);
+        toast.success("Seller doesn't exist", generalToastStyle);
       });
   };
 
@@ -164,8 +166,9 @@ const Login = () => {
               title={"Mobile"}
               value={mobile}
               onEdit={(e) => {
-                const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
-                if (value.length <= 10) { // Only allow up to 10 digits
+                const value = e.target.value.replace(/\D/g, ""); // Remove non-digits
+                if (value.length <= 10) {
+                  // Only allow up to 10 digits
                   setMobile(value);
                   if (value.length === 10) {
                     activateSendOTPAdornment(true);

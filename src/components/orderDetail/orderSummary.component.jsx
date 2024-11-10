@@ -1,6 +1,15 @@
 import { Divider } from "@mui/material";
+import { useState } from "react";
 
-const OrderInfoCard = ({ orderDetail }) => {
+const OrderInfoCard = ({
+  orderDetail,
+  huidValue,
+  setHuidValue,
+  setHuidOrderDetailId,
+  triggerHuidVerificatiom,
+}) => {
+  const [showHuidInput, setShowHuidInput] = useState(false);
+
   return (
     <div
       style={{
@@ -52,7 +61,7 @@ const OrderInfoCard = ({ orderDetail }) => {
               display: "flex",
               justifyContent: "space-around",
               alignItems: "center",
-              width: "100px",
+              width: "150px",
               padding: "5px",
               border:
                 orderDetail?.shipment_status === "ADMIN_INSPECTION_FAILED" ||
@@ -96,15 +105,145 @@ const OrderInfoCard = ({ orderDetail }) => {
         </div>
         <div
           style={{
-            margin: 0,
-            marginTop: "10px",
-            color: "gray",
-            lineHeight: "2rem",
-            fontWeight: 500,
-            fontSize: "1.1rem",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
-          Quantity: {orderDetail?.quantity} pcs.
+          <div
+            style={{
+              margin: 0,
+              marginTop: "10px",
+              color: "gray",
+              lineHeight: "2rem",
+              fontWeight: 500,
+              fontSize: "1.1rem",
+            }}
+          >
+            Quantity: {orderDetail?.quantity} pcs.
+          </div>
+          {orderDetail?.shipment_status === "ORDER_CREATED" && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                marginTop: "10px",
+              }}
+            >
+              {!orderDetail?.verification_details ||
+              orderDetail?.verification_details?.length === 0 ? (
+                <>
+                  {!showHuidInput && (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "150px",
+                        padding: "5px",
+                        paddingTop: "18px",
+                        paddingBottom: "18px",
+                        backgroundColor: "#A36E29",
+                        borderRadius: "5px",
+                        color: "white",
+                        height: "24px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => setShowHuidInput(true)}
+                    >
+                      Verify HUID
+                    </div>
+                  )}
+
+                  {showHuidInput && (
+                    <>
+                      <input
+                        type="text"
+                        placeholder="Enter HUID"
+                        value={huidValue}
+                        onChange={(e) => {
+                          const value = e.target.value
+                            .replace(/[^a-zA-Z0-9]/g, "")
+                            .toUpperCase();
+                          if (value.length <= 6) {
+                            setHuidValue(value);
+                            // Log the value directly instead of the state variable
+                            console.log(value);
+                          }
+                        }}
+                        maxLength={6}
+                        style={{
+                          padding: "5px",
+                          borderRadius: "5px",
+                          border: "1px solid #ccc",
+                          textTransform: "uppercase",
+                        }}
+                      />
+
+                      <div
+                        style={{
+                          backgroundColor: "#A36E29",
+                          color: "white",
+                          width: "30px",
+                          height: "30px",
+                          borderRadius: "50%",
+                          cursor: "pointer",
+                          textAlign: "center",
+                          lineHeight: "30px",
+                        }}
+                        onClick={async () => {
+                          console.log(orderDetail.order_detail_id);
+                          setHuidOrderDetailId(
+                            () => orderDetail.order_detail_id
+                          );
+                          console.log(huidValue);
+                          triggerHuidVerificatiom();
+                        }}
+                      >
+                        ✓
+                      </div>
+
+                      <div
+                        style={{
+                          backgroundColor: "white",
+                          color: "#A36E29",
+                          width: "30px",
+                          height: "30px",
+                          borderRadius: "50%",
+                          cursor: "pointer",
+                          textAlign: "center",
+                          lineHeight: "30px",
+                          border: "2px solid #A36E29",
+                        }}
+                        onClick={() => {
+                          setShowHuidInput(false);
+                          setHuidValue("");
+                        }}
+                      >
+                        ✕
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: "5px 15px",
+                    backgroundColor: "#cffbcf",
+                    borderRadius: "5px",
+                    color: "#008000",
+                    height: "24px",
+                  }}
+                >
+                  HUID Verified
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <p
           style={{
@@ -133,7 +272,13 @@ const OrderInfoCard = ({ orderDetail }) => {
   );
 };
 
-const OrderSummaryComponent = ({ orderDetails }) => {
+const OrderSummaryComponent = ({
+  orderDetails,
+  huidValue,
+  setHuidValue,
+  setHuidOrderDetailId,
+  triggerHuidVerificatiom,
+}) => {
   return (
     <div
       style={{
@@ -163,7 +308,13 @@ const OrderSummaryComponent = ({ orderDetails }) => {
         </div>
       </span>
       {orderDetails?.map((item) => (
-        <OrderInfoCard orderDetail={item} />
+        <OrderInfoCard
+          orderDetail={item}
+          huidValue={huidValue}
+          setHuidValue={setHuidValue}
+          setHuidOrderDetailId={setHuidOrderDetailId}
+          triggerHuidVerificatiom={triggerHuidVerificatiom}
+        />
       ))}
 
       <div

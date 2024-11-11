@@ -1,14 +1,75 @@
 import { Divider } from "@mui/material";
+import axios from "axios";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { generalToastStyle } from "../../utils/toast.styles";
 
-const OrderInfoCard = ({
-  orderDetail,
-  huidValue,
-  setHuidValue,
-  setHuidOrderDetailId,
-  triggerHuidVerificatiom,
-}) => {
+const OrderInfoCard = ({ orderDetail }) => {
   const [showHuidInput, setShowHuidInput] = useState(false);
+  const [huidValue, setHuidValue] = useState("");
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  const handleCloseDialog = () => {
+    setEditDialogOpen(false);
+    setHuidValue("");
+  };
+
+  const verifyHuid = async () => {
+    try {
+      const response = await axios.post(
+        "https://kyc-api.surepass.io/api/v1/huid/verify",
+        {
+          id_number: huidValue,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyNDY1NTYxNiwianRpIjoiN2FhYWJkNjctYTk2OS00MTA0LWI1MjUtOWY4OGM5NWU0OTljIiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LnNhZGFzaHJpamV3ZWxAc3VyZXBhc3MuaW8iLCJuYmYiOjE3MjQ2NTU2MTYsImV4cCI6MjA0MDAxNTYxNiwiZW1haWwiOiJzYWRhc2hyaWpld2VsQHN1cmVwYXNzLmlvIiwidGVuYW50X2lkIjoibWFpbiIsInVzZXJfY2xhaW1zIjp7InNjb3BlcyI6WyJ1c2VyIl19fQ.XzfFcgWopXR8Nj31l3_Ke8g0fjp9QgW9ab4nn-Rl2ts",
+          },
+        }
+      );
+
+      if (response.data.success) {
+        const formData = new FormData();
+        formData.append("type", "verify_product");
+        formData.append("order_detail_id", orderDetail?.order_detail_id);
+        formData.append(
+          "verification_details",
+          JSON.stringify(response.data.data)
+        );
+
+        const result = await axios.post(
+          "https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (result.data) {
+          setHuidValue("");
+          setShowHuidInput(false);
+          toast.success("HUID verification successful", generalToastStyle);
+          handleCloseDialog();
+          window.location.reload();
+        }
+      } else {
+        toast.error("HUID verification failed", generalToastStyle);
+      }
+    } catch (error) {
+      console.error("Error verifying HUID:", error);
+      if (error.response && error.response.status === 422) {
+        toast.error("Invalid HUID", generalToastStyle);
+      } else {
+        toast.error("Error verifying HUID", generalToastStyle);
+      }
+    }
+  };
 
   return (
     <div
@@ -168,8 +229,6 @@ const OrderInfoCard = ({
                             .toUpperCase();
                           if (value.length <= 6) {
                             setHuidValue(value);
-                            // Log the value directly instead of the state variable
-                            console.log(value);
                           }
                         }}
                         maxLength={6}
@@ -192,13 +251,8 @@ const OrderInfoCard = ({
                           textAlign: "center",
                           lineHeight: "30px",
                         }}
-                        onClick={async () => {
-                          console.log(orderDetail.order_detail_id);
-                          setHuidOrderDetailId(
-                            () => orderDetail.order_detail_id
-                          );
-                          console.log(huidValue);
-                          triggerHuidVerificatiom();
+                        onClick={() => {
+                          verifyHuid();
                         }}
                       >
                         ✓
@@ -274,10 +328,10 @@ const OrderInfoCard = ({
 
 const OrderSummaryComponent = ({
   orderDetails,
-  huidValue,
-  setHuidValue,
-  setHuidOrderDetailId,
-  triggerHuidVerificatiom,
+  // huidValue,
+  // setHuidValue,
+  // setHuidOrderDetailId,
+  // triggerHuidVerificatiom,
 }) => {
   return (
     <div
@@ -310,10 +364,10 @@ const OrderSummaryComponent = ({
       {orderDetails?.map((item) => (
         <OrderInfoCard
           orderDetail={item}
-          huidValue={huidValue}
-          setHuidValue={setHuidValue}
-          setHuidOrderDetailId={setHuidOrderDetailId}
-          triggerHuidVerificatiom={triggerHuidVerificatiom}
+          // huidValue={huidValue}
+          // setHuidValue={setHuidValue}
+          // setHuidOrderDetailId={setHuidOrderDetailId}
+          // triggerHuidVerificatiom={triggerHuidVerificatiom}
         />
       ))}
 

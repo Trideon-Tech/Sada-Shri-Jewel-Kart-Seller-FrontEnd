@@ -100,11 +100,6 @@ const Products = () => {
     setPage(0);
   };
 
-  const rowClicked = (row) => {
-    //setCategoryClicked(products.indexOf(row));
-    // setShowDrawer(true);
-  };
-
   const handleAddNewProduct = () => {
     navigate("/products/add");
   };
@@ -177,10 +172,7 @@ const Products = () => {
                           key={row.id}
                         >
                           <TableCell>{row.created_at}</TableCell>
-                          <TableCell
-                            className="name-content"
-                            onClick={() => rowClicked(row)}
-                          >
+                          <TableCell className="name-content">
                             <img
                               className="company-img"
                               alt="org"

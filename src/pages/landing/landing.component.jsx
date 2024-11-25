@@ -1,6 +1,6 @@
-import React from "react";
-import { AppBar, Toolbar, Button } from "@mui/material";
 import { ChevronRight, FormatQuoteOutlined } from "@mui/icons-material";
+import { AppBar, Button, Toolbar } from "@mui/material";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import "./landing.styles.scss";
@@ -93,7 +93,7 @@ const Landing = () => {
       <div className="footer">
         <div className="seperator" />
         <div className="items-row">
-          <div className="company">Sada Shri Jewel Kart Pvt. Ltd.</div>
+          <div className="company">Sadāshrī Jewelkart Pvt. Ltd.</div>
           <div className="actions">
             <div
               onClick={() => handleFooterRedirect("privacy")}

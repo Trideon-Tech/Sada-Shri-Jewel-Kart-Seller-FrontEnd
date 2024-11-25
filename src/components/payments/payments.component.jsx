@@ -338,6 +338,9 @@ const PaymentsComponent = ({ row }) => {
                                   }
                                   setModalOpen(true);
                                 }}
+                                style={{
+                                  cursor: "pointer",
+                                }}
                               >
                                 <TableCell>{row?.updated_at}</TableCell>
                                 <TableCell>{row?.payment_public_id}</TableCell>

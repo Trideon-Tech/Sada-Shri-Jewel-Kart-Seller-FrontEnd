@@ -41,7 +41,6 @@ const RegistrationUserDetails = () => {
 
   const sendOTP = () => {
     sendOTPHandler();
-    toast("OTP Sent Successfully!", generalToastStyle);
     activateSendOTPAdornment(false);
     setOTPSent(true);
   };
@@ -51,24 +50,36 @@ const RegistrationUserDetails = () => {
   };
 
   const sendOTPHandler = () => {
-    const formData = new FormData();
-    formData.append("type", "generate_otp");
-    formData.append("mobile", `91${mobile}`);
+    if (firstName === "" || typeof firstName === "undefined") {
+      toast.warn("First Name is required!", generalToastStyle);
+      return;
+    } else if (lastName === "" || typeof lastName === "undefined") {
+      toast.warn("Last Name is required!", generalToastStyle);
+      return;
+    } else {
+      const formData = new FormData();
+      formData.append("type", "generate_otp");
+      formData.append("mobile", `91${mobile}`);
 
-    axios
-      .post("https://api.sadashrijewelkart.com/v1.0.0/user/otp.php", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((response) => {
-        console.log(response);
-        if (response.data.success === 1) {
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+      axios
+        .post(
+          "https://api.sadashrijewelkart.com/v1.0.0/user/otp.php",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          if (response.data.success === 1) {
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
   };
 
   const verifyOTPHandler = () => {
@@ -123,51 +134,6 @@ const RegistrationUserDetails = () => {
       .catch((error) => {
         console.error("Error:", error);
       });
-  };
-
-  const onNext = () => {
-    if (firstName === "" || typeof firstName === "undefined") {
-      toast.warn("First Name is required!", generalToastStyle);
-    } else if (lastName === "" || typeof lastName === "undefined") {
-      toast.warn("Last Name is required!", generalToastStyle);
-    } else if (mobile === "" || typeof mobile === "undefined") {
-      toast.warn("Mobie Number is required!", generalToastStyle);
-    } else if (!otpSent) {
-      toast.warn('Click on the "Tick" icon to send OTP!', generalToastStyle);
-    } else if (otp === "" || typeof otp === "undefined") {
-      toast.warn(
-        "OTP Verification is mandatory to proceed!",
-        generalToastStyle
-      );
-    } else if (!otpVerified) {
-      toast.warn('Click on the "Tick" icon to verify OTP!', generalToastStyle);
-    } else {
-      activateNextStepLoading(true);
-      let formData = new FormData();
-      formData.append("name", `${firstName + " " + lastName}`);
-      formData.append("mobile", `${mobile}`);
-
-      axios
-        .post(
-          "https://api.sadashrijewelkart.com/v1.0.0/seller/register.php",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        )
-        .then((_) => {
-          localStorage.setItem("mobile", mobile);
-          activateNextStepLoading(false);
-          navigate("/register/company");
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          activateNextStepLoading(false);
-          toast.warn(error.response.data.message, generalToastStyle);
-        });
-    }
   };
 
   return (
@@ -245,7 +211,7 @@ const RegistrationUserDetails = () => {
         <Button className="btn-secondary" disabled={true}>
           Prev. Step
         </Button>
-        <Button className="btn-primary" onClick={onNext}>
+        <Button className="btn-primary" onClick={verifyOTPHandler}>
           {nextStepLoading ? (
             <ThemeProvider theme={theme}>
               <CircularProgress size={"1.1rem"} />

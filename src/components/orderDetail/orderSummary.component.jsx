@@ -394,10 +394,10 @@ const OrderSummaryComponent = ({
           <div style={{ width: "25%" }}>
             <p style={{ textAlign: "left" }}>Subtotal</p>
           </div>
-          <div style={{ width: "60%" }}>
+          <div style={{ width: "40%" }}>
             <p style={{ textAlign: "left" }}>{orderDetails?.length} Item</p>
           </div>
-          <div style={{ width: "15%" }}>
+          <div style={{ width: "35%" }}>
             <p style={{ textAlign: "right" }}>
               Rs:{" "}
               {orderDetails
@@ -420,8 +420,8 @@ const OrderSummaryComponent = ({
           <div style={{ width: "25%" }}>
             <p style={{ textAlign: "left" }}>Discount</p>
           </div>
-          <div style={{ width: "60%" }}></div>
-          <div style={{ width: "15%" }}>
+          <div style={{ width: "40%" }}></div>
+          <div style={{ width: "35%" }}>
             <p style={{ textAlign: "right" }}>
               - Rs:{" "}
               {(

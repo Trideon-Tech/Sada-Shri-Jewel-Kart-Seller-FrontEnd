@@ -1,22 +1,22 @@
-import React, { useState } from "react";
 import {
   AppBar,
-  Toolbar,
   Button,
-  Grid,
-  Typography,
-  ThemeProvider,
-  createTheme,
   CircularProgress,
+  createTheme,
+  Grid,
+  ThemeProvider,
+  Toolbar,
+  Typography,
 } from "@mui/material";
-import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 import "./contact-us.styles.scss";
 
-import { generalToastStyle } from "../../utils/toast.styles";
 import InputTextField from "../../components/input-text-field/input-text-field.component";
+import { generalToastStyle } from "../../utils/toast.styles";
 
 const theme = createTheme({
   palette: {
@@ -200,7 +200,7 @@ const ContactUs = () => {
         <div className="footer">
         <div className="seperator" />
         <div className="items-row">
-          <div className="company">Sada Shri Jewel Kart Pvt. Ltd.</div>
+          <div className="company">Sadāshrī Jewelkart Pvt. Ltd.</div>
           <div className="actions">
             <div
               onClick={() => handleFooterRedirect("privacy")}

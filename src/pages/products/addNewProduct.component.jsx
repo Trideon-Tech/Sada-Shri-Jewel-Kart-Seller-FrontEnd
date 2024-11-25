@@ -1,7 +1,18 @@
 import {
+  Delete,
+  ExpandLess,
+  ExpandMore,
+  PhotoCamera,
+  VideoCameraFront,
+} from "@mui/icons-material";
+import {
   Button,
   Collapse,
   createTheme,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   FormControl,
   Grid,
@@ -13,16 +24,9 @@ import {
   TextField,
   ThemeProvider,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-
-import {
-  Delete,
-  ExpandLess,
-  ExpandMore,
-  PhotoCamera,
-  VideoCameraFront,
-} from "@mui/icons-material";
 import axios from "axios";
+import React, { useCallback, useEffect, useState } from "react";
+import Cropper from "react-easy-crop";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
@@ -46,7 +50,6 @@ const theme = createTheme({
 const AddNewProduct = () => {
   let navigate = useNavigate();
   let token = localStorage.getItem("token");
-  var productId = 1;
 
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState(null);
@@ -64,7 +67,7 @@ const AddNewProduct = () => {
   const [customizationOptions, setCustomizationOptions] = useState([]);
   const [dropdownValues, setDropdownValues] = useState();
   const [metalType, setMetalType] = useState();
-  const [quantity, setQuantity] = useState();
+  const [quantity, setQuantity] = useState(1);
   const [grossWeight, setGrossWeight] = useState();
   const [stoneWeight, setStoneWeight] = useState(0);
   const [netWeight, setNetWeight] = useState();
@@ -96,6 +99,14 @@ const AddNewProduct = () => {
   const [hsnCode, setHsnCode] = useState();
   const [stoneDetailsExpanded, setStoneDetailsExpanded] = useState(false);
   const [metalDetailsExpanded, setMetalDetailsExpanded] = useState(false);
+
+  // Crop related states
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -231,19 +242,101 @@ const AddNewProduct = () => {
   };
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setImages((prevImages) => [...prevImages, ...files]);
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Create URL for the image
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCurrentImage(reader.result);
+      setCurrentImageIndex(images.length); // Set to new image index
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setCropDialogOpen(true);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleVideoChange = (e) => {
     const file = e.target.files[0];
-    setVideo(file);
+    if (!file) return;
+    try {
+      const videoBlob = new Blob([file], { type: file.type });
+      setVideo(videoBlob);
+    } catch (error) {
+      console.error("Error handling video:", error);
+    }
   };
 
   const handleDeleteImage = (index) => {
     const newImages = [...images];
     newImages.splice(index, 1);
     setImages(newImages);
+  };
+
+  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const startCropImage = (index) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCurrentImage(reader.result);
+      setCurrentImageIndex(index);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setCropDialogOpen(true);
+    };
+    reader.readAsDataURL(images[index]);
+  };
+
+  const getCroppedImage = async () => {
+    try {
+      const canvas = document.createElement("canvas");
+      const image = new Image();
+      image.src = currentImage;
+
+      await new Promise((resolve) => {
+        image.onload = resolve;
+      });
+
+      canvas.width = croppedAreaPixels.width;
+      canvas.height = croppedAreaPixels.height;
+
+      const ctx = canvas.getContext("2d");
+
+      ctx.drawImage(
+        image,
+        croppedAreaPixels.x,
+        croppedAreaPixels.y,
+        croppedAreaPixels.width,
+        croppedAreaPixels.height,
+        0,
+        0,
+        croppedAreaPixels.width,
+        croppedAreaPixels.height
+      );
+
+      canvas.toBlob((blob) => {
+        const newImages = [...images];
+        if (currentImageIndex === images.length) {
+          // New image
+          newImages.push(blob);
+        } else {
+          // Replacing existing image
+          newImages[currentImageIndex] = blob;
+        }
+        setImages(newImages);
+        setCropDialogOpen(false);
+        setCurrentImage(null);
+        setCurrentImageIndex(null);
+      }, "image/jpeg");
+    } catch (e) {
+      console.error("Error cropping image:", e);
+      setCropDialogOpen(false);
+      setCurrentImage(null);
+      setCurrentImageIndex(null);
+    }
   };
 
   const handleProductSave = async () => {
@@ -535,7 +628,6 @@ const AddNewProduct = () => {
         </div>
       </div>
       <Divider />
-
       {/* Image and Video Input */}
       <ThemeProvider theme={theme}>
         <div className="inputFilePreviewContainer">
@@ -549,7 +641,6 @@ const AddNewProduct = () => {
                   <input
                     type="file"
                     accept="image/*"
-                    multiple
                     id="imageInput"
                     onChange={handleImageChange}
                     style={{ display: "none" }}
@@ -560,7 +651,7 @@ const AddNewProduct = () => {
                       className="selectButton"
                       component="span"
                     >
-                      <PhotoCamera /> Select Images
+                      <PhotoCamera /> Select Image
                     </Button>
                   </label>
                   <div className="previewContainer">
@@ -576,6 +667,16 @@ const AddNewProduct = () => {
                         >
                           <Delete />
                         </IconButton>
+                        <Button
+                          variant="contained"
+                          onClick={() => startCropImage(index)}
+                          size="small"
+                          style={{
+                            marginTop: "10px",
+                          }}
+                        >
+                          Crop
+                        </Button>
                       </div>
                     ))}
                   </div>
@@ -625,6 +726,41 @@ const AddNewProduct = () => {
             </Grid>
           </Paper>
         </div>
+
+        {/* Image Cropping Dialog */}
+        <Dialog
+          open={cropDialogOpen}
+          onClose={() => setCropDialogOpen(false)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle>Crop Image</DialogTitle>
+          <DialogContent>
+            <div style={{ position: "relative", height: "400px" }}>
+              {currentImageIndex !== null && (
+                <Cropper
+                  image={currentImage}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={onCropComplete}
+                />
+              )}
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setCropDialogOpen(false)}>Cancel</Button>
+            <Button
+              onClick={getCroppedImage}
+              variant="contained"
+              color="primary"
+            >
+              Crop
+            </Button>
+          </DialogActions>
+        </Dialog>
       </ThemeProvider>
 
       {/* Product basic details input */}
@@ -1491,13 +1627,10 @@ const AddNewProduct = () => {
               >
                 <div className="label">Clarity</div>
                 <FormControl fullWidth>
-                  <TextField
+                  <Select
                     name="stoneClarity"
-                    type="text"
                     value={stoneClarity}
                     onChange={(e) => setStoneClarity(e.target.value)}
-                    fullWidth
-                    placeholder="Enter clarity"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
@@ -1506,7 +1639,15 @@ const AddNewProduct = () => {
                           ?.focus();
                       }
                     }}
-                  />
+                  >
+                    {dropdownValues?.[0]?.customization_fields
+                      .find((field) => field.name === "clarity")
+                      ?.property_value.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.display_name}
+                        </MenuItem>
+                      ))}
+                  </Select>
                 </FormControl>
               </Grid>
               <Grid
@@ -1516,13 +1657,10 @@ const AddNewProduct = () => {
               >
                 <div className="label">Cut</div>
                 <FormControl fullWidth>
-                  <TextField
+                  <Select
                     name="stoneCut"
-                    type="text"
                     value={stoneCut}
                     onChange={(e) => setStoneCut(e.target.value)}
-                    fullWidth
-                    placeholder="Enter cut"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
@@ -1531,7 +1669,15 @@ const AddNewProduct = () => {
                           ?.focus();
                       }
                     }}
-                  />
+                  >
+                    {dropdownValues?.[0]?.customization_fields
+                      .find((field) => field.name === "cut")
+                      ?.property_value.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.display_name}
+                        </MenuItem>
+                      ))}
+                  </Select>
                 </FormControl>
               </Grid>
               <Grid
@@ -1687,318 +1833,6 @@ const AddNewProduct = () => {
           </Collapse>
         </Paper>
       </ThemeProvider>
-
-      {/* <div className="product-customization-wrapper">
-        <ThemeProvider theme={theme}>
-          <Paper
-            className="customization-paper"
-            elevation={4}
-            style={{ marginTop: "50px" }}
-          >
-            <div className="heading">Product Customization</div>
-            <Divider />
-            <div className="customization-text">
-              Does your product come in different options, like size, purity or
-              material? Add them here.
-            </div>
-
-            <div
-              style={{
-                width: "100%",
-                height: "max-content",
-                minHeight: "300px",
-              }}
-            >
-              <MaterialSelector
-                saveProductCustomization={handleProductSave}
-                combinationsValues={combinationsValues}
-                setCombinationValues={setCombinationValues}
-              />
-            </div>
-            {selectedOptions === null || !showCustomizationTable ? (
-              <></>
-            ) : (
-              <div>
-                {selectedOptions.map((option, index) => (
-                  <Chip
-                    key={index}
-                    label={`${option.type_name}: ${option.option_name}`}
-                    onDelete={() => handleChipDelete(index)}
-                    style={{ marginRight: "5px", marginBottom: "10px" }}
-                  />
-                ))}
-              </div>
-            )}
-            {selectedOptions === null || !showCustomizationTable ? (
-              <></>
-            ) : (
-              <div className="customization-options-table">
-                <div className="heading">Customization Options Table</div>
-                <TableContainer>
-                  <Table stickyHeader aria-label="sticky table">
-                    <TableHead sx={{ fontWeight: "bold" }}>
-                      <TableRow>
-                        <TableCell>Index</TableCell>
-                        {Object.keys(selectedCustomizationNames).map(
-                          (key, index) => (
-                            <TableCell key={index}>
-                              {selectedCustomizationNames[key]}
-                            </TableCell>
-                          )
-                        )}
-                        <TableCell>Price</TableCell>
-                        <TableCell>Made On Order</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {selectedCustomizations.map((option, index) => (
-                        <TableRow hover key={index}>
-                          <TableCell>{index + 1}</TableCell>
-                          {Object.keys(selectedCustomizationNames).map(
-                            (key, colIndex) => (
-                              <TableCell key={colIndex}>
-                                {option["customization"][key]}
-                              </TableCell>
-                            )
-                          )}
-                          <TableCell>
-                            <Input
-                              type="number"
-                              value={option["price"]}
-                              onChange={(e) => {
-                                let x = [...selectedCustomizations];
-                                selectedCustomizations[index]["price"] =
-                                  e.target.value;
-                                setSelectedCustomizations(x);
-                              }}
-                              startAdornment={
-                                <InputAdornment position="start">
-                                  ₹
-                                </InputAdornment>
-                              }
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Checkbox
-                              checked={option["madeOnOrder"]}
-                              onChange={(e) => {
-                                let x = [...selectedCustomizations];
-                                selectedCustomizations[index]["madeOnOrder"] =
-                                  e.target.checked;
-                                setSelectedCustomizations(x);
-                              }}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </div>
-            )}
-
-            <Dialog
-              open={openCustomizationInputDialog}
-              onClose={() => setOpenCustomizationInputDialog(false)}
-              disableEscapeKeyDown
-              sx={{
-                "& .MuiDialogTitle-root": {
-                  fontSize: "1.5rem",
-                  fontWeight: 600,
-                  marginBottom: "10px",
-                },
-                "& .MuiDialogContent-root": {
-                  fontSize: "1.2rem",
-                  fontWeight: 400,
-                  marginBottom: "10px",
-                },
-              }}
-            >
-              <ThemeProvider theme={theme}>
-                <DialogTitle>Add Customization</DialogTitle>
-                <Divider />
-                <DialogContent
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                    fontFamily: '"Work Sans", sans-serif',
-                  }}
-                >
-                  You'll be able to manage pricing and inventory for this
-                  product customization in the next step.
-                  <TextField
-                    select
-                    label="Customization Type"
-                    value={selectedCustomizationTypeId}
-                    onChange={handleCustomizationTypeSelection}
-                    variant="outlined"
-                    fullWidth
-                    sx={{ marginBottom: "20px", marginTop: "10px" }}
-                  >
-                    {customizationTypes.map((type) => (
-                      <MenuItem key={type.id} value={type.id}>
-                        {type.name}
-                      </MenuItem>
-                    ))}
-                    <MenuItem key={-1} value={-1}>
-                      <Add /> Add New
-                    </MenuItem>
-                  </TextField>
-                  <TextField
-                    label="Customization Options"
-                    select
-                    variant="outlined"
-                    fullWidth
-                    value=""
-                    onChange={handleCustomizationOptionChange}
-                  >
-                    {customizationOptions &&
-                      customizationOptions.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                    <MenuItem key={-1} value={-1}>
-                      <Add /> Add New
-                    </MenuItem>
-                  </TextField>
-                  <div>
-                    {selectedOptions.map((option, index) => (
-                      <Chip
-                        key={index}
-                        label={`${option.type_name}: ${option.option_name}`}
-                        onDelete={() => handleChipDelete(index)}
-                        style={{ marginRight: "5px", marginBottom: "10px" }}
-                      />
-                    ))}
-                  </div>
-                </DialogContent>
-                <DialogActions
-                  sx={{ marginBottom: "10px", marginRight: "10px" }}
-                >
-                  <Button
-                    onClick={() => setOpenCustomizationInputDialog(false)}
-                  >
-                    Close
-                  </Button>
-                  <Button variant="contained" onClick={loadCustomizationTable}>
-                    Apply
-                  </Button>
-                </DialogActions>
-              </ThemeProvider>
-            </Dialog>
-
-            <Dialog
-              open={openAddNewCustomizationTypeInputDialog}
-              onClose={() => setOpenAddNewCustomizationTypeInputDialog(false)}
-              disableEscapeKeyDown
-              sx={{
-                "& .MuiDialogTitle-root": {
-                  fontSize: "1.5rem",
-                  fontWeight: 600,
-                  marginBottom: "10px",
-                },
-                "& .MuiDialogContent-root": {
-                  fontSize: "1.2rem",
-                  fontWeight: 400,
-                  marginBottom: "10px",
-                },
-              }}
-            >
-              <ThemeProvider theme={theme}>
-                <DialogTitle>Add New Customization Type</DialogTitle>
-                <Divider />
-                <DialogContent
-                  sx={{ display: "flex", flexDirection: "column", gap: "10px" }}
-                >
-                  Enter the name of the customization type you want to add to
-                  customize type list.
-                  <br />
-                  <InputTextField
-                    title={"New Customization Type"}
-                    value={newCustomizationType}
-                    onEdit={(e) => setNewCustomizationType(e.target.value)}
-                    sx={{ marginBottom: "20px", marginTop: "10px" }}
-                  />
-                </DialogContent>
-                <DialogActions
-                  sx={{ marginBottom: "10px", marginRight: "10px" }}
-                >
-                  <Button
-                    onClick={() =>
-                      setOpenAddNewCustomizationTypeInputDialog(false)
-                    }
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={handleAddNewCustomizationType}
-                    className="closeButton"
-                  >
-                    Add
-                  </Button>
-                </DialogActions>
-              </ThemeProvider>
-            </Dialog>
-
-            <Dialog
-              open={openAddNewCustomizationOptionInputDialog}
-              onClose={() => setOpenAddNewCustomizationOptionInputDialog(false)}
-              disableEscapeKeyDown
-              sx={{
-                "& .MuiDialogTitle-root": {
-                  fontSize: "1.5rem",
-                  fontWeight: 600,
-                  marginBottom: "10px",
-                },
-                "& .MuiDialogContent-root": {
-                  fontSize: "1.2rem",
-                  fontWeight: 400,
-                  marginBottom: "10px",
-                },
-              }}
-            >
-              <ThemeProvider theme={theme}>
-                <DialogTitle>Add New Customization Option</DialogTitle>
-                <Divider />
-                <DialogContent
-                  sx={{ display: "flex", flexDirection: "column", gap: "10px" }}
-                >
-                  Enter the name of the customization option you want to add for
-                  the customize type "{selectedCustomizationTypeName}".
-                  <br />
-                  <InputTextField
-                    title={"New Customization Option"}
-                    value={newCustomizationOption}
-                    onEdit={(e) => setNewCustomizationOption(e.target.value)}
-                    sx={{ marginBottom: "20px", marginTop: "10px" }}
-                  />
-                </DialogContent>
-                <DialogActions
-                  sx={{ marginBottom: "10px", marginRight: "10px" }}
-                >
-                  <Button
-                    onClick={() =>
-                      setOpenAddNewCustomizationOptionInputDialog(false)
-                    }
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    variant="contained"
-                    className="closeButton"
-                    onClick={handleAddNewCustomizationOption}
-                  >
-                    Add
-                  </Button>
-                </DialogActions>
-              </ThemeProvider>
-            </Dialog>
-          </Paper>
-        </ThemeProvider>
-      </div> */}
     </div>
   );
 };

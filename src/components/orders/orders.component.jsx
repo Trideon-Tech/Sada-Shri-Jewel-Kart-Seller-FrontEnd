@@ -213,12 +213,17 @@ const OrdersComponent = ({ row }) => {
                               onClick={() =>
                                 navigate(`/order-detail/${row.order_record_id}`)
                               }
+                              style={{
+                                cursor: "pointer",
+                              }}
                             >
                               <TableCell>
                                 {row?.order_detail_items[0]["public_id"]}
                               </TableCell>
                               <TableCell>{row?.user_name}</TableCell>
-                              <TableCell>{row?.created_at}</TableCell>
+                              <TableCell>
+                                {new Date(row?.created_at).toLocaleString()}
+                              </TableCell>
                               <TableCell>
                                 {row?.order_detail_items.length} Product(s)
                               </TableCell>

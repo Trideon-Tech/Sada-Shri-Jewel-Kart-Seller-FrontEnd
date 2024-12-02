@@ -13,13 +13,14 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TextField,
   ThemeProvider,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
-import { Close } from "@mui/icons-material";
+import { Close, Done, Edit } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { generalToastStyle } from "../../utils/toast.styles";
@@ -45,6 +46,8 @@ const Products = () => {
   const [productsLoaded, setProductsLoaded] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [editingId, setEditingId] = useState();
+  const [editQuantity, setEditQuantity] = useState();
 
   const getProductList = () => {
     axios
@@ -155,6 +158,7 @@ const Products = () => {
                     <TableCell>Created On</TableCell>
                     <TableCell>Name</TableCell>
                     <TableCell>Price</TableCell>
+                    <TableCell>Stock</TableCell>
                     <TableCell>Admin Verified</TableCell>
                     <TableCell>View in Store</TableCell>
                     <TableCell>Actions</TableCell>
@@ -186,6 +190,91 @@ const Products = () => {
                           </TableCell>
                           <TableCell>
                             ₹{row.customizations.variants.options[0]?.price}
+                          </TableCell>
+                          <TableCell style={{ position: "relative" }}>
+                            {editingId === row.id ? (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                }}
+                              >
+                                <TextField
+                                  value={editQuantity}
+                                  onChange={(e) =>
+                                    setEditQuantity(e.target.value)
+                                  }
+                                  size="small"
+                                  type="number"
+                                  inputProps={{ min: 0 }}
+                                  style={{ width: "100px" }}
+                                />
+                                <Done
+                                  sx={{
+                                    color: "green",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={async () => {
+                                    try {
+                                      await axios.put(
+                                        "https://api.sadashrijewelkart.com/v1.0.0/seller/inventory/inventory.php",
+                                        JSON.stringify({
+                                          product_id: row.id,
+                                          quantity: editQuantity,
+                                        }),
+                                        {
+                                          headers: {
+                                            Authorization: `Bearer ${localStorage.getItem(
+                                              "token"
+                                            )}`,
+                                            "Content-Type": "application/json",
+                                          },
+                                        }
+                                      );
+                                      row.quantity = editQuantity;
+                                      setEditingId(null);
+                                    } catch (err) {
+                                      console.error(err);
+                                    }
+                                  }}
+                                />
+                                <Close
+                                  sx={{
+                                    color: "red",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() => setEditingId(null)}
+                                />
+                              </div>
+                            ) : (
+                              <>
+                                <span
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  {row.quantity} pieces
+                                  <Edit
+                                    sx={{
+                                      marginLeft: "10px",
+                                      opacity: 0,
+                                      transition: "opacity 0.2s",
+                                      ".MuiTableRow-hover &": {
+                                        opacity: 1,
+                                      },
+                                      cursor: "pointer",
+                                      color: "grey",
+                                    }}
+                                    onClick={() => {
+                                      setEditingId(row.id);
+                                      setEditQuantity(row.quantity);
+                                    }}
+                                  />
+                                </span>
+                              </>
+                            )}
                           </TableCell>
                           <TableCell>
                             <div

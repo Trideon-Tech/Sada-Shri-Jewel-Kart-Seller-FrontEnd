@@ -99,6 +99,7 @@ const AddNewProduct = () => {
   const [hsnCode, setHsnCode] = useState();
   const [stoneDetailsExpanded, setStoneDetailsExpanded] = useState(false);
   const [metalDetailsExpanded, setMetalDetailsExpanded] = useState(false);
+  const [inventoryQty, setInventoryQty] = useState(false);
 
   // Crop related states
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
@@ -357,6 +358,10 @@ const AddNewProduct = () => {
       toast.error("Please enter product description", generalToastStyle);
       return;
     }
+    if (!inventoryQty) {
+      toast.error("Please enter product quantity", generalToastStyle);
+      return;
+    }
     if (!images || images.length === 0) {
       toast.error(
         "Please select at least one product image",
@@ -501,6 +506,7 @@ const AddNewProduct = () => {
           .join(","),
         size: size || "",
         hsn: hsnCode || "",
+        quantity: inventoryQty || 1,
         metal: {
           metal: metalType || "",
           quality: qualityName || "",
@@ -896,6 +902,34 @@ const AddNewProduct = () => {
                       </MenuItem>
                     ))}
                 </Select>
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={3}
+              style={{ marginBottom: "20px", paddingRight: "50px" }}
+            >
+              <div className="label">Enter Quantity</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="quantity"
+                  type="number"
+                  value={inventoryQty}
+                  onChange={(e) =>
+                    setInventoryQty(parseInt(e.target.value) || 0)
+                  }
+                  fullWidth
+                  placeholder="Enter Quantity of Products"
+                  inputProps={{ min: 0 }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector(".quill-container .ql-editor")
+                        ?.focus();
+                    }
+                  }}
+                />
               </FormControl>
             </Grid>
 

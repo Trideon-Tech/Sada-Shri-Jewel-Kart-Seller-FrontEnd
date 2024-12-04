@@ -7,6 +7,7 @@ import {
 } from "@mui/icons-material";
 import {
   Button,
+  CircularProgress,
   Collapse,
   createTheme,
   Dialog,
@@ -23,11 +24,11 @@ import {
   Select,
   TextField,
   ThemeProvider,
+  Typography,
 } from "@mui/material";
 import axios from "axios";
 import React, { useCallback, useEffect, useState } from "react";
 import Cropper from "react-easy-crop";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -71,16 +72,16 @@ const AddNewProduct = () => {
   const [grossWeight, setGrossWeight] = useState();
   const [stoneWeight, setStoneWeight] = useState(0);
   const [netWeight, setNetWeight] = useState();
-  const [wastagePercent, setWastagePercent] = useState();
+  const [wastagePercent, setWastagePercent] = useState(0);
   const [wastageWeight, setWastageWeight] = useState(0);
   const [netWeightAfterWastage, setNetWeightAfterWastage] = useState();
   const [makingChargeType, setMakingChargeType] = useState();
   const [makingChargeValue, setMakingChargeValue] = useState();
   const [makingChargeAmount, setMakingChargeAmount] = useState();
-  const [stoneAmount, setStoneAmount] = useState();
-  const [hallmarkCharge, setHallmarkCharge] = useState();
-  const [rodiumCharge, setRodiumCharge] = useState();
-  const [gstPercent, setGstPercent] = useState();
+  const [stoneAmount, setStoneAmount] = useState(0);
+  const [hallmarkCharge, setHallmarkCharge] = useState(50);
+  const [rodiumCharge, setRodiumCharge] = useState(0);
+  const [gstPercent, setGstPercent] = useState(3);
   const [rates, setRates] = useState([]);
   const [rate, setRate] = useState(0);
   const [amount, setAmount] = useState(0);
@@ -108,6 +109,11 @@ const AddNewProduct = () => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [showDeleteImageDialog, setShowDeleteImageDialog] = useState(false);
+  const [deleteImageIndex, setDeleteImageIndex] = useState();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -344,22 +350,27 @@ const AddNewProduct = () => {
     // Validate required fields
     if (!productName) {
       toast.error("Please enter product name", generalToastStyle);
+      setLoading(false);
       return;
     }
     if (!selectedCategory) {
       toast.error("Please select a category", generalToastStyle);
+      setLoading(false);
       return;
     }
     if (!selectedSubcategory) {
       toast.error("Please select a subcategory", generalToastStyle);
+      setLoading(false);
       return;
     }
     if (!desc) {
       toast.error("Please enter product description", generalToastStyle);
+      setLoading(false);
       return;
     }
     if (!inventoryQty) {
       toast.error("Please enter product quantity", generalToastStyle);
+      setLoading(false);
       return;
     }
     if (!images || images.length === 0) {
@@ -367,6 +378,12 @@ const AddNewProduct = () => {
         "Please select at least one product image",
         generalToastStyle
       );
+      setLoading(false);
+      return;
+    }
+    if (!video) {
+      toast.error("Please select a product video", generalToastStyle);
+      setLoading(false);
       return;
     }
     if (!metalType && !stoneType) {
@@ -374,6 +391,7 @@ const AddNewProduct = () => {
         "Please select either metal type or stone type",
         generalToastStyle
       );
+      setLoading(false);
       return;
     }
     if (metalType) {
@@ -381,44 +399,40 @@ const AddNewProduct = () => {
         // Only validate making charge and GST for type 8
         if (!makingChargeValue) {
           toast.error("Please enter making charge value", generalToastStyle);
+          setLoading(false);
           return;
         }
         if (!makingChargeAmount) {
           toast.error("Please enter making charge amount", generalToastStyle);
+          setLoading(false);
           return;
         }
         if (!gstPercent) {
+          console.log(gstPercent);
           toast.error("Please enter GST percentage", generalToastStyle);
+          setLoading(false);
           return;
         }
       } else {
         // Validate all fields for other types
         if (!purity) {
           toast.error("Please select quality/purity", generalToastStyle);
+          setLoading(false);
           return;
         }
         if (!quantity) {
           toast.error("Please enter quantity", generalToastStyle);
+          setLoading(false);
           return;
         }
         if (!grossWeight) {
           toast.error("Please enter gross weight", generalToastStyle);
-          return;
-        }
-        if (!stoneWeight) {
-          toast.error("Please enter stone weight", generalToastStyle);
+          setLoading(false);
           return;
         }
         if (!netWeight) {
           toast.error("Please enter net weight", generalToastStyle);
-          return;
-        }
-        if (!wastagePercent) {
-          toast.error("Please enter wastage percentage", generalToastStyle);
-          return;
-        }
-        if (!wastageWeight) {
-          toast.error("Please enter wastage weight", generalToastStyle);
+          setLoading(false);
           return;
         }
         if (!netWeightAfterWastage) {
@@ -426,34 +440,33 @@ const AddNewProduct = () => {
             "Please enter net weight after wastage",
             generalToastStyle
           );
+          setLoading(false);
           return;
         }
         if (!makingChargeType) {
           toast.error("Please select making charge type", generalToastStyle);
+          setLoading(false);
           return;
         }
         if (!makingChargeValue) {
           toast.error("Please enter making charge value", generalToastStyle);
+          setLoading(false);
           return;
         }
         if (!makingChargeAmount) {
           toast.error("Please enter making charge amount", generalToastStyle);
-          return;
-        }
-        if (!stoneAmount) {
-          toast.error("Please enter stone amount", generalToastStyle);
+          setLoading(false);
           return;
         }
         if (!hallmarkCharge) {
           toast.error("Please enter hallmark charge", generalToastStyle);
-          return;
-        }
-        if (!rodiumCharge) {
-          toast.error("Please enter rodium charge", generalToastStyle);
+          setLoading(false);
           return;
         }
         if (!gstPercent) {
+          console.log(gstPercent);
           toast.error("Please enter GST percentage", generalToastStyle);
+          setLoading(false);
           return;
         }
       }
@@ -461,34 +474,42 @@ const AddNewProduct = () => {
     if (stoneType) {
       if (!stoneClass) {
         toast.error("Please select stone class", generalToastStyle);
+        setLoading(false);
         return;
       }
       if (!stoneClarity) {
         toast.error("Please select stone clarity", generalToastStyle);
+        setLoading(false);
         return;
       }
       if (!stoneCut) {
         toast.error("Please select stone cut", generalToastStyle);
+        setLoading(false);
         return;
       }
       if (!stonePieces) {
         toast.error("Please enter number of stone pieces", generalToastStyle);
+        setLoading(false);
         return;
       }
       if (!stoneCarat) {
         toast.error("Please enter stone carat", generalToastStyle);
+        setLoading(false);
         return;
       }
       if (!stoneInternalWeight) {
         toast.error("Please enter stone weight", generalToastStyle);
+        setLoading(false);
         return;
       }
       if (!stoneRate) {
         toast.error("Please enter stone rate", generalToastStyle);
+        setLoading(false);
         return;
       }
       if (!stoneGSTPercent) {
         toast.error("Please enter stone GST percentage", generalToastStyle);
+        setLoading(false);
         return;
       }
     }
@@ -606,6 +627,7 @@ const AddNewProduct = () => {
       navigate("/products");
     } catch (error) {
       console.error("Error saving product:", error);
+      setLoading(false);
       toast.error("Error saving product. Please try again.");
     }
   };
@@ -621,15 +643,160 @@ const AddNewProduct = () => {
     <div className="AddNewProduct">
       <ToastContainer />
 
+      {/* Confirmation Dialog */}
+      <Dialog
+        open={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          style: {
+            backgroundColor: "#fff",
+            fontFamily: '"Work Sans", sans-serif',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            color: "#a36e29",
+            fontFamily: '"Work Sans", sans-serif',
+          }}
+        >
+          Confirm Save
+        </DialogTitle>
+        <DialogContent>
+          <Typography
+            sx={{
+              color: "#333",
+              fontFamily: '"Work Sans", sans-serif',
+            }}
+          >
+            Are you sure you want to save this product?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setLoading(false);
+              setConfirmDialogOpen(false);
+            }}
+            sx={{
+              color: "#666",
+              fontFamily: '"Work Sans", sans-serif',
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              setConfirmDialogOpen(false);
+              handleProductSave();
+            }}
+            variant="contained"
+            sx={{
+              backgroundColor: "#a36e29",
+              fontFamily: '"Work Sans", sans-serif',
+              "&:hover": {
+                backgroundColor: "#8b5d23",
+              },
+            }}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Image Dialog */}
+      <Dialog
+        open={showDeleteImageDialog}
+        onClose={() => setShowDeleteImageDialog(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          style: {
+            backgroundColor: "#fff",
+            fontFamily: '"Work Sans", sans-serif',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            color: "#a36e29",
+            fontFamily: '"Work Sans", sans-serif',
+          }}
+        >
+          Confirm Delete
+        </DialogTitle>
+        <DialogContent>
+          <Typography
+            sx={{
+              color: "#333",
+              fontFamily: '"Work Sans", sans-serif',
+            }}
+          >
+            Are you sure you want to remove this image?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setShowDeleteImageDialog(false);
+            }}
+            sx={{
+              color: "#666",
+              fontFamily: '"Work Sans", sans-serif',
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              handleDeleteImage(deleteImageIndex);
+              setShowDeleteImageDialog(false);
+            }}
+            variant="contained"
+            sx={{
+              backgroundColor: "#a36e29",
+              fontFamily: '"Work Sans", sans-serif',
+              "&:hover": {
+                backgroundColor: "#8b5d23",
+              },
+            }}
+          >
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       {/* Heading */}
-      <div className="head">
+      <div
+        className="head"
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+          backgroundColor: "#fff",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+        }}
+      >
         <div className="head-txt">Add New Product</div>
         <div className="btns">
           <Button className="button1" onClick={() => navigate("/products")}>
             Cancel
           </Button>
-          <Button className="button2" onClick={handleProductSave}>
-            Save
+          <Button
+            className="button2"
+            onClick={() => {
+              setLoading(true);
+              setConfirmDialogOpen(true);
+            }}
+            disabled={loading}
+          >
+            {loading ? (
+              <CircularProgress size={24} sx={{ color: "#fff" }} />
+            ) : (
+              "Save"
+            )}
           </Button>
         </div>
       </div>
@@ -669,7 +836,10 @@ const AddNewProduct = () => {
                         />
                         <IconButton
                           className="deleteButton"
-                          onClick={() => handleDeleteImage(index)}
+                          onClick={() => {
+                            setDeleteImageIndex(index);
+                            setShowDeleteImageDialog(true);
+                          }}
                         >
                           <Delete />
                         </IconButton>
@@ -779,12 +949,19 @@ const AddNewProduct = () => {
           <div className="heading">Product Details</div>
           <Divider />
           <Grid container spacing={0}>
-            <Grid item xs={3}>
+            <Grid item xs={2}>
               <InputTextField
                 title={"Name"}
                 value={productName}
                 onEdit={(e) => {
-                  setProductName(e.target.value);
+                  setProductName(
+                    e.target.value
+                      .split(" ")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(" ")
+                  );
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -796,7 +973,7 @@ const AddNewProduct = () => {
             </Grid>
             <Grid
               item
-              xs={3}
+              xs={2}
               style={{ marginBottom: "20px", paddingRight: "50px" }}
             >
               <div className="label">Category</div>
@@ -824,7 +1001,7 @@ const AddNewProduct = () => {
             </Grid>
             <Grid
               item
-              xs={3}
+              xs={2}
               style={{ marginBottom: "20px", paddingRight: "50px" }}
             >
               <div className="label">Sub-Category</div>
@@ -853,7 +1030,7 @@ const AddNewProduct = () => {
             </Grid>
             <Grid
               item
-              xs={3}
+              xs={2}
               style={{ marginBottom: "20px", paddingRight: "50px" }}
             >
               <div className="label">Size</div>
@@ -875,7 +1052,7 @@ const AddNewProduct = () => {
             </Grid>
             <Grid
               item
-              xs={3}
+              xs={2}
               style={{ marginBottom: "20px", paddingRight: "50px" }}
             >
               <div className="label">HSN Code</div>
@@ -906,7 +1083,7 @@ const AddNewProduct = () => {
             </Grid>
             <Grid
               item
-              xs={3}
+              xs={2}
               style={{ marginBottom: "20px", paddingRight: "50px" }}
             >
               <div className="label">Enter Quantity</div>
@@ -935,12 +1112,14 @@ const AddNewProduct = () => {
 
             <Grid item xs={12} className="quill-container">
               <div className="label">Description</div>
-              <ReactQuill
-                theme="snow"
+              <TextField
+                multiline
+                rows={4}
+                fullWidth
                 placeholder="Product Description"
                 value={desc}
-                onChange={(value) => {
-                  setDesc(value);
+                onChange={(e) => {
+                  setDesc(e.target.value);
                 }}
               />
             </Grid>
@@ -993,7 +1172,7 @@ const AddNewProduct = () => {
           <Divider />
           <Collapse in={metalDetailsExpanded}>
             <Grid container spacing={0}>
-              <Grid item xs={3}>
+              <Grid item xs={2}>
                 <div className="label">Type</div>
                 <FormControl
                   fullWidth
@@ -1019,7 +1198,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Quality</div>
@@ -1089,7 +1268,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Quantity</div>
@@ -1114,7 +1293,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Gross Weight</div>
@@ -1150,7 +1329,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Stone Weight</div>
@@ -1177,7 +1356,7 @@ const AddNewProduct = () => {
                       if (e.key === "Enter") {
                         e.preventDefault();
                         document
-                          .querySelector('input[name="netWeight"]')
+                          .querySelector('input[name="makingChargeType"]')
                           ?.focus();
                       }
                     }}
@@ -1186,7 +1365,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Net Weight</div>
@@ -1215,7 +1394,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Wastage Percentage</div>
@@ -1253,7 +1432,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Wastage Weight</div>
@@ -1282,7 +1461,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Net Weight After Wastage</div>
@@ -1311,7 +1490,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Making Charge Type</div>
@@ -1353,7 +1532,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Making Charge Value</div>
@@ -1413,7 +1592,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Making Charge Amount</div>
@@ -1444,7 +1623,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Stone Amount</div>
@@ -1474,7 +1653,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Hallmark Charge</div>
@@ -1504,7 +1683,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Rodium Cg. | Certificate Cg.</div>
@@ -1534,7 +1713,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">GST Percentage</div>
@@ -1542,7 +1721,10 @@ const AddNewProduct = () => {
                   <Select
                     name="gstPercent"
                     value={gstPercent}
-                    onChange={(e) => setGstPercent(e.target.value)}
+                    onChange={(e) => {
+                      console.log("GST Percent changed:", e.target.value);
+                      setGstPercent(e.target.value);
+                    }}
                     fullWidth
                   >
                     {dropdownValues?.[0]?.customization_fields
@@ -1600,7 +1782,7 @@ const AddNewProduct = () => {
           <Divider />
           <Collapse in={stoneDetailsExpanded}>
             <Grid container spacing={0}>
-              <Grid item xs={3}>
+              <Grid item xs={2}>
                 <div className="label">Type</div>
                 <FormControl
                   fullWidth
@@ -1631,7 +1813,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Class</div>
@@ -1656,7 +1838,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Clarity</div>
@@ -1686,7 +1868,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Cut</div>
@@ -1716,7 +1898,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Pieces</div>
@@ -1748,7 +1930,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Carat</div>
@@ -1780,7 +1962,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Weight (gm)</div>
@@ -1801,7 +1983,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">Rate</div>
@@ -1832,7 +2014,7 @@ const AddNewProduct = () => {
               </Grid>
               <Grid
                 item
-                xs={3}
+                xs={2}
                 style={{ marginBottom: "20px", paddingRight: "50px" }}
               >
                 <div className="label">GST Percentage</div>

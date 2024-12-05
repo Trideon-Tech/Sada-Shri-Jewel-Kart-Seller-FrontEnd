@@ -33,7 +33,6 @@ import "react-quill/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import InputTextField from "../../components/input-text-field/input-text-field.component";
 import { generalToastStyle } from "../../utils/toast.styles";
 import "./addNewProduct.styles.scss";
 
@@ -941,41 +940,40 @@ const AddNewProduct = () => {
 
       {/* Product basic details input */}
       <ThemeProvider theme={theme}>
-        <Paper
-          elevation={3}
-          className="detail-paper"
-          style={{ marginTop: "50px" }}
-        >
+        <Paper elevation={3} className="detail-paper">
           <div className="heading">Product Details</div>
           <Divider />
-          <Grid container spacing={0}>
-            <Grid item xs={2}>
-              <InputTextField
-                title={"Name"}
-                value={productName}
-                onEdit={(e) => {
-                  setProductName(
-                    e.target.value
-                      .split(" ")
-                      .map(
-                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(" ")
-                  );
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    document.querySelector('select[name="category"]')?.focus();
+          <Grid container spacing={2}>
+            <Grid item xs={1.5}>
+              <div className="label">Name</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="Name"
+                  value={productName}
+                  onChange={(e) =>
+                    setProductName(
+                      e.target.value
+                        .split(" ")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")
+                    )
                   }
-                }}
-              />
+                  fullWidth
+                  placeholder="Enter name"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('select[name="category"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
             </Grid>
-            <Grid
-              item
-              xs={2}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
+            <Grid item xs={1}>
               <div className="label">Category</div>
               <FormControl fullWidth>
                 <Select
@@ -999,12 +997,8 @@ const AddNewProduct = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid
-              item
-              xs={2}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Sub-Category</div>
+            <Grid item xs={1}>
+              <div className="label">Sub-Cat.</div>
               <FormControl fullWidth>
                 <Select
                   name="subcategory"
@@ -1028,11 +1022,7 @@ const AddNewProduct = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid
-              item
-              xs={2}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
+            <Grid item xs={1}>
               <div className="label">Size</div>
               <FormControl fullWidth>
                 <TextField
@@ -1050,11 +1040,7 @@ const AddNewProduct = () => {
                 />
               </FormControl>
             </Grid>
-            <Grid
-              item
-              xs={2}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
+            <Grid item xs={1}>
               <div className="label">HSN Code</div>
               <FormControl fullWidth>
                 <Select
@@ -1081,12 +1067,8 @@ const AddNewProduct = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid
-              item
-              xs={2}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Enter Quantity</div>
+            <Grid item xs={1}>
+              <div className="label">Quantity</div>
               <FormControl fullWidth>
                 <TextField
                   name="quantity"
@@ -1110,11 +1092,11 @@ const AddNewProduct = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} className="quill-container">
+            <Grid item xs={5.5}>
               <div className="label">Description</div>
               <TextField
                 multiline
-                rows={4}
+                rows={1}
                 fullWidth
                 placeholder="Product Description"
                 value={desc}
@@ -1132,7 +1114,7 @@ const AddNewProduct = () => {
         <Paper
           elevation={3}
           className="detail-paper"
-          style={{ marginTop: "50px" }}
+          style={{ marginTop: "20px" }}
         >
           <div
             style={{
@@ -1171,13 +1153,10 @@ const AddNewProduct = () => {
           </div>
           <Divider />
           <Collapse in={metalDetailsExpanded}>
-            <Grid container spacing={0}>
-              <Grid item xs={2}>
+            <Grid container spacing={2}>
+              <Grid item xs={1.5}>
                 <div className="label">Type</div>
-                <FormControl
-                  fullWidth
-                  style={{ marginBottom: "20px", paddingRight: "50px" }}
-                >
+                <FormControl fullWidth>
                   <Select
                     name="metalType"
                     value={metalType}
@@ -1196,11 +1175,7 @@ const AddNewProduct = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.5}>
                 <div className="label">Quality</div>
                 <FormControl fullWidth>
                   <Select
@@ -1266,11 +1241,7 @@ const AddNewProduct = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.5}>
                 <div className="label">Quantity</div>
                 <FormControl fullWidth>
                   <TextField
@@ -1291,11 +1262,7 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.5}>
                 <div className="label">Gross Weight</div>
                 <FormControl fullWidth>
                   <TextField
@@ -1327,11 +1294,7 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.5}>
                 <div className="label">Stone Weight</div>
                 <FormControl fullWidth>
                   <TextField
@@ -1363,11 +1326,7 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.5}>
                 <div className="label">Net Weight</div>
                 <FormControl fullWidth>
                   <TextField
@@ -1392,12 +1351,8 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
-                <div className="label">Wastage Percentage</div>
+              <Grid item xs={1.5}>
+                <div className="label">Wastage %</div>
                 <FormControl fullWidth>
                   <TextField
                     name="wastagePercent"
@@ -1430,11 +1385,7 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.5}>
                 <div className="label">Wastage Weight</div>
                 <FormControl fullWidth>
                   <TextField
@@ -1459,12 +1410,8 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
-                <div className="label">Net Weight After Wastage</div>
+              <Grid item xs={1.5}>
+                <div className="label">Net New Wt.</div>
                 <FormControl fullWidth>
                   <TextField
                     name="netWeightAfterWastage"
@@ -1488,12 +1435,8 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
-                <div className="label">Making Charge Type</div>
+              <Grid item xs={1.5}>
+                <div className="label">Making Charge</div>
                 <FormControl fullWidth>
                   <Select
                     name="makingChargeType"
@@ -1530,12 +1473,8 @@ const AddNewProduct = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
-                <div className="label">Making Charge Value</div>
+              <Grid item xs={1.5}>
+                <div className="label">MC Value</div>
                 <FormControl fullWidth>
                   <TextField
                     name="makingChargeValue"
@@ -1590,12 +1529,8 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
-                <div className="label">Making Charge Amount</div>
+              <Grid item xs={1.5}>
+                <div className="label">MC Amt.</div>
                 <FormControl fullWidth>
                   <TextField
                     name="makingChargeAmount"
@@ -1621,12 +1556,8 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
-                <div className="label">Stone Amount</div>
+              <Grid item xs={1.5}>
+                <div className="label">Stone Amt.</div>
                 <FormControl fullWidth>
                   <TextField
                     name="stoneAmount"
@@ -1651,12 +1582,8 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
-                <div className="label">Hallmark Charge</div>
+              <Grid item xs={1.5}>
+                <div className="label">Hallmark Amt.</div>
                 <FormControl fullWidth>
                   <TextField
                     name="hallmarkCharge"
@@ -1681,12 +1608,8 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
-                <div className="label">Rodium Cg. | Certificate Cg.</div>
+              <Grid item xs={1.5}>
+                <div className="label">Rodium|Cert. Cg.</div>
                 <FormControl fullWidth>
                   <TextField
                     name="rodiumCharge"
@@ -1711,12 +1634,8 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
-                <div className="label">GST Percentage</div>
+              <Grid item xs={1.5}>
+                <div className="label">GST</div>
                 <FormControl fullWidth>
                   <Select
                     name="gstPercent"
@@ -1748,7 +1667,7 @@ const AddNewProduct = () => {
           elevation={3}
           className="detail-paper"
           style={{
-            marginTop: "50px",
+            marginTop: "20px",
           }}
         >
           <div
@@ -1781,13 +1700,10 @@ const AddNewProduct = () => {
           </div>
           <Divider />
           <Collapse in={stoneDetailsExpanded}>
-            <Grid container spacing={0}>
-              <Grid item xs={2}>
+            <Grid container spacing={2}>
+              <Grid item xs={1.33}>
                 <div className="label">Type</div>
-                <FormControl
-                  fullWidth
-                  style={{ marginBottom: "20px", paddingRight: "50px" }}
-                >
+                <FormControl fullWidth>
                   <Select
                     name="stoneType"
                     value={stoneType}
@@ -1811,11 +1727,7 @@ const AddNewProduct = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.33}>
                 <div className="label">Class</div>
                 <FormControl fullWidth>
                   <TextField
@@ -1836,11 +1748,7 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.33}>
                 <div className="label">Clarity</div>
                 <FormControl fullWidth>
                   <Select
@@ -1866,11 +1774,7 @@ const AddNewProduct = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.33}>
                 <div className="label">Cut</div>
                 <FormControl fullWidth>
                   <Select
@@ -1896,11 +1800,7 @@ const AddNewProduct = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.33}>
                 <div className="label">Pieces</div>
                 <FormControl fullWidth>
                   <TextField
@@ -1928,11 +1828,7 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.33}>
                 <div className="label">Carat</div>
                 <FormControl fullWidth>
                   <TextField
@@ -1960,11 +1856,7 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.33}>
                 <div className="label">Weight (gm)</div>
                 <FormControl fullWidth>
                   <TextField
@@ -1981,11 +1873,7 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.33}>
                 <div className="label">Rate</div>
                 <FormControl fullWidth>
                   <TextField
@@ -2012,11 +1900,7 @@ const AddNewProduct = () => {
                   />
                 </FormControl>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                style={{ marginBottom: "20px", paddingRight: "50px" }}
-              >
+              <Grid item xs={1.33}>
                 <div className="label">GST Percentage</div>
                 <FormControl fullWidth>
                   <Select
@@ -2048,6 +1932,42 @@ const AddNewProduct = () => {
             </Grid>
           </Collapse>
         </Paper>
+      </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <div
+          style={{
+            marginLeft: "3vw",
+            marginTop: "30px",
+          }}
+        >
+          <Button
+            variant="outlined"
+            style={{
+              width: "200px",
+              height: "50px",
+              marginRight: "10px",
+            }}
+            color="primary"
+            onClick={() => navigate("/products")}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            style={{
+              width: "200px",
+              height: "50px",
+            }}
+            color="primary"
+            onClick={() => {
+              setLoading(true);
+              setConfirmDialogOpen(true);
+            }}
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Save"}
+          </Button>
+        </div>
       </ThemeProvider>
     </div>
   );

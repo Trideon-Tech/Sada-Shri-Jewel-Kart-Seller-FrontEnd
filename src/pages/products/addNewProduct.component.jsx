@@ -114,6 +114,8 @@ const AddNewProduct = () => {
   const [deleteImageIndex, setDeleteImageIndex] = useState();
   const [loading, setLoading] = useState(false);
 
+  const [showDeleteVideoDialog, setShowVideoDeleteDialog] = useState(false);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -767,6 +769,68 @@ const AddNewProduct = () => {
         </DialogActions>
       </Dialog>
 
+      {/* Delete Video Dialog */}
+      <Dialog
+        open={showDeleteVideoDialog}
+        onClose={() => setShowVideoDeleteDialog(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          style: {
+            backgroundColor: "#fff",
+            fontFamily: '"Work Sans", sans-serif',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            color: "#a36e29",
+            fontFamily: '"Work Sans", sans-serif',
+          }}
+        >
+          Confirm Delete
+        </DialogTitle>
+        <DialogContent>
+          <Typography
+            sx={{
+              color: "#333",
+              fontFamily: '"Work Sans", sans-serif',
+            }}
+          >
+            Are you sure you want to remove this video?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setShowVideoDeleteDialog(false);
+            }}
+            sx={{
+              color: "#666",
+              fontFamily: '"Work Sans", sans-serif',
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              setVideo(null);
+              setShowVideoDeleteDialog(false);
+            }}
+            variant="contained"
+            sx={{
+              backgroundColor: "#a36e29",
+              fontFamily: '"Work Sans", sans-serif',
+              "&:hover": {
+                backgroundColor: "#8b5d23",
+              },
+            }}
+          >
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       {/* Heading */}
       <div
         className="head"
@@ -890,7 +954,7 @@ const AddNewProduct = () => {
                       </video>
                       <IconButton
                         className="deleteButton"
-                        onClick={() => setVideo(null)}
+                        onClick={() => setShowVideoDeleteDialog(true)}
                       >
                         <Delete />
                       </IconButton>

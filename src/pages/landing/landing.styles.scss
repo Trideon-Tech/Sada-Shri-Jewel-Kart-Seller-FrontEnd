@@ -143,6 +143,7 @@
         .comments {
           height: calc(70vh - 280px);
           width: 75vw;
+          color: white;
 
           display: flex;
           justify-content: flex-end;
@@ -175,7 +176,6 @@
             font-size: 0.8rem;
             margin-top: 5px;
             margin-bottom: 40px;
-            color: gray;
           }
         }
       }

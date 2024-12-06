@@ -628,33 +628,6 @@ const AddNewProduct = () => {
     const categoryId = e.target.value;
     setSelectedCategory(categoryId);
     setSelectedSubcategory("");
-
-    // Set HSN based on category
-    const category = categoriesData.find((cat) => cat.id === categoryId)?.name;
-
-    let newHsnCode = "";
-    switch (category) {
-      case "GOLD JEWELLERY":
-        newHsnCode = "Gold Jewelry - 7113";
-        break;
-      case "SILVER JEWELLERY":
-        newHsnCode = "Silver Jewelry - 7113";
-        break;
-      case "SILVER ARTICLES":
-        newHsnCode = "Silver Articles - 7114";
-        break;
-      case "GEMSTONE":
-        newHsnCode = "Gemstone Jewelry - 7113";
-        break;
-      case "DIAMOND JEWELLERY":
-        newHsnCode = "Diamond Jewelry - 7113";
-        break;
-    }
-
-    setHsnCode(() => {
-      console.log("Setting HSN code to:", newHsnCode);
-      return newHsnCode;
-    });
   };
 
   return (
@@ -1170,9 +1143,7 @@ const AddNewProduct = () => {
                 <Select
                   name="hsnCode"
                   value={hsnCode}
-                  onChange={(e) => {
-                    setHsnCode(e.target.value);
-                  }}
+                  onChange={(e) => setHsnCode(e.target.value)}
                   fullWidth
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {

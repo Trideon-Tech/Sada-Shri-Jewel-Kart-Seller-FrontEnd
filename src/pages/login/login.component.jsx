@@ -1,4 +1,13 @@
-import { AppBar, Button, Grid, Toolbar } from "@mui/material";
+import {
+  AppBar,
+  Button,
+  createTheme,
+  Grid,
+  InputAdornment,
+  OutlinedInput,
+  ThemeProvider,
+  Toolbar,
+} from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,19 +19,28 @@ import "./login.styles.scss";
 import InputTextField from "../../components/input-text-field/input-text-field.component";
 import { generalToastStyle } from "../../utils/toast.styles";
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#a36e29",
+    },
+  },
+  typography: {
+    fontFamily: '"Work Sans", sans-serif',
+  },
+});
+
 const Login = () => {
   let navigate = useNavigate();
-  const [mobile, setMobile] = useState();
+  const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState();
   const [otpSent, setOTPSent] = useState(false);
   const [otpVerified, setOTPVerified] = useState(false);
   const [sendOTPAdornment, activateSendOTPAdornment] = useState(false);
   const [verifyOTPAdornment, activateVerifyOTPAdornment] = useState(false);
-  const [nextStepLoading, activateNextStepLoading] = useState(false);
 
   useEffect(() => {
     if (!mobile) return;
-    if (mobile.length > 9 && mobile.length <= 11) sendOTP();
   }, [mobile]);
 
   const sendOTP = () => {
@@ -147,8 +165,15 @@ const Login = () => {
             onClick={handleLogoClick}
           />
           <div className="btns">
-            <Link className="link" to={"/login"}>
-              <Button className="btn">Login</Button>
+            <Link className="link" to={"/register/user"}>
+              <Button
+                className="btn"
+                style={{
+                  color: "#a36e29",
+                }}
+              >
+                Register
+              </Button>
             </Link>
             <Link className="link-primary">
               <Button className="btn">Contact Us</Button>
@@ -162,22 +187,42 @@ const Login = () => {
         <Grid item xs={4} className="actions-div">
           <div className="content">
             <div className="heading">Login</div>
-            <InputTextField
-              title={"Mobile"}
-              value={mobile}
-              onEdit={(e) => {
-                const value = e.target.value.replace(/\D/g, ""); // Remove non-digits
-                if (value.length <= 10) {
-                  // Only allow up to 10 digits
-                  setMobile(value);
-                  if (value.length === 10) {
-                    activateSendOTPAdornment(true);
-                  } else {
-                    activateSendOTPAdornment(false);
+            <div className="input-text-field">
+              <div className="label">Mobile</div>
+              <ThemeProvider theme={theme}>
+                <OutlinedInput
+                  className="field"
+                  value={mobile}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, ""); // Remove non-digits
+                    if (value.length <= 10) {
+                      // Only allow up to 10 digits
+                      setMobile(value);
+                    }
+                  }}
+                  startAdornment={
+                    <InputAdornment position="start">+91</InputAdornment>
                   }
-                }
-              }}
-            />
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <Button
+                        disabled={mobile.length !== 10}
+                        onClick={sendOTP}
+                        sx={{
+                          color: "#a36e29",
+                          "&:hover": {
+                            backgroundColor: "transparent",
+                            textDecoration: "underline",
+                          },
+                        }}
+                      >
+                        Send OTP
+                      </Button>
+                    </InputAdornment>
+                  }
+                />
+              </ThemeProvider>
+            </div>
             <InputTextField
               title={"OTP"}
               value={otp}
@@ -193,7 +238,11 @@ const Login = () => {
           </div>
         </Grid>
         <Grid item xs={8} className="infographics">
-          Graphics
+          <img
+            src={process.env.PUBLIC_URL + "assets/login.webp"}
+            alt="Login Banner"
+            style={{ width: "100%", height: "100vh", objectFit: "cover" }}
+          />
         </Grid>
       </Grid>
     </div>

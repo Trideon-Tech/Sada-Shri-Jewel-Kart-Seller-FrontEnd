@@ -381,7 +381,7 @@ const Products = () => {
               textAlign: "center",
             }}
           >
-            Are you sure you want to delete this product? This action cannot be
+            Are you sure you want to disable this product? This action cannot be
             undone.
           </Typography>
           <Box

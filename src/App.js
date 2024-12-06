@@ -51,6 +51,7 @@ function App() {
             textAlign: "center",
             fontSize: "18px",
             color: "#333",
+            fontFamily: "'Work Sans', sans-serif",
           }}
         >
           Please open Sadāshrī Jewelkart Seller Portal on a laptop or tablet for

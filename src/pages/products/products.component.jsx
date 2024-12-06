@@ -91,7 +91,7 @@ const Products = () => {
       )
       .then((_) => {
         toast("Product deleted successfully!", generalToastStyle);
-        navigate(0);
+        getProductList();
       })
       .catch((err) => {
         toast(err.response.data.message, generalToastStyle);

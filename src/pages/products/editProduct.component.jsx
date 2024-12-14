@@ -93,7 +93,9 @@ const EditProduct = () => {
   const [hsnCode, setHsnCode] = useState();
   const [inventoryQty, setInventoryQty] = useState(false);
 
+  const [origImages, setOrigImages] = useState([]);
   const [images, setImages] = useState([]);
+  const [origVideo, setOrigVideo] = useState(null);
   const [video, setVideo] = useState(null);
 
   const [product, setProduct] = useState(null);
@@ -184,6 +186,9 @@ const EditProduct = () => {
 
       const productData = response.data.response;
       setProduct(productData);
+
+      setOrigImages(productData.images);
+      setOrigVideo(productData.video);
 
       const category = categoriesData.find(
         (cat) => cat.name === productData.category
@@ -409,6 +414,33 @@ const EditProduct = () => {
                     </Button>
                   </label>
                   <div className="previewContainer">
+                    {origImages.map((image, index) => (
+                      <div key={index} className="imagePreview">
+                        <img
+                          src={`https://api.sadashrijewelkart.com/assets/${image.file}`}
+                          alt={`Preview ${index + 1}`}
+                        />
+                        <IconButton
+                          className="deleteButton"
+                          //   onClick={() => {
+                          //     setDeleteImageIndex(index);
+                          //     setShowDeleteImageDialog(true);
+                          //   }}
+                        >
+                          <Delete />
+                        </IconButton>
+                        <Button
+                          variant="contained"
+                          //   onClick={() => startCropImage(index)}
+                          size="small"
+                          style={{
+                            marginTop: "10px",
+                          }}
+                        >
+                          Crop
+                        </Button>
+                      </div>
+                    ))}
                     {images.map((image, index) => (
                       <div key={index} className="imagePreview">
                         <img
@@ -471,6 +503,22 @@ const EditProduct = () => {
                       Select Video
                     </Button>
                   </label>
+                  {origVideo && (
+                    <div className="previewContainer">
+                      <video controls>
+                        <source
+                          src={`https://api.sadashrijewelkart.com/assets/${origVideo.file}`}
+                          type="video/mp4"
+                        />
+                      </video>
+                      <IconButton
+                        className="deleteButton"
+                        // onClick={() => setShowVideoDeleteDialog(true)}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </div>
+                  )}
                   {video && (
                     <div className="previewContainer">
                       <video controls>

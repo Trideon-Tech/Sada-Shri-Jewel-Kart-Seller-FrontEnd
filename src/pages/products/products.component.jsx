@@ -314,6 +314,15 @@ const Products = () => {
                           </TableCell>
 
                           <TableCell className="actions-content">
+                            <Edit
+                              className="allow"
+                              onClick={() =>
+                                navigate(
+                                  `/products/edit?id=${row.id}&name=${row.name}&hash=${row.hash}`
+                                )
+                              }
+                              style={{ marginRight: "8px" }}
+                            />
                             <Close
                               className="block"
                               onClick={() => openDeleteDialog(row.id)}

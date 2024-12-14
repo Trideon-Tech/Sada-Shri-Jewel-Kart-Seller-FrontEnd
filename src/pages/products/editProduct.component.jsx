@@ -1,62 +1,31 @@
-import React, { useState, useEffect } from "react";
+import { Delete, PhotoCamera, VideoCameraFront } from "@mui/icons-material";
 import {
   Button,
-  Divider,
-  Paper,
-  InputAdornment,
-  IconButton,
-  Grid,
-  Chip,
-  Input,
-  FormControl,
+  CircularProgress,
   createTheme,
   Dialog,
-  DialogTitle,
-  DialogContent,
-  TextField,
-  MenuItem,
   DialogActions,
-  ThemeProvider,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormControl,
+  Grid,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Paper,
   Select,
-  InputLabel,
-  Checkbox,
-  TableContainer,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
+  TextField,
+  ThemeProvider,
 } from "@mui/material";
-import {
-  Add,
-  PhotoCamera,
-  VideoCameraFront,
-  Delete,
-} from "@mui/icons-material";
 import axios from "axios";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { toast, ToastContainer } from "react-toastify";
+import React, { useCallback, useEffect, useState } from "react";
+import Cropper from "react-easy-crop";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate, useParams } from "react-router-dom";
-import { generalToastStyle } from "../../utils/toast.styles";
 import "./addNewProduct.styles.scss";
 
-import InputTextField from "../../components/input-text-field/input-text-field.component";
-import MaterialSelectorEdit from "./materialSelectorEdit.component";
-
-const COLUMN_TRANSFORMS = {
-  gold_making_charges: "Gold Making Charge(%)",
-  silver_making_charges: "Silver Making Charge(%)",
-  platinum_making_charges: "Platinum Making Charges(%)",
-  diamond_making_charges: "Diamond Fixed Price",
-  gemstone_making_charges: "Gemstone Fixed Price",
-  gold_nt_wt: "Gold Weight(gms)",
-  silver_nt_wt: "Silver Weight(gms)",
-  platinum_nt_wt: "Platinum Weight(gms)",
-  diamond_nt_wt: "Diamond weight",
-  gemstone_nt_wt: "Gem weight",
-};
 const theme = createTheme({
   palette: {
     primary: {
@@ -69,34 +38,18 @@ const theme = createTheme({
 });
 
 const EditProduct = () => {
-  let navigate = useNavigate();
   let token = localStorage.getItem("token");
-  var productId = 1;
-  let { hash, name } = useParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get("id");
+  const productName = searchParams.get("name");
+  const hash = searchParams.get("hash");
 
-  const [images, setImages] = useState([]);
-  const [video, setVideo] = useState(null);
-  const [productName, setProductName] = useState();
+  const [loading, setLoading] = useState(false);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+
   const [desc, setDesc] = useState();
-  const [weight, setWeight] = useState();
-  const [price, setPrice] = useState();
-  const [height, setHeight] = useState();
-  const [width, setWidth] = useState();
-  const [orderProductId, setOrderProductId] = useState();
   const [purity, setPurity] = useState();
-  const [newCustomizationType, setNewCustomizationType] = useState();
-  const [newCustomizationOption, setNewCustomizationOption] = useState();
-  const [openCustomizationInputDialog, setOpenCustomizationInputDialog] =
-    useState(false);
-  const [
-    openAddNewCustomizationTypeInputDialog,
-    setOpenAddNewCustomizationTypeInputDialog,
-  ] = useState(false);
-  const [
-    openAddNewCustomizationOptionInputDialog,
-    setOpenAddNewCustomizationOptionInputDialog,
-  ] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState([]);
   const [customizationTypes, setCustomizationTypes] = useState([]);
   const [categoriesData, setCategoriesData] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -106,630 +59,335 @@ const EditProduct = () => {
   const [selectedCustomizationTypeName, setSelectedCustomizationTypeName] =
     useState("");
   const [customizationOptions, setCustomizationOptions] = useState([]);
-  const [showCustomizationTable, setShowCustomizationTable] = useState(false);
-  const [selectedCustomizationNames, setSelectedCustomizationNames] = useState(
-    {}
-  );
-  const [selectedCustomizations, setSelectedCustomizations] = useState([]);
+  const [dropdownValues, setDropdownValues] = useState();
+  const [metalType, setMetalType] = useState();
+  const [quantity, setQuantity] = useState(1);
+  const [grossWeight, setGrossWeight] = useState();
+  const [stoneWeight, setStoneWeight] = useState(0);
+  const [netWeight, setNetWeight] = useState();
+  const [wastagePercent, setWastagePercent] = useState(0);
+  const [wastageWeight, setWastageWeight] = useState(0);
+  const [netWeightAfterWastage, setNetWeightAfterWastage] = useState();
+  const [makingChargeType, setMakingChargeType] = useState(9);
+  const [makingChargeValue, setMakingChargeValue] = useState();
+  const [makingChargeAmount, setMakingChargeAmount] = useState();
+  const [stoneAmount, setStoneAmount] = useState(0);
+  const [hallmarkCharge, setHallmarkCharge] = useState(50);
+  const [rodiumCharge, setRodiumCharge] = useState(0);
+  const [gstPercent, setGstPercent] = useState(3);
+  const [rates, setRates] = useState([]);
+  const [rate, setRate] = useState(0);
+  const [amount, setAmount] = useState(0);
+  const [stoneTotalAmount, setStoneTotalAmount] = useState(0);
+  const [stoneType, setStoneType] = useState();
+  const [stoneClass, setStoneClass] = useState();
+  const [stoneCut, setStoneCut] = useState();
+  const [stonePieces, setStonePieces] = useState();
+  const [stoneCarat, setStoneCarat] = useState();
+  const [stoneClarity, setStoneClarity] = useState();
+  const [stoneRate, setStoneRate] = useState();
+  const [stoneInternalWeight, setStoneInternalWeight] = useState();
+  const [stoneGSTPercent, setStoneGSTPercent] = useState();
+  const [qualityName, setQualityName] = useState();
+  const [size, setSize] = useState();
+  const [hsnCode, setHsnCode] = useState();
+  const [inventoryQty, setInventoryQty] = useState(false);
 
-  const [combinationsValues, setCombinationValues] = React.useState([]);
-  const [combinationFields, setCombinationFields] = React.useState([]);
+  const [images, setImages] = useState([]);
+  const [video, setVideo] = useState(null);
 
-  const [displayTable, setDisplayTable] = React.useState({});
+  const [product, setProduct] = useState(null);
 
-  const convertToTableData = (rawData) => {
-    const tableHeaders = rawData?.customizations?.fields;
-    const checkData =
-      rawData?.customizations?.variants?.options[0]?.making_charge_perc;
+  // Crop related states
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
-    const headerLists = [];
+  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
 
-    if (checkData["gold_making_charges"] !== 0) {
-      tableHeaders.push("gold_making_charges");
-      headerLists.push("gold_making_charges");
+  const startCropImage = (index) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCurrentImage(reader.result);
+      setCurrentImageIndex(index);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setCropDialogOpen(true);
+    };
+    reader.readAsDataURL(images[index]);
+  };
+
+  const getCroppedImage = async () => {
+    try {
+      const canvas = document.createElement("canvas");
+      const image = new Image();
+      image.src = currentImage;
+
+      await new Promise((resolve) => {
+        image.onload = resolve;
+      });
+
+      canvas.width = croppedAreaPixels.width;
+      canvas.height = croppedAreaPixels.height;
+
+      const ctx = canvas.getContext("2d");
+
+      ctx.drawImage(
+        image,
+        croppedAreaPixels.x,
+        croppedAreaPixels.y,
+        croppedAreaPixels.width,
+        croppedAreaPixels.height,
+        0,
+        0,
+        croppedAreaPixels.width,
+        croppedAreaPixels.height
+      );
+
+      canvas.toBlob((blob) => {
+        const newImages = [...images];
+        if (currentImageIndex === images.length) {
+          // New image
+          newImages.push(blob);
+        } else {
+          // Replacing existing image
+          newImages[currentImageIndex] = blob;
+        }
+        setImages(newImages);
+        setCropDialogOpen(false);
+        setCurrentImage(null);
+        setCurrentImageIndex(null);
+      }, "image/jpeg");
+    } catch (e) {
+      console.error("Error cropping image:", e);
+      setCropDialogOpen(false);
+      setCurrentImage(null);
+      setCurrentImageIndex(null);
     }
+  };
 
-    if (checkData["silver_making_charges"] !== 0) {
-      tableHeaders.push("silver_making_charges");
-      headerLists.push("silver_making_charges");
+  const fetchProduct = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/details.php?name=${productName}&hash=${hash}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const productData = response.data.response;
+      setProduct(productData);
+
+      const category = categoriesData.find(
+        (cat) => cat.name === productData.category
+      );
+      setSelectedCategory(category ? category.id : "");
+
+      const subcategory = category?.sub_categories.find(
+        (subcat) => subcat.name === productData.sub_category
+      );
+      setSelectedSubcategory(subcategory ? subcategory.id : "");
+
+      setSize(productData.size);
+
+      const hsn = dropdownValues?.[0]?.customization_fields
+        .find((field) => field.name === "hsn")
+        ?.property_value.find((option) => option.name === productData.hsn);
+      setHsnCode(hsn ? hsn.name : "");
+
+      setInventoryQty(productData.quantity);
+
+      const strippedDesc = productData.description.replace(
+        /<\/?[^>]+(>|$)/g,
+        ""
+      );
+      setDesc(strippedDesc);
+
+      // metal details
+      setGrossWeight(productData.customizations[0]?.metal_info?.gross_wt);
+      setStoneWeight(productData.customizations[0]?.metal_info?.stone_wt || 0);
+      setNetWeight(productData.customizations[0]?.metal_info?.net_wt || 0);
+      setWastagePercent(
+        productData.customizations[0]?.metal_info?.wastage_prec || 0
+      );
+      setWastageWeight(productData.customizations[0]?.metal_info?.wastage_wt);
+      setNetWeightAfterWastage(
+        productData.customizations[0]?.metal_info?.net_wt_after_wastage || 0
+      );
+      setMakingChargeValue(
+        productData.customizations[0]?.metal_info?.making_charge_value
+      );
+      setMakingChargeAmount(
+        productData.customizations[0]?.metal_info?.making_charge_amount
+      );
+      setStoneAmount(
+        productData.customizations[0]?.metal_info?.stone_amount || 0
+      );
+      setHallmarkCharge(
+        productData.customizations[0]?.metal_info?.hallmark_charge || 0
+      );
+      setRodiumCharge(
+        productData.customizations[0]?.metal_info?.rodium_charge || 0
+      );
+
+      //stone details
+      setStoneClass(productData.customizations[0]?.stone_info?.class);
+      setStonePieces(productData.customizations[0]?.stone_info?.pieces);
+      setStoneCarat(productData.customizations[0]?.stone_info?.carat);
+      setStoneRate(productData.customizations[0]?.stone_info?.stone_rate);
+      setStoneInternalWeight(
+        productData.customizations[0]?.stone_info?.stone_wt
+      );
+      setStoneGSTPercent(productData.customizations[0]?.stone_info?.gst_perc);
+    } catch (error) {
+      console.error("Error fetching product data:", error);
     }
+  };
 
-    if (checkData["platinum_making_charges"] !== 0) {
-      tableHeaders.push("platinum_making_charges");
-      headerLists.push("platinum_making_charges");
-    }
-
-    if (checkData["diamond_making_charges"] !== 0) {
-      tableHeaders.push("diamond_making_charges");
-      headerLists.push("diamond_making_charges");
-    }
-
-    if (checkData["gemstone_making_charges"] !== 0) {
-      tableHeaders.push("gemstone_making_charges");
-      headerLists.push("gemstone_making_charges");
-    }
-
-    //wt headers
-
-    const checkDataWt =
-      rawData?.customizations?.variants?.options[0]?.jewellery_type_nt_wt;
-
-    if (checkDataWt["gold_nt_wt"] !== 0) {
-      tableHeaders.push("gold_nt_wt");
-      headerLists.push("gold_nt_wt");
-    }
-
-    if (checkDataWt["silver_nt_wt"] !== 0) {
-      tableHeaders.push("silver_nt_wt");
-      headerLists.push("silver_nt_wt");
-    }
-
-    if (checkDataWt["platinum_nt_wt"] !== 0) {
-      tableHeaders.push("platinum_nt_wt");
-      headerLists.push("platinum_nt_wt");
-    }
-
-    if (checkDataWt["diamond_nt_wt"] !== 0) {
-      tableHeaders.push("diamond_nt_wt");
-      headerLists.push("diamond_nt_wt");
-    }
-
-    if (checkDataWt["gemstone_nt_wt"] !== 0) {
-      tableHeaders.push("gemstone_nt_wt");
-      headerLists.push("gemstone_nt_wt");
-    }
-
-    const tableData = [];
-    for (let row of rawData?.customizations?.variants?.options) {
-      const fillUpData = row?.for_customization_options;
-      const mergedObject = {
-        ...row?.making_charge_perc,
-        ...row?.jewellery_type_nt_wt,
-      };
-      headerLists.map((key) => fillUpData.push(mergedObject[key]));
-
-      tableData.push(fillUpData);
-    }
-
-    console.log("formed Data ========>>>>>>>", {
-      tableHeaders: tableHeaders,
-      tableData: tableData,
-    });
-
-    setDisplayTable({ tableHeaders: tableHeaders, tableData: tableData });
+  const handleCategoryChange = (e) => {
+    const categoryId = e.target.value;
+    setSelectedCategory(categoryId);
+    setSelectedSubcategory("");
   };
 
   useEffect(() => {
-    let config = {
-      method: "get",
-      maxBodyLength: Infinity,
-      url: `https://api.sadashrijewelkart.com/v1.0.0/seller/product/details.php?name=${name}&hash=${hash}`,
-      headers: {},
-    };
+    const token = localStorage.getItem("token");
 
-    axios
-      .request(config)
-      .then((response) => {
-        const result = response?.data?.response;
-        console.log("response", result);
-        setOrderProductId(result?.id);
-        setProductName(result?.name);
-        setDesc(result?.description);
-        setWeight(result?.weight);
-        setPrice(result?.price);
-        setHeight(result?.height);
-        setWidth(result?.width);
-        console.log(
-          "result?.purity, result?.category, result?.sub_category",
-          result?.purity,
-          result?.category,
-          result?.sub_category
-        );
-        setPurity(result?.purity || 0);
-        setSelectedCategory(result?.category);
-        setSelectedSubcategory(result?.sub_category);
-        setCombinationValues(result?.customizations?.variants?.options);
-        setCombinationFields(result?.customizations?.fields);
-        convertToTableData(result);
-        console.log(JSON.stringify(response.data));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    // const result = {
-    //   success: 1,
-    //   message: "Data fetch success!",
-    //   response: {
-    //     id: "14",
-    //     created_at: "2024-09-08 13:42:35",
-    //     updated_at: "2024-09-12 17:37:30",
-    //     company: {
-    //       id: "1",
-    //       created_at: "2023-12-27 15:33:52",
-    //       updated_at: "2024-01-18 10:30:04",
-    //       gstin: "123456789012345",
-    //       gstin_verified: "1",
-    //       name: "NewJwellers",
-    //       logo: "company/NewJwellers/logo.png",
-    //       cover_image: "company/NewJwellers/cover_image.webp",
-    //       contact_email: "rishavk1102.work@gmail.com",
-    //       addresses: "1",
-    //       banks: "1",
-    //       admin_verified: "1",
-    //       admin: "1",
-    //     },
-    //     seller: "1",
-    //     name: "Rose P Necklace",
-    //     hash: "3982bc",
-    //     description: "<p>So, <strong><em><u>heyy yes!</u></em></strong></p>",
-    //     category: "More Jewellery",
-    //     sub_category: "Solitaire",
-    //     weight: "100",
-    //     height: "10",
-    //     width: "200",
-    //     purity: "",
-    //     price: "200000",
-    //     admin_verified: "0",
-    //     admin: "0",
-    //     is_active: "1",
-    //     customizations: {
-    //       fields: ["Diamond Color"],
-    //       variants: {
-    //         count: 2,
-    //         options: [
-    //           {
-    //             id: "65",
-    //             created_at: "2024-09-08 13:42:36",
-    //             updated_at: "2024-09-14 18:32:50",
-    //             product: "14",
-    //             for_customization_options: [
-    //               "Diamond Color 1",
-    //               "Diamond Color 2",
-    //               "Diamond Color 3",
-    //             ],
-    //             price: "10000",
-    //             made_on_order: "1",
-    //             fixed_price: "2000",
-    //             making_charge_perc:
-    //               '{"gold_making_charges":4,"silver_making_charges":1,"platinum_making_charges":3,"diamond_making_charges":4,"gemstone_making_charges":0}',
-    //             jewellery_type_nt_wt:
-    //               '{"gold_nt_wt":10,"silver_nt_wt":0,"platinum_nt_wt":11,"diamond_nt_wt":12,"gemstone_nt_wt":11}',
-    //             is_active: "1",
-    //             for_customization_fields: [
-    //               "Diamond Color",
-    //               "Diamond Color",
-    //               "Diamond Color",
-    //             ],
-    //           },
-    //           {
-    //             id: "66",
-    //             created_at: "2024-09-08 13:42:36",
-    //             updated_at: "2024-09-14 18:32:47",
-    //             product: "14",
-    //             for_customization_options: [
-    //               "Diamond Color 1",
-    //               "Diamond Color 2",
-    //               "Diamond Color 3",
-    //             ],
-    //             price: "30000",
-    //             made_on_order: "0",
-    //             fixed_price: "2000",
-    //             making_charge_perc:
-    //               '{"gold_making_charges":4,"silver_making_charges":1,"platinum_making_charges":3,"diamond_making_charges":4,"gemstone_making_charges":0}',
-    //             jewellery_type_nt_wt:
-    //               '{"gold_nt_wt":10,"silver_nt_wt":12,"platinum_nt_wt":11,"diamond_nt_wt":12,"gemstone_nt_wt":11}',
-    //             is_active: "1",
-    //             for_customization_fields: [
-    //               "Diamond Color",
-    //               "Diamond Color",
-    //               "Diamond Color",
-    //             ],
-    //           },
-    //         ],
-    //       },
-    //       options_per_field: {
-    //         "Diamond Color": [
-    //           "Diamond Color 1",
-    //           "Diamond Color 2",
-    //           "Diamond Color 3",
-    //         ],
-    //       },
-    //     },
-    //     recommended: [],
-    //   },
-    // };
-    // setProductName(result.response.name);
-    // setDesc(result.response.description);
-    // setWeight(result.response.weight);
-    // setPrice(result.response.price);
-    // setHeight(result.response.height);
-    // setWidth(result.response.width);
-    // setPurity(result.response.purity);
-    // setSelectedCategory(result.response.category);
-    // setSelectedSubcategory(result.response.sub_category);
-    // setCombinationValues(result?.response?.customizations?.variants?.options);
-  }, []);
-
-  useEffect(() => {
-    axios
-      .get(
+    Promise.all([
+      axios.get(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/all.php?type=product_add_template",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      ),
+      axios.get(
         "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php?type=category",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
-      .then((response) => {
-        const categories = response.data.response || [];
-        setCategoriesData(categories);
+      ),
+      axios.get(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/jewelleryInventory/jewellryInventory.php?type=get_latest",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      ),
+    ])
+      .then(([dropdownResponse, categoriesResponse, ratesResponse]) => {
+        setDropdownValues(() => dropdownResponse.data.response || []);
+        const categories = categoriesResponse.data.response || [];
+        setCategoriesData(() => categories);
+        setRates(ratesResponse.data.response?.jewelry_prices || []);
       })
       .catch((error) => {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching data:", error);
       });
   }, []);
 
   useEffect(() => {
-    getAllCustomizationFields();
+    fetchProduct();
+  }, [dropdownValues]);
 
-    if (selectedCustomizationTypeId !== null) {
-      setSelectedCustomizationTypeName(
-        customizationTypes.find((i) => i.id === selectedCustomizationTypeId)
-          ?.name
-      );
+  useEffect(() => {
+    let baseAmount = 0;
 
-      getAllCustomizationOptionsPerField();
-    }
-  }, [selectedCustomizationTypeId]);
-
-  const getAllCustomizationFields = () => {
-    axios
-      .get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/field/all.php",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        setCustomizationTypes(response.data.response);
-      })
-      .catch((error) => {
-        console.error("Error fetching customization types:", error);
-      });
-  };
-
-  const getAllCustomizationOptionsPerField = () => {
-    if (!selectedCustomizationTypeId) return;
-    axios
-      .get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedCustomizationTypeId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        setCustomizationOptions(response.data.response);
-      })
-      .catch((error) => {
-        console.error("Error fetching customization options:", error);
-      });
-  };
-
-  const handleCustomizationTypeSelection = (event) => {
-    let selectedTypeId = event.target.value;
-
-    if (selectedTypeId !== -1) {
-      setSelectedCustomizationTypeId(selectedTypeId);
-    } else {
-      setOpenAddNewCustomizationTypeInputDialog(true);
-    }
-  };
-
-  const handleAddNewCustomizationType = () => {
-    const formData = new FormData();
-    formData.append("name", newCustomizationType);
-
-    axios
-      .post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/field/add.php",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((_) => {
-        setOpenAddNewCustomizationTypeInputDialog(false);
-        getAllCustomizationFields();
-      })
-      .catch((error) => {
-        console.error("Error saving initial product details:", error);
-      });
-  };
-
-  const handleAddNewCustomizationOption = () => {
-    const formData = new FormData();
-    formData.append("customization_field", selectedCustomizationTypeId);
-    formData.append("name", newCustomizationOption);
-
-    axios
-      .post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/add.php",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((_) => {
-        setOpenAddNewCustomizationOptionInputDialog(false);
-        getAllCustomizationOptionsPerField();
-      })
-      .catch((error) => {
-        console.error("Error saving initial product details:", error);
-      });
-  };
-
-  const handleCustomizationOptionChange = (event) => {
-    const selectedOption = event.target.value;
-    if (selectedOption !== -1) {
-      setSelectedOptions((prevSelectedOptions) => [
-        ...prevSelectedOptions,
-        {
-          type: selectedCustomizationTypeId,
-          option: selectedOption,
-          type_name: selectedCustomizationTypeName,
-          option_name: customizationOptions.find(
-            (i) => i.id === selectedOption
-          )["name"],
-        },
-      ]);
-    } else {
-      // Add new customization option here
-      setOpenAddNewCustomizationOptionInputDialog(true);
-    }
-  };
-
-  const loadCustomizationTable = () => {
-    // creating combinations
-    const typeIds = Array.from(
-      new Set(selectedOptions.map((item) => item.type))
-    );
-    const typeNames = {};
-    selectedOptions.forEach((item) => {
-      typeNames[item.type] = item.type_name;
-    });
-
-    const types = {};
-    typeIds.forEach((typeId) => {
-      types[typeId] = selectedOptions.filter((item) => item.type === typeId);
-    });
-
-    const combinations = [];
-
-    function generateCombinations(currentCombination, remainingTypeIds) {
-      if (remainingTypeIds.length === 0) {
-        const combinationObject = {};
-        currentCombination.forEach((option, index) => {
-          const currentTypeId = typeIds[index];
-          combinationObject[currentTypeId.toLowerCase()] = option;
-        });
-        combinations.push(combinationObject);
-        return;
-      }
-
-      const currentTypeId = remainingTypeIds[0];
-      const currentTypeOptions = types[currentTypeId];
-
-      for (const option of currentTypeOptions) {
-        const nextCombination = [...currentCombination, option.option_name];
-        const nextRemainingTypeIds = remainingTypeIds.slice(1);
-        generateCombinations(nextCombination, nextRemainingTypeIds);
-      }
+    if (makingChargeType == 8) {
+      setAmount(parseFloat(makingChargeAmount || 0));
+      return;
     }
 
-    generateCombinations([], typeIds);
-
-    const customizationsList = [];
-
-    for (let i = 0; i < combinations.length; i++) {
-      const customizationIds = [];
-
-      for (const typeId in typeNames) {
-        const optionName = combinations[i][typeId];
-        const optionId = selectedOptions.find(
-          (i) => i.option_name === optionName
-        )["option"];
-
-        customizationIds.push(optionId);
-      }
-
-      const customizationIdsString = customizationIds.join(",");
-
-      customizationsList.push({
-        customization: combinations[i],
-        customization_ids: customizationIdsString,
-        price,
-        madeOnOrder: true,
-      });
+    // Calculate base amount based on weight
+    if (netWeightAfterWastage) {
+      baseAmount = netWeightAfterWastage * rate;
+    } else if (netWeight) {
+      baseAmount = netWeight * rate;
+    } else if (grossWeight) {
+      baseAmount = grossWeight * rate;
     }
 
-    console.log(customizationsList);
+    // Add additional charges
+    let totalAmount = baseAmount;
+    if (makingChargeAmount) totalAmount += parseFloat(makingChargeAmount);
+    if (hallmarkCharge) totalAmount += parseFloat(hallmarkCharge);
+    if (rodiumCharge) totalAmount += parseFloat(rodiumCharge);
+    if (stoneAmount) totalAmount += parseFloat(stoneAmount);
 
-    setSelectedCustomizationNames(typeNames);
-    setSelectedCustomizations(customizationsList);
-
-    setShowCustomizationTable(true);
-    setOpenCustomizationInputDialog(false);
-  };
-
-  const handleChipDelete = (index) => {
-    const newSelectedOptions = [...selectedOptions];
-    newSelectedOptions.splice(index, 1);
-    setSelectedOptions(newSelectedOptions);
-  };
-
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setImages((prevImages) => [...prevImages, ...files]);
-  };
-
-  const handleVideoChange = (e) => {
-    const file = e.target.files[0];
-    setVideo(file);
-  };
-
-  const handleDeleteImage = (index) => {
-    const newImages = [...images];
-    newImages.splice(index, 1);
-    setImages(newImages);
-  };
-
-  const handleProductSave = async () => {
-    if (productName === "" || typeof productName === "undefined") {
-      toast.warn("Product Name is required!", generalToastStyle);
-    } else if (desc === "" || typeof desc === "undefined") {
-      toast.warn("Description is required!", generalToastStyle);
-    } else if (weight === "" || typeof weight === "undefined") {
-      toast.warn("Weight is required!", generalToastStyle);
-    } else if (price === "" || typeof price === "undefined") {
-      toast.warn("Price is required!", generalToastStyle);
-    } else if (height === "" || typeof height === "undefined") {
-      toast.warn("Height is required!", generalToastStyle);
-    } else if (width === "" || typeof width === "undefined") {
-      toast.warn("Width is required!", generalToastStyle);
-    } else if (purity === "" || typeof purity === "undefined") {
-      toast.warn("Purity is required!", generalToastStyle);
-    } else {
-      axios
-        .put(
-          "https://api.sadashrijewelkart.com/v1.0.0/seller/product/update.php",
-          {
-            id: orderProductId,
-            type: "update_item",
-            name: productName,
-            description: desc,
-            category: selectedCategory,
-            sub_category: selectedSubcategory,
-            purity: purity,
-            price: price,
-            weight: weight,
-            height: height,
-            width: width,
-            customization: combinationsValues,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        )
-        .then((response) => {
-          productId = response.data.response.id;
-
-          const promises = [];
-
-          images.forEach((image, index) => {
-            const formData = new FormData();
-            formData.append("type", "infographics");
-            formData.append("product", productId);
-            formData.append("is_primary", index === 0 ? true : false);
-            formData.append("file_type", "img");
-            formData.append("file", image);
-            console.log(formData);
-            promises.push(
-              axios.post(
-                "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-                formData,
-                {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                  },
-                }
-              )
-            );
-          });
-
-          if (video) {
-            const videoFormData = new FormData();
-            videoFormData.append("type", "infographics");
-            videoFormData.append("product", productId);
-            videoFormData.append("is_primary", false);
-            videoFormData.append("file_type", "vid");
-            videoFormData.append("file", video);
-
-            promises.push(
-              axios.post(
-                "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-                videoFormData,
-                {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                  },
-                }
-              )
-            );
-          }
-
-          Promise.all(promises)
-            .then((responses) => {
-              console.log(
-                "All Details, images and videos uploaded successfully:",
-                responses
-              );
-              navigate("/products");
-            })
-            .catch((error) => {
-              console.error("Error uploading images and videos:", error);
-            });
-        })
-        .catch((error) => {
-          console.error("Error saving initial product details:", error);
-        });
+    // Add GST if present
+    if (gstPercent) {
+      totalAmount += (totalAmount * parseFloat(gstPercent)) / 100;
     }
-  };
 
-  const handleCategoryChange = (e) => {
-    const categoryId = e.target.value;
-    setSelectedCategory(categoryId); // Change #3
-    // Reset subcategory when changing category
-    setSelectedSubcategory(""); // Change #4
-    console.log(selectedCategory);
-  };
+    setAmount(totalAmount);
+  }, [
+    netWeightAfterWastage,
+    netWeight,
+    grossWeight,
+    rate,
+    makingChargeAmount,
+    hallmarkCharge,
+    rodiumCharge,
+    stoneAmount,
+    gstPercent,
+    makingChargeType,
+  ]);
 
   return (
     <div className="AddNewProduct">
       <ToastContainer />
 
       {/* Heading */}
-      <div className="head">
+      <div
+        className="head"
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+          backgroundColor: "#fff",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+        }}
+      >
         <div className="head-txt">Edit Product</div>
         <div className="btns">
           <Button className="button1" onClick={() => navigate("/products")}>
             Cancel
           </Button>
-          <Button className="button2" onClick={handleProductSave}>
-            Update
+          <Button
+            className="button2"
+            onClick={() => {
+              setLoading(true);
+              setConfirmDialogOpen(true);
+            }}
+            disabled={loading}
+          >
+            {loading ? (
+              <CircularProgress size={24} sx={{ color: "#fff" }} />
+            ) : (
+              "Save"
+            )}
           </Button>
         </div>
       </div>
       <Divider />
 
       {/* Image and Video Input */}
-
-      {/* <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <div className="inputFilePreviewContainer">
           <Paper className="inputFieldsContainer">
             <Grid container spacing={2}>
+              {/* Image Input */}
               <Grid item xs={6}>
                 <div className="imageInputContainer">
                   <label>Select Images for the Product</label>
@@ -737,9 +395,8 @@ const EditProduct = () => {
                   <input
                     type="file"
                     accept="image/*"
-                    multiple
                     id="imageInput"
-                    onChange={handleImageChange}
+                    // onChange={handleImageChange}
                     style={{ display: "none" }}
                   />
                   <label htmlFor="imageInput">
@@ -748,7 +405,7 @@ const EditProduct = () => {
                       className="selectButton"
                       component="span"
                     >
-                      <PhotoCamera /> Select Images
+                      <PhotoCamera /> Select Image
                     </Button>
                   </label>
                   <div className="previewContainer">
@@ -760,17 +417,30 @@ const EditProduct = () => {
                         />
                         <IconButton
                           className="deleteButton"
-                          onClick={() => handleDeleteImage(index)}
+                          //   onClick={() => {
+                          //     setDeleteImageIndex(index);
+                          //     setShowDeleteImageDialog(true);
+                          //   }}
                         >
                           <Delete />
                         </IconButton>
+                        <Button
+                          variant="contained"
+                          //   onClick={() => startCropImage(index)}
+                          size="small"
+                          style={{
+                            marginTop: "10px",
+                          }}
+                        >
+                          Crop
+                        </Button>
                       </div>
                     ))}
                   </div>
                 </div>
               </Grid>
 
-              
+              {/* Video Input */}
               <Grid item xs={6}>
                 <div className="videoInputContainer">
                   <label className="heading">Select a Product Video</label>
@@ -779,7 +449,16 @@ const EditProduct = () => {
                     type="file"
                     accept="video/*"
                     id="videoInput"
-                    onChange={handleVideoChange}
+                    // onChange={(e) => {
+                    //   const file = e.target.files[0];
+                    //   if (file && file.size > 10 * 1024 * 1024) {
+                    //     // 10MB in bytes
+                    //     toast.error("Video size exceeds 10MB limit");
+                    //     e.target.value = null; // Clear the input
+                    //     return;
+                    //   }
+                    //   handleVideoChange(e.target.value);
+                    // }}
                     style={{ display: "none" }}
                   />
                   <label htmlFor="videoInput">
@@ -802,7 +481,7 @@ const EditProduct = () => {
                       </video>
                       <IconButton
                         className="deleteButton"
-                        onClick={() => setVideo(null)}
+                        // onClick={() => setShowVideoDeleteDialog(true)}
                       >
                         <Delete />
                       </IconButton>
@@ -813,77 +492,104 @@ const EditProduct = () => {
             </Grid>
           </Paper>
         </div>
-      </ThemeProvider> */}
+
+        {/* Image Cropping Dialog */}
+        <Dialog
+          open={cropDialogOpen}
+          onClose={() => setCropDialogOpen(false)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle>Crop Image</DialogTitle>
+          <DialogContent>
+            <div style={{ position: "relative", height: "400px" }}>
+              {currentImageIndex !== null && (
+                <Cropper
+                  image={currentImage}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={onCropComplete}
+                />
+              )}
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setCropDialogOpen(false)}>Cancel</Button>
+            <Button
+              onClick={getCroppedImage}
+              variant="contained"
+              color="primary"
+            >
+              Crop
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </ThemeProvider>
 
       {/* Product basic details input */}
       <ThemeProvider theme={theme}>
-        <Paper
-          elevation={3}
-          className="detail-paper"
-          style={{ marginTop: "50px" }}
-        >
-          <div className="heading">Product Details</div>
-          <Divider />
-          <Grid container spacing={0}>
-            <Grid item xs={6}>
-              <InputTextField
-                title={"Name"}
-                value={productName}
-                onEdit={(e) => {
-                  setProductName(e.target.value);
-                }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <InputTextField
-                title={"Price"}
-                value={price}
-                onEdit={(e) => setPrice(e.target.value)}
-                adornmentType="rupees"
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <InputTextField
-                title={"Weight"}
-                value={weight}
-                onEdit={(e) => setWeight(e.target.value)}
-                adornmentType="grams"
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <InputTextField
-                title={"Height"}
-                value={height}
-                onEdit={(e) => setHeight(e.target.value)}
-                adornmentType="mm"
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <InputTextField
-                title={"Width"}
-                value={width}
-                onEdit={(e) => setWidth(e.target.value)}
-                adornmentType="mm"
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <InputTextField
-                title={"Purity"}
-                value={purity}
-                onEdit={(e) => setPurity(e.target.value)}
-                adornmentType="kt"
-              />
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
+        <Paper elevation={3} className="detail-paper">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div className="heading">Product Details</div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
+              <div style={{ marginRight: "20px" }}>
+                <div>Metal Rate</div>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {rate.toFixed(2)}
+                </div>
+              </div>
+              <div style={{ marginRight: "20px" }}>
+                <div>Metal Amount</div>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {amount.toFixed(2)}
+                </div>
+              </div>
+              <div style={{ marginRight: "20px" }}>
+                <div>Stone Amount</div>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {parseFloat(stoneTotalAmount).toFixed(2)}
+                </div>
+              </div>
+            </div>
+          </div>
+          <Divider />
+          <Grid container spacing={2}>
+            <Grid item xs={1.5}>
+              <div className="label">Product Name</div>
+              <FormControl fullWidth>
+                <TextField name="Name" value={productName} disabled fullWidth />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1}>
               <div className="label">Category</div>
               <FormControl fullWidth>
                 <Select
+                  name="category"
                   value={selectedCategory}
                   onChange={handleCategoryChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('select[name="subcategory"]')
+                        ?.focus();
+                    }
+                  }}
                 >
                   {categoriesData.map((category) => (
                     <MenuItem key={category.id} value={category.id}>
@@ -893,16 +599,19 @@ const EditProduct = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid
-              item
-              xs={6}
-              style={{ marginBottom: "20px", paddingRight: "50px" }}
-            >
-              <div className="label">Sub-Category</div>
+            <Grid item xs={1}>
+              <div className="label">Sub-Cat.</div>
               <FormControl fullWidth>
                 <Select
+                  name="subcategory"
                   value={selectedSubcategory}
                   onChange={(e) => setSelectedSubcategory(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document.querySelector('input[name="size"]')?.focus();
+                    }
+                  }}
                 >
                   {selectedCategory &&
                     categoriesData
@@ -915,385 +624,832 @@ const EditProduct = () => {
                 </Select>
               </FormControl>
             </Grid>
+            <Grid item xs={1}>
+              <div className="label">Size</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="size"
+                  value={size}
+                  onChange={(e) => setSize(e.target.value)}
+                  fullWidth
+                  placeholder="Enter size"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document.querySelector('select[name="hsnCode"]')?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1}>
+              <div className="label">HSN</div>
+              <FormControl fullWidth>
+                <Select
+                  name="hsnCode"
+                  value={hsnCode}
+                  onChange={(e) => setHsnCode(e.target.value)}
+                  fullWidth
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector(".quill-container .ql-editor")
+                        ?.focus();
+                    }
+                  }}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "hsn")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.name} value={option.name}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1}>
+              <div className="label">Quantity</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="quantity"
+                  type="number"
+                  value={inventoryQty}
+                  onChange={(e) =>
+                    setInventoryQty(parseInt(e.target.value) || 0)
+                  }
+                  fullWidth
+                  placeholder="Enter Quantity of Products"
+                  inputProps={{ min: 0 }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector(".quill-container .ql-editor")
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
 
-            <Grid item xs={12} className="quill-container">
+            <Grid item xs={5.5}>
               <div className="label">Description</div>
-              <ReactQuill
-                theme="snow"
+              <TextField
+                multiline
+                rows={1}
+                fullWidth
                 placeholder="Product Description"
                 value={desc}
-                onChange={(value) => {
-                  setDesc(value);
-                  console.log(value);
+                onChange={(e) => {
+                  setDesc(e.target.value);
                 }}
               />
+            </Grid>
+            <Grid item xs={12}>
+              <Divider />
+            </Grid>
+            <Grid item xs={12}>
+              <div className="label">Metal Details</div>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">Type</div>
+              <FormControl fullWidth>
+                <Select
+                  name="metalType"
+                  value={metalType}
+                  onChange={(e) => {
+                    setMetalType(e.target.value);
+                    setMakingChargeType(9);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document.querySelector('select[name="purity"]')?.focus();
+                    }
+                  }}
+                >
+                  <MenuItem defaultChecked={true} value="gold">
+                    Gold
+                  </MenuItem>
+                  <MenuItem value="silver">Silver</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">Purity</div>
+              <FormControl fullWidth>
+                <Select
+                  name="purity"
+                  value={purity}
+                  onChange={(e) => {
+                    setPurity(e.target.value);
+
+                    let selectedOption;
+                    if (metalType === "gold") {
+                      selectedOption = dropdownValues?.[0]?.customization_fields
+                        .find((field) => field.name === "gold_quality")
+                        ?.property_value.find(
+                          (opt) => opt.id === e.target.value
+                        )?.name;
+                    } else if (metalType === "silver") {
+                      selectedOption = dropdownValues?.[1]?.customization_fields
+                        .find((field) => field.name === "silver_quality")
+                        ?.property_value.find(
+                          (opt) => opt.id === e.target.value
+                        )?.name;
+                    }
+
+                    setQualityName(selectedOption);
+
+                    if (selectedOption) {
+                      setRate(
+                        rates[
+                          selectedOption === "silver22"
+                            ? "silver"
+                            : selectedOption
+                        ]
+                      );
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document.querySelector('input[name="quantity"]')?.focus();
+                    }
+                  }}
+                >
+                  {metalType === "gold" &&
+                    dropdownValues?.[0]?.customization_fields
+                      .find((field) => field.name === "gold_quality")
+                      ?.property_value.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.display_name}
+                        </MenuItem>
+                      ))}
+                  {metalType === "silver" &&
+                    dropdownValues?.[1]?.customization_fields
+                      .find((field) => field.name === "silver_quality")
+                      ?.property_value.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.display_name}
+                        </MenuItem>
+                      ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">Quantity</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="quantity"
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  fullWidth
+                  placeholder="Enter quantity"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="grossWeight"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">Gross Weight</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="grossWeight"
+                  type="number"
+                  value={grossWeight}
+                  onChange={(e) => {
+                    setGrossWeight(e.target.value);
+                    setNetWeight(e.target.value - stoneWeight);
+                    setNetWeightAfterWastage(
+                      e.target.value - stoneWeight + wastageWeight
+                    );
+                  }}
+                  fullWidth
+                  placeholder="Enter gross weight"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stoneWeight"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">Stone Weight</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="stoneWeight"
+                  type="number"
+                  value={stoneWeight}
+                  onChange={(e) => {
+                    setStoneWeight(e.target.value);
+                    setNetWeight(grossWeight - e.target.value);
+                    setNetWeightAfterWastage(
+                      grossWeight - e.target.value + wastageWeight
+                    );
+                  }}
+                  fullWidth
+                  placeholder="Enter stone weight"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="makingChargeType"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">Net Weight</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="netWeight"
+                  type="number"
+                  value={netWeight}
+                  disabled
+                  fullWidth
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="wastagePercent"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">Wastage %</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="wastagePercent"
+                  type="number"
+                  value={wastagePercent}
+                  onChange={(e) => {
+                    setWastagePercent(e.target.value);
+                    setWastageWeight(
+                      (grossWeight - stoneWeight) * (e.target.value / 100)
+                    );
+                    setNetWeightAfterWastage(
+                      (grossWeight - stoneWeight) * (1 + e.target.value / 100)
+                    );
+                  }}
+                  fullWidth
+                  placeholder="Enter wastage percentage"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">%</InputAdornment>
+                    ),
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="wastageWeight"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">Wastage Weight</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="wastageWeight"
+                  type="number"
+                  value={wastageWeight}
+                  disabled
+                  fullWidth
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="netWeightAfterWastage"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">Net New Wt.</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="netWeightAfterWastage"
+                  type="number"
+                  value={netWeightAfterWastage}
+                  disabled
+                  fullWidth
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('select[name="makingChargeType"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">MC Type</div>
+              <FormControl fullWidth>
+                <Select
+                  name="makingChargeType"
+                  value={makingChargeType}
+                  onChange={(e) => {
+                    console.log(e.target.value);
+                    setMakingChargeType(e.target.value);
+                    setMakingChargeValue();
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="makingChargeValue"]')
+                        ?.focus();
+                    }
+                  }}
+                >
+                  {metalType === "gold" &&
+                    dropdownValues?.[0]?.customization_fields
+                      .find((field) => field.name === "making_charge_type")
+                      ?.property_value.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.display_name}
+                        </MenuItem>
+                      ))}
+                  {metalType === "silver" &&
+                    dropdownValues?.[1]?.customization_fields
+                      .find((field) => field.name === "making_charge_type")
+                      ?.property_value.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.display_name}
+                        </MenuItem>
+                      ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">MC</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="makingChargeValue"
+                  type="number"
+                  value={makingChargeValue}
+                  onChange={(e) => {
+                    setMakingChargeValue(e.target.value);
+
+                    console.log(e.target.value);
+                    if (makingChargeType == 6) {
+                      setMakingChargeAmount(
+                        (
+                          parseFloat(e.target.value) *
+                          parseFloat(netWeightAfterWastage)
+                        ).toFixed(2)
+                      );
+                    } else if (makingChargeType == 7) {
+                      setMakingChargeAmount(
+                        parseFloat(e.target.value).toFixed(2)
+                      );
+                    } else if (makingChargeType == 8) {
+                      setMakingChargeAmount(
+                        parseFloat(e.target.value).toFixed(2)
+                      );
+                    } else if (makingChargeType == 9) {
+                      setMakingChargeAmount(
+                        parseFloat(
+                          e.target.value *
+                            (rate / 100) *
+                            (netWeightAfterWastage || netWeight)
+                        ).toFixed(2)
+                      );
+                    }
+                  }}
+                  fullWidth
+                  placeholder="Enter making charge value"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        {makingChargeType == 9 ? "%" : "₹"}
+                      </InputAdornment>
+                    ),
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="makingChargeAmount"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">MC Amt.</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="makingChargeAmount"
+                  type="number"
+                  value={makingChargeAmount}
+                  onChange={(e) => setMakingChargeAmount(e.target.value)}
+                  fullWidth
+                  placeholder="Enter making charge amount"
+                  disabled
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">₹</InputAdornment>
+                    ),
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stoneAmount"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">Stone Amt.</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="stoneAmount"
+                  type="number"
+                  value={stoneAmount}
+                  onChange={(e) => setStoneAmount(e.target.value)}
+                  fullWidth
+                  placeholder="Enter stone amount"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">₹</InputAdornment>
+                    ),
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="hallmarkCharge"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">Hallmark Amt.</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="hallmarkCharge"
+                  type="number"
+                  value={hallmarkCharge}
+                  onChange={(e) => setHallmarkCharge(e.target.value)}
+                  fullWidth
+                  placeholder="Enter hallmark charge"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">₹</InputAdornment>
+                    ),
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="rodiumCharge"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">Rodium|Cert. Cg.</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="rodiumCharge"
+                  type="number"
+                  value={rodiumCharge}
+                  onChange={(e) => setRodiumCharge(e.target.value)}
+                  fullWidth
+                  placeholder="Enter rodium charge"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">₹</InputAdornment>
+                    ),
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('select[name="gstPercent"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.5}>
+              <div className="label">GST</div>
+              <FormControl fullWidth>
+                <Select
+                  name="gstPercent"
+                  value={gstPercent}
+                  onChange={(e) => {
+                    console.log("GST Percent changed:", e.target.value);
+                    setGstPercent(e.target.value);
+                  }}
+                  fullWidth
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "gst")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.name} value={option.name}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <Divider />
+            </Grid>
+            <Grid item xs={12}>
+              <div className="label">Stone Details</div>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Type</div>
+              <FormControl fullWidth>
+                <Select
+                  name="stoneType"
+                  value={stoneType}
+                  onChange={(e) => setStoneType(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stoneClass"]')
+                        ?.focus();
+                    }
+                  }}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "stone_type")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Class</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="stoneClass"
+                  type="text"
+                  value={stoneClass}
+                  onChange={(e) => setStoneClass(e.target.value)}
+                  fullWidth
+                  placeholder="Enter class"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stoneClarity"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Clarity</div>
+              <FormControl fullWidth>
+                <Select
+                  name="stoneClarity"
+                  value={stoneClarity}
+                  onChange={(e) => setStoneClarity(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document.querySelector('input[name="stoneCut"]')?.focus();
+                    }
+                  }}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "clarity")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Cut</div>
+              <FormControl fullWidth>
+                <Select
+                  name="stoneCut"
+                  value={stoneCut}
+                  onChange={(e) => setStoneCut(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stonePieces"]')
+                        ?.focus();
+                    }
+                  }}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "cut")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Pieces</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="stonePieces"
+                  type="number"
+                  value={stonePieces}
+                  onChange={(e) => {
+                    setStonePieces(e.target.value);
+                    const weight =
+                      e.target.value && stoneCarat
+                        ? (stoneCarat * 0.2 * e.target.value).toFixed(2)
+                        : "";
+                    setStoneInternalWeight(weight);
+                  }}
+                  fullWidth
+                  placeholder="Enter number of pieces"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stoneCarat"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Carat</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="stoneCarat"
+                  type="number"
+                  value={stoneCarat}
+                  onChange={(e) => {
+                    setStoneCarat(e.target.value);
+                    const weight =
+                      e.target.value && stonePieces
+                        ? (e.target.value * 0.2 * stonePieces).toFixed(2)
+                        : "";
+                    setStoneInternalWeight(weight);
+                  }}
+                  fullWidth
+                  placeholder="Enter carat"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stoneInternalWeight"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Weight (gm)</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={stoneInternalWeight}
+                  disabled
+                  fullWidth
+                  placeholder="Auto-calculated weight"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Rate</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={stoneRate}
+                  onChange={(e) => {
+                    setStoneRate(e.target.value);
+                    const total =
+                      stoneInternalWeight && e.target.value
+                        ? (
+                            parseFloat(stoneInternalWeight) *
+                            parseFloat(e.target.value)
+                          ).toFixed(2)
+                        : 0;
+                    setStoneTotalAmount(total);
+                  }}
+                  fullWidth
+                  placeholder="Enter rate"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">₹</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">GST Percentage</div>
+              <FormControl fullWidth>
+                <Select
+                  value={stoneGSTPercent}
+                  onChange={(e) => {
+                    setStoneGSTPercent(e.target.value);
+                    const baseAmount =
+                      stoneInternalWeight && stoneRate
+                        ? parseFloat(stoneInternalWeight) *
+                          parseFloat(stoneRate)
+                        : 0;
+                    const gstAmount =
+                      baseAmount * (parseFloat(e.target.value) / 100);
+                    const total = (baseAmount + gstAmount).toFixed(2);
+                    setStoneTotalAmount(total);
+                  }}
+                  fullWidth
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "gst")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.name} value={option.name}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
             </Grid>
           </Grid>
         </Paper>
       </ThemeProvider>
-
-      {/* Customization input */}
-
-      <div className="product-customization-wrapper">
-        <ThemeProvider theme={theme}>
-          <Paper
-            className="customization-paper"
-            elevation={4}
-            style={{ marginTop: "50px" }}
-            sx={{ width: "100%", overflow: "scroll" }}
-          >
-            <div className="heading">Existing Customization</div>
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                  <TableRow>
-                    {displayTable?.tableHeaders?.map((column) => (
-                      <TableCell key={column} align={"left"}>
-                        {COLUMN_TRANSFORMS[column]
-                          ? COLUMN_TRANSFORMS[column]
-                          : column.toUpperCase()}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {displayTable?.tableData?.map((columns, index) => {
-                    return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                        {columns.map((column) => (
-                          <TableCell>{column}</TableCell>
-                        ))}
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </ThemeProvider>
-      </div>
-
-      <div className="product-customization-wrapper">
-        <ThemeProvider theme={theme}>
-          <Paper
-            className="customization-paper"
-            elevation={4}
-            style={{ marginTop: "50px" }}
-          >
-            <div className="heading">Product Customization</div>
-            <Divider />
-            {/* <div className="customization-text">
-              Does your product come in different options, like size, purity or
-              material? Add them here.
-            </div>
-            <Button
-              className="button"
-              onClick={() => setOpenCustomizationInputDialog(true)}
-            >
-              <Add /> Add New Customization
-            </Button> */}
-            <div
-              style={{
-                width: "100%",
-                height: "max-content",
-                minHeight: "300px",
-              }}
-            >
-              <MaterialSelectorEdit
-                readOnly={true}
-                saveProductCustomization={() => {}}
-                combinationsValues={combinationsValues}
-                setCombinationValues={setCombinationValues}
-                combinationFields={combinationFields}
-              />
-            </div>
-            {selectedOptions === null || !showCustomizationTable ? (
-              <></>
-            ) : (
-              <div>
-                {selectedOptions.map((option, index) => (
-                  <Chip
-                    key={index}
-                    label={`${option.type_name}: ${option.option_name}`}
-                    onDelete={() => handleChipDelete(index)}
-                    style={{ marginRight: "5px", marginBottom: "10px" }}
-                  />
-                ))}
-              </div>
-            )}
-            {selectedOptions === null || !showCustomizationTable ? (
-              <></>
-            ) : (
-              <div className="customization-options-table">
-                <div className="heading">Customization Options Table</div>
-                <TableContainer>
-                  <Table stickyHeader aria-label="sticky table">
-                    <TableHead sx={{ fontWeight: "bold" }}>
-                      <TableRow>
-                        <TableCell>Index</TableCell>
-                        {Object.keys(selectedCustomizationNames).map(
-                          (key, index) => (
-                            <TableCell key={index}>
-                              {selectedCustomizationNames[key]}
-                            </TableCell>
-                          )
-                        )}
-                        <TableCell>Price</TableCell>
-                        <TableCell>Made On Order</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {selectedCustomizations.map((option, index) => (
-                        <TableRow hover key={index}>
-                          <TableCell>{index + 1}</TableCell>
-                          {Object.keys(selectedCustomizationNames).map(
-                            (key, colIndex) => (
-                              <TableCell key={colIndex}>
-                                {option["customization"][key]}
-                              </TableCell>
-                            )
-                          )}
-                          <TableCell>
-                            <Input
-                              type="number"
-                              value={option["price"]}
-                              onChange={(e) => {
-                                let x = [...selectedCustomizations];
-                                selectedCustomizations[index]["price"] =
-                                  e.target.value;
-                                setSelectedCustomizations(x);
-                              }}
-                              startAdornment={
-                                <InputAdornment position="start">
-                                  ₹
-                                </InputAdornment>
-                              }
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Checkbox
-                              checked={option["madeOnOrder"]}
-                              onChange={(e) => {
-                                let x = [...selectedCustomizations];
-                                selectedCustomizations[index]["madeOnOrder"] =
-                                  e.target.checked;
-                                setSelectedCustomizations(x);
-                              }}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </div>
-            )}
-
-            {/* Apply customization dialog */}
-            <Dialog
-              open={openCustomizationInputDialog}
-              onClose={() => setOpenCustomizationInputDialog(false)}
-              disableEscapeKeyDown
-              sx={{
-                "& .MuiDialogTitle-root": {
-                  fontSize: "1.5rem",
-                  fontWeight: 600,
-                  marginBottom: "10px",
-                },
-                "& .MuiDialogContent-root": {
-                  fontSize: "1.2rem",
-                  fontWeight: 400,
-                  marginBottom: "10px",
-                },
-              }}
-            >
-              <ThemeProvider theme={theme}>
-                <DialogTitle>Add Customization</DialogTitle>
-                <Divider />
-                <DialogContent
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                    fontFamily: '"Work Sans", sans-serif',
-                  }}
-                >
-                  You'll be able to manage pricing and inventory for this
-                  product customization in the next step.
-                  <TextField
-                    select
-                    label="Customization Type"
-                    value={selectedCustomizationTypeId}
-                    onChange={handleCustomizationTypeSelection}
-                    variant="outlined"
-                    fullWidth
-                    sx={{ marginBottom: "20px", marginTop: "10px" }}
-                  >
-                    {customizationTypes.map((type) => (
-                      <MenuItem key={type.id} value={type.id}>
-                        {type.name}
-                      </MenuItem>
-                    ))}
-                    <MenuItem key={-1} value={-1}>
-                      <Add /> Add New
-                    </MenuItem>
-                  </TextField>
-                  <TextField
-                    label="Customization Options"
-                    select
-                    variant="outlined"
-                    fullWidth
-                    value=""
-                    onChange={handleCustomizationOptionChange}
-                  >
-                    {customizationOptions &&
-                      customizationOptions.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                    <MenuItem key={-1} value={-1}>
-                      <Add /> Add New
-                    </MenuItem>
-                  </TextField>
-                  <div>
-                    {selectedOptions.map((option, index) => (
-                      <Chip
-                        key={index}
-                        label={`${option.type_name}: ${option.option_name}`}
-                        onDelete={() => handleChipDelete(index)}
-                        style={{ marginRight: "5px", marginBottom: "10px" }}
-                      />
-                    ))}
-                  </div>
-                </DialogContent>
-                <DialogActions
-                  sx={{ marginBottom: "10px", marginRight: "10px" }}
-                >
-                  <Button
-                    onClick={() => setOpenCustomizationInputDialog(false)}
-                  >
-                    Close
-                  </Button>
-                  <Button variant="contained" onClick={loadCustomizationTable}>
-                    Apply
-                  </Button>
-                </DialogActions>
-              </ThemeProvider>
-            </Dialog>
-
-            {/* Add customization field  dialog */}
-            <Dialog
-              open={openAddNewCustomizationTypeInputDialog}
-              onClose={() => setOpenAddNewCustomizationTypeInputDialog(false)}
-              disableEscapeKeyDown
-              sx={{
-                "& .MuiDialogTitle-root": {
-                  fontSize: "1.5rem",
-                  fontWeight: 600,
-                  marginBottom: "10px",
-                },
-                "& .MuiDialogContent-root": {
-                  fontSize: "1.2rem",
-                  fontWeight: 400,
-                  marginBottom: "10px",
-                },
-              }}
-            >
-              <ThemeProvider theme={theme}>
-                <DialogTitle>Add New Customization Type</DialogTitle>
-                <Divider />
-                <DialogContent
-                  sx={{ display: "flex", flexDirection: "column", gap: "10px" }}
-                >
-                  Enter the name of the customization type you want to add to
-                  customize type list.
-                  <br />
-                  <InputTextField
-                    title={"New Customization Type"}
-                    value={newCustomizationType}
-                    onEdit={(e) => setNewCustomizationType(e.target.value)}
-                    sx={{ marginBottom: "20px", marginTop: "10px" }}
-                  />
-                </DialogContent>
-                <DialogActions
-                  sx={{ marginBottom: "10px", marginRight: "10px" }}
-                >
-                  <Button
-                    onClick={() =>
-                      setOpenAddNewCustomizationTypeInputDialog(false)
-                    }
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={handleAddNewCustomizationType}
-                    className="closeButton"
-                  >
-                    Add
-                  </Button>
-                </DialogActions>
-              </ThemeProvider>
-            </Dialog>
-
-            {/* Add customization option dialog */}
-            <Dialog
-              open={openAddNewCustomizationOptionInputDialog}
-              onClose={() => setOpenAddNewCustomizationOptionInputDialog(false)}
-              disableEscapeKeyDown
-              sx={{
-                "& .MuiDialogTitle-root": {
-                  fontSize: "1.5rem",
-                  fontWeight: 600,
-                  marginBottom: "10px",
-                },
-                "& .MuiDialogContent-root": {
-                  fontSize: "1.2rem",
-                  fontWeight: 400,
-                  marginBottom: "10px",
-                },
-              }}
-            >
-              <ThemeProvider theme={theme}>
-                <DialogTitle>Add New Customization Option</DialogTitle>
-                <Divider />
-                <DialogContent
-                  sx={{ display: "flex", flexDirection: "column", gap: "10px" }}
-                >
-                  Enter the name of the customization option you want to add for
-                  the customize type "{selectedCustomizationTypeName}".
-                  <br />
-                  <InputTextField
-                    title={"New Customization Option"}
-                    value={newCustomizationOption}
-                    onEdit={(e) => setNewCustomizationOption(e.target.value)}
-                    sx={{ marginBottom: "20px", marginTop: "10px" }}
-                  />
-                </DialogContent>
-                <DialogActions
-                  sx={{ marginBottom: "10px", marginRight: "10px" }}
-                >
-                  <Button
-                    onClick={() =>
-                      setOpenAddNewCustomizationOptionInputDialog(false)
-                    }
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    variant="contained"
-                    className="closeButton"
-                    onClick={handleAddNewCustomizationOption}
-                  >
-                    Add
-                  </Button>
-                </DialogActions>
-              </ThemeProvider>
-            </Dialog>
-          </Paper>
-        </ThemeProvider>
-      </div>
     </div>
   );
 };

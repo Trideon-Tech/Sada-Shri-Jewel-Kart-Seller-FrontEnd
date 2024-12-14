@@ -15,7 +15,7 @@ import Staging from "./pages/staging/staging.component";
 import TermsandConditions from "./pages/terms-conditions/term.component";
 
 import AddProductPage from "./pages/addnewproduct/addnewproductpage.component";
-import EditProductPage from "./pages/editProduct/editProductpage.component";
+import EditProductPage from "./pages/editproductpage/editproductpage.component";
 import OrderDetailsComponent from "./pages/orderDetails/orderDetails.component";
 import OrdersPage from "./pages/orders/ordersPage.component";
 import PaymentsPage from "./pages/payments/paymentsPage.component";
@@ -70,10 +70,7 @@ function App() {
           <Route path="/dashboard" element={<Home />} />
           <Route path="/products" element={<ProductPage />} />
           <Route path="/products/add" element={<AddProductPage />} />
-          <Route
-            path="/products/edit/:hash/:name"
-            element={<EditProductPage />}
-          />
+          <Route path="/products/edit" element={<EditProductPage />} />
           <Route path="/staging" element={<Staging />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />

@@ -17,13 +17,15 @@ import {
   Select,
   TextField,
   ThemeProvider,
+  Typography,
 } from "@mui/material";
 import axios from "axios";
 import React, { useCallback, useEffect, useState } from "react";
 import Cropper from "react-easy-crop";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { generalToastStyle } from "../../utils/toast.styles";
 import "./addNewProduct.styles.scss";
 
 const theme = createTheme({
@@ -36,6 +38,12 @@ const theme = createTheme({
     fontFamily: '"Work Sans", sans-serif',
   },
 });
+
+/* 
+Delete Image Types
+1. Existing Image
+2. New Image
+*/
 
 const EditProduct = () => {
   let token = localStorage.getItem("token");
@@ -107,6 +115,10 @@ const EditProduct = () => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+  const [showDeleteImageDialog, setShowDeleteImageDialog] = useState(false);
+  const [deleteImageIndex, setDeleteImageIndex] = useState();
+  const [deleteImageType, setDeleteImageType] = useState();
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -262,6 +274,51 @@ const EditProduct = () => {
     setSelectedSubcategory("");
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Create URL for the image
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCurrentImage(reader.result);
+      setCurrentImageIndex(images.length); // Set to new image index
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setCropDialogOpen(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const deleteExistingImage = async (index) => {
+    let deleteImage = origImages[index];
+
+    console.log(deleteImage);
+
+    await axios.delete(
+      `https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          type: "infographics",
+          infographics_id: deleteImage.id,
+        },
+      }
+    );
+
+    toast("Image deleted successfully", generalToastStyle);
+
+    fetchProduct();
+  };
+
+  const handleDeleteImage = (index) => {
+    const newImages = [...images];
+    newImages.splice(index, 1);
+    setImages(newImages);
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -353,6 +410,72 @@ const EditProduct = () => {
     <div className="AddNewProduct">
       <ToastContainer />
 
+      {/* Delete Image Dialog */}
+      <Dialog
+        open={showDeleteImageDialog}
+        onClose={() => setShowDeleteImageDialog(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          style: {
+            backgroundColor: "#fff",
+            fontFamily: '"Work Sans", sans-serif',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            color: "#a36e29",
+            fontFamily: '"Work Sans", sans-serif',
+          }}
+        >
+          Confirm Delete
+        </DialogTitle>
+        <DialogContent>
+          <Typography
+            sx={{
+              color: "#333",
+              fontFamily: '"Work Sans", sans-serif',
+            }}
+          >
+            Are you sure you want to remove this image?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setShowDeleteImageDialog(false);
+            }}
+            sx={{
+              color: "#666",
+              fontFamily: '"Work Sans", sans-serif',
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              if (deleteImageType == 1) {
+                deleteExistingImage(deleteImageIndex);
+              } else {
+                handleDeleteImage(deleteImageIndex);
+              }
+              setShowDeleteImageDialog(false);
+            }}
+            variant="contained"
+            sx={{
+              backgroundColor: "#a36e29",
+              fontFamily: '"Work Sans", sans-serif',
+              "&:hover": {
+                backgroundColor: "#8b5d23",
+              },
+            }}
+          >
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       {/* Heading */}
       <div
         className="head"
@@ -401,7 +524,7 @@ const EditProduct = () => {
                     type="file"
                     accept="image/*"
                     id="imageInput"
-                    // onChange={handleImageChange}
+                    onChange={handleImageChange}
                     style={{ display: "none" }}
                   />
                   <label htmlFor="imageInput">
@@ -422,23 +545,14 @@ const EditProduct = () => {
                         />
                         <IconButton
                           className="deleteButton"
-                          //   onClick={() => {
-                          //     setDeleteImageIndex(index);
-                          //     setShowDeleteImageDialog(true);
-                          //   }}
+                          onClick={() => {
+                            setDeleteImageType(1);
+                            setDeleteImageIndex(index);
+                            setShowDeleteImageDialog(true);
+                          }}
                         >
                           <Delete />
                         </IconButton>
-                        <Button
-                          variant="contained"
-                          //   onClick={() => startCropImage(index)}
-                          size="small"
-                          style={{
-                            marginTop: "10px",
-                          }}
-                        >
-                          Crop
-                        </Button>
                       </div>
                     ))}
                     {images.map((image, index) => (
@@ -449,16 +563,17 @@ const EditProduct = () => {
                         />
                         <IconButton
                           className="deleteButton"
-                          //   onClick={() => {
-                          //     setDeleteImageIndex(index);
-                          //     setShowDeleteImageDialog(true);
-                          //   }}
+                          onClick={() => {
+                            setDeleteImageType(2);
+                            setDeleteImageIndex(index);
+                            setShowDeleteImageDialog(true);
+                          }}
                         >
                           <Delete />
                         </IconButton>
                         <Button
                           variant="contained"
-                          //   onClick={() => startCropImage(index)}
+                          onClick={() => startCropImage(index)}
                           size="small"
                           style={{
                             marginTop: "10px",

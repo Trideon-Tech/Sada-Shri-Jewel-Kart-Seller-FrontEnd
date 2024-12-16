@@ -26,7 +26,6 @@ import "react-quill/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { generalToastStyle } from "../../utils/toast.styles";
 import "./addNewProduct.styles.scss";
 
 const theme = createTheme({
@@ -340,171 +339,171 @@ const AddNewProduct = () => {
 
   const handleProductSave = async () => {
     // Validate required fields
-    if (!productName) {
-      toast.error("Please enter product name", generalToastStyle);
-      setLoading(false);
-      return;
-    }
-    if (!selectedCategory) {
-      toast.error("Please select a category", generalToastStyle);
-      setLoading(false);
-      return;
-    }
-    if (!selectedSubcategory) {
-      toast.error("Please select a subcategory", generalToastStyle);
-      setLoading(false);
-      return;
-    }
-    if (!desc) {
-      toast.error("Please enter product description", generalToastStyle);
-      setLoading(false);
-      return;
-    }
-    if (!inventoryQty) {
-      toast.error("Please enter product quantity", generalToastStyle);
-      setLoading(false);
-      return;
-    }
-    if (!images || images.length === 0) {
-      toast.error(
-        "Please select at least one product image",
-        generalToastStyle
-      );
-      setLoading(false);
-      return;
-    }
-    if (!video) {
-      toast.error("Please select a product video", generalToastStyle);
-      setLoading(false);
-      return;
-    }
-    if (!metalType && !stoneType) {
-      toast.error(
-        "Please select either metal type or stone type",
-        generalToastStyle
-      );
-      setLoading(false);
-      return;
-    }
-    if (metalType) {
-      if (makingChargeType == 8) {
-        // Only validate making charge and GST for type 8
-        if (!makingChargeValue) {
-          toast.error("Please enter making charge value", generalToastStyle);
-          setLoading(false);
-          return;
-        }
-        if (!makingChargeAmount) {
-          toast.error("Please enter making charge amount", generalToastStyle);
-          setLoading(false);
-          return;
-        }
-        if (!gstPercent) {
-          console.log(gstPercent);
-          toast.error("Please enter GST percentage", generalToastStyle);
-          setLoading(false);
-          return;
-        }
-      } else {
-        // Validate all fields for other types
-        if (!purity) {
-          toast.error("Please select quality/purity", generalToastStyle);
-          setLoading(false);
-          return;
-        }
-        if (!quantity) {
-          toast.error("Please enter quantity", generalToastStyle);
-          setLoading(false);
-          return;
-        }
-        if (!grossWeight) {
-          toast.error("Please enter gross weight", generalToastStyle);
-          setLoading(false);
-          return;
-        }
-        if (!netWeight) {
-          toast.error("Please enter net weight", generalToastStyle);
-          setLoading(false);
-          return;
-        }
-        if (!netWeightAfterWastage) {
-          toast.error(
-            "Please enter net weight after wastage",
-            generalToastStyle
-          );
-          setLoading(false);
-          return;
-        }
-        if (!makingChargeType) {
-          toast.error("Please select making charge type", generalToastStyle);
-          setLoading(false);
-          return;
-        }
-        if (!makingChargeValue) {
-          toast.error("Please enter making charge value", generalToastStyle);
-          setLoading(false);
-          return;
-        }
-        if (!makingChargeAmount) {
-          toast.error("Please enter making charge amount", generalToastStyle);
-          setLoading(false);
-          return;
-        }
-        if (!hallmarkCharge) {
-          toast.error("Please enter hallmark charge", generalToastStyle);
-          setLoading(false);
-          return;
-        }
-        if (!gstPercent) {
-          console.log(gstPercent);
-          toast.error("Please enter GST percentage", generalToastStyle);
-          setLoading(false);
-          return;
-        }
-      }
-    }
-    if (stoneType) {
-      if (!stoneClass) {
-        toast.error("Please select stone class", generalToastStyle);
-        setLoading(false);
-        return;
-      }
-      if (!stoneClarity) {
-        toast.error("Please select stone clarity", generalToastStyle);
-        setLoading(false);
-        return;
-      }
-      if (!stoneCut) {
-        toast.error("Please select stone cut", generalToastStyle);
-        setLoading(false);
-        return;
-      }
-      if (!stonePieces) {
-        toast.error("Please enter number of stone pieces", generalToastStyle);
-        setLoading(false);
-        return;
-      }
-      if (!stoneCarat) {
-        toast.error("Please enter stone carat", generalToastStyle);
-        setLoading(false);
-        return;
-      }
-      if (!stoneInternalWeight) {
-        toast.error("Please enter stone weight", generalToastStyle);
-        setLoading(false);
-        return;
-      }
-      if (!stoneRate) {
-        toast.error("Please enter stone rate", generalToastStyle);
-        setLoading(false);
-        return;
-      }
-      if (!stoneGSTPercent) {
-        toast.error("Please enter stone GST percentage", generalToastStyle);
-        setLoading(false);
-        return;
-      }
-    }
+    // if (!productName) {
+    //   toast.error("Please enter product name", generalToastStyle);
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!selectedCategory) {
+    //   toast.error("Please select a category", generalToastStyle);
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!selectedSubcategory) {
+    //   toast.error("Please select a subcategory", generalToastStyle);
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!desc) {
+    //   toast.error("Please enter product description", generalToastStyle);
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!inventoryQty) {
+    //   toast.error("Please enter product quantity", generalToastStyle);
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!images || images.length === 0) {
+    //   toast.error(
+    //     "Please select at least one product image",
+    //     generalToastStyle
+    //   );
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!video) {
+    //   toast.error("Please select a product video", generalToastStyle);
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!metalType && !stoneType) {
+    //   toast.error(
+    //     "Please select either metal type or stone type",
+    //     generalToastStyle
+    //   );
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (metalType) {
+    //   if (makingChargeType == 8) {
+    //     // Only validate making charge and GST for type 8
+    //     if (!makingChargeValue) {
+    //       toast.error("Please enter making charge value", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!makingChargeAmount) {
+    //       toast.error("Please enter making charge amount", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!gstPercent) {
+    //       console.log(gstPercent);
+    //       toast.error("Please enter GST percentage", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //   } else {
+    //     // Validate all fields for other types
+    //     if (!purity) {
+    //       toast.error("Please select quality/purity", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!quantity) {
+    //       toast.error("Please enter quantity", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!grossWeight) {
+    //       toast.error("Please enter gross weight", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!netWeight) {
+    //       toast.error("Please enter net weight", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!netWeightAfterWastage) {
+    //       toast.error(
+    //         "Please enter net weight after wastage",
+    //         generalToastStyle
+    //       );
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!makingChargeType) {
+    //       toast.error("Please select making charge type", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!makingChargeValue) {
+    //       toast.error("Please enter making charge value", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!makingChargeAmount) {
+    //       toast.error("Please enter making charge amount", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!hallmarkCharge) {
+    //       toast.error("Please enter hallmark charge", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!gstPercent) {
+    //       console.log(gstPercent);
+    //       toast.error("Please enter GST percentage", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //   }
+    // }
+    // if (stoneType) {
+    //   if (!stoneClass) {
+    //     toast.error("Please select stone class", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stoneClarity) {
+    //     toast.error("Please select stone clarity", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stoneCut) {
+    //     toast.error("Please select stone cut", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stonePieces) {
+    //     toast.error("Please enter number of stone pieces", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stoneCarat) {
+    //     toast.error("Please enter stone carat", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stoneInternalWeight) {
+    //     toast.error("Please enter stone weight", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stoneRate) {
+    //     toast.error("Please enter stone rate", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stoneGSTPercent) {
+    //     toast.error("Please enter stone GST percentage", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    // }
 
     try {
       // First save the product details

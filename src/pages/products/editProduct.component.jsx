@@ -319,6 +319,293 @@ const EditProduct = () => {
     setImages(newImages);
   };
 
+  const handleProductSave = async () => {
+    // Validate required fields
+    // if (!productName) {
+    //   toast.error("Please enter product name", generalToastStyle);
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!selectedCategory) {
+    //   toast.error("Please select a category", generalToastStyle);
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!selectedSubcategory) {
+    //   toast.error("Please select a subcategory", generalToastStyle);
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!desc) {
+    //   toast.error("Please enter product description", generalToastStyle);
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!inventoryQty) {
+    //   toast.error("Please enter product quantity", generalToastStyle);
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!images || images.length === 0) {
+    //   toast.error(
+    //     "Please select at least one product image",
+    //     generalToastStyle
+    //   );
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!video) {
+    //   toast.error("Please select a product video", generalToastStyle);
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (!metalType && !stoneType) {
+    //   toast.error(
+    //     "Please select either metal type or stone type",
+    //     generalToastStyle
+    //   );
+    //   setLoading(false);
+    //   return;
+    // }
+    // if (metalType) {
+    //   if (makingChargeType == 8) {
+    //     // Only validate making charge and GST for type 8
+    //     if (!makingChargeValue) {
+    //       toast.error("Please enter making charge value", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!makingChargeAmount) {
+    //       toast.error("Please enter making charge amount", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!gstPercent) {
+    //       console.log(gstPercent);
+    //       toast.error("Please enter GST percentage", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //   } else {
+    //     // Validate all fields for other types
+    //     if (!purity) {
+    //       toast.error("Please select quality/purity", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!quantity) {
+    //       toast.error("Please enter quantity", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!grossWeight) {
+    //       toast.error("Please enter gross weight", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!netWeight) {
+    //       toast.error("Please enter net weight", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!netWeightAfterWastage) {
+    //       toast.error(
+    //         "Please enter net weight after wastage",
+    //         generalToastStyle
+    //       );
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!makingChargeType) {
+    //       toast.error("Please select making charge type", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!makingChargeValue) {
+    //       toast.error("Please enter making charge value", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!makingChargeAmount) {
+    //       toast.error("Please enter making charge amount", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!hallmarkCharge) {
+    //       toast.error("Please enter hallmark charge", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //     if (!gstPercent) {
+    //       console.log(gstPercent);
+    //       toast.error("Please enter GST percentage", generalToastStyle);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //   }
+    // }
+    // if (stoneType) {
+    //   if (!stoneClass) {
+    //     toast.error("Please select stone class", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stoneClarity) {
+    //     toast.error("Please select stone clarity", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stoneCut) {
+    //     toast.error("Please select stone cut", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stonePieces) {
+    //     toast.error("Please enter number of stone pieces", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stoneCarat) {
+    //     toast.error("Please enter stone carat", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stoneInternalWeight) {
+    //     toast.error("Please enter stone weight", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stoneRate) {
+    //     toast.error("Please enter stone rate", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   if (!stoneGSTPercent) {
+    //     toast.error("Please enter stone GST percentage", generalToastStyle);
+    //     setLoading(false);
+    //     return;
+    //   }
+    // }
+
+    try {
+      // First save the product details
+      const formData = {
+        id: productId,
+        type: "update_item",
+        category: selectedCategory || "",
+        sub_category: selectedSubcategory || "",
+        name: productName || "",
+        desc: desc || "",
+        customization_option: [quantity, makingChargeType, stoneType]
+          .filter((val) => val !== null && val !== 0)
+          .join(","),
+        size: size || "",
+        hsn: hsnCode || "",
+        quantity: inventoryQty || 1,
+        metal: {
+          metal: metalType || "",
+          quality: qualityName || "",
+          quantity: quantity || "",
+          gross_wt: grossWeight || "",
+          stone_wt: stoneWeight || "",
+          net_wt: netWeight || "",
+          wastage_prec: wastagePercent || "",
+          wastage_wt: wastageWeight || "",
+          net_wt_after_wastage: netWeightAfterWastage || "",
+          making_charge_type: makingChargeType || "",
+          making_charge_value: makingChargeValue || "",
+          making_charge_amount: makingChargeAmount || "",
+          stone_amount: stoneAmount || "",
+          hallmark_charge: hallmarkCharge || "",
+          rodium_charge: rodiumCharge || "",
+          gst_perc: gstPercent || "",
+        },
+        stone: {
+          stone_type: stoneType || "",
+          class: stoneClass || "",
+          clarity: stoneClarity || "",
+          cut: stoneCut || "",
+          pieces: stonePieces || "",
+          carat: stoneCarat || "",
+          stone_wt: stoneInternalWeight || "",
+          stone_rate: stoneRate || "",
+          gst_perc: stoneGSTPercent || "",
+        },
+      };
+
+      console.log(JSON.stringify(formData));
+
+      const productResponse = await axios.put(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/update.php",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      // Then upload all images and video
+      const uploadPromises = [];
+
+      // Upload images
+      images.forEach((image, index) => {
+        const imageFormData = new FormData();
+        imageFormData.append("type", "infographics");
+        imageFormData.append("product", productId);
+        imageFormData.append("is_primary", index === 0 ? true : false);
+        imageFormData.append("file_type", "img");
+        imageFormData.append("file", image);
+
+        uploadPromises.push(
+          axios.post(
+            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+            imageFormData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          )
+        );
+      });
+
+      // Upload video if exists
+      if (video) {
+        const videoFormData = new FormData();
+        videoFormData.append("type", "infographics");
+        videoFormData.append("product", productId);
+        videoFormData.append("is_primary", false);
+        videoFormData.append("file_type", "vid");
+        videoFormData.append("file", video);
+
+        uploadPromises.push(
+          axios.post(
+            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+            videoFormData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          )
+        );
+      }
+
+      // Wait for all uploads to complete
+      await Promise.all(uploadPromises);
+      toast.success("Product saved successfully!");
+      navigate("/products");
+    } catch (error) {
+      console.error("Error saving product:", error);
+      setLoading(false);
+      toast.error("Error saving product. Please try again.");
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -409,6 +696,69 @@ const EditProduct = () => {
   return (
     <div className="AddNewProduct">
       <ToastContainer />
+
+      {/* Confirmation Dialog */}
+      <Dialog
+        open={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          style: {
+            backgroundColor: "#fff",
+            fontFamily: '"Work Sans", sans-serif',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            color: "#a36e29",
+            fontFamily: '"Work Sans", sans-serif',
+          }}
+        >
+          Confirm Save
+        </DialogTitle>
+        <DialogContent>
+          <Typography
+            sx={{
+              color: "#333",
+              fontFamily: '"Work Sans", sans-serif',
+            }}
+          >
+            Are you sure you want to save this product?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setLoading(false);
+              setConfirmDialogOpen(false);
+            }}
+            sx={{
+              color: "#666",
+              fontFamily: '"Work Sans", sans-serif',
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              setConfirmDialogOpen(false);
+              handleProductSave();
+            }}
+            variant="contained"
+            sx={{
+              backgroundColor: "#a36e29",
+              fontFamily: '"Work Sans", sans-serif',
+              "&:hover": {
+                backgroundColor: "#8b5d23",
+              },
+            }}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Delete Image Dialog */}
       <Dialog
@@ -503,7 +853,7 @@ const EditProduct = () => {
             {loading ? (
               <CircularProgress size={24} sx={{ color: "#fff" }} />
             ) : (
-              "Save"
+              "Update"
             )}
           </Button>
         </div>
@@ -537,24 +887,25 @@ const EditProduct = () => {
                     </Button>
                   </label>
                   <div className="previewContainer">
-                    {origImages.map((image, index) => (
-                      <div key={index} className="imagePreview">
-                        <img
-                          src={`https://api.sadashrijewelkart.com/assets/${image.file}`}
-                          alt={`Preview ${index + 1}`}
-                        />
-                        <IconButton
-                          className="deleteButton"
-                          onClick={() => {
-                            setDeleteImageType(1);
-                            setDeleteImageIndex(index);
-                            setShowDeleteImageDialog(true);
-                          }}
-                        >
-                          <Delete />
-                        </IconButton>
-                      </div>
-                    ))}
+                    {origImages &&
+                      origImages.map((image, index) => (
+                        <div key={index} className="imagePreview">
+                          <img
+                            src={`https://api.sadashrijewelkart.com/assets/${image.file}`}
+                            alt={`Preview ${index + 1}`}
+                          />
+                          <IconButton
+                            className="deleteButton"
+                            onClick={() => {
+                              setDeleteImageType(1);
+                              setDeleteImageIndex(index);
+                              setShowDeleteImageDialog(true);
+                            }}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </div>
+                      ))}
                     {images.map((image, index) => (
                       <div key={index} className="imagePreview">
                         <img
@@ -618,7 +969,7 @@ const EditProduct = () => {
                       Select Video
                     </Button>
                   </label>
-                  {origVideo && (
+                  {origVideo !== undefined && origVideo && (
                     <div className="previewContainer">
                       <video controls>
                         <source

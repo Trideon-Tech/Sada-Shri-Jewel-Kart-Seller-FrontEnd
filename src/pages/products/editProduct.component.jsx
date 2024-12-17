@@ -888,6 +888,7 @@ const EditProduct = () => {
                   </label>
                   <div className="previewContainer">
                     {origImages &&
+                      origImages !== "Product Infographics doesn't exist." &&
                       origImages.map((image, index) => (
                         <div key={index} className="imagePreview">
                           <img
@@ -969,22 +970,24 @@ const EditProduct = () => {
                       Select Video
                     </Button>
                   </label>
-                  {origVideo !== undefined && origVideo && (
-                    <div className="previewContainer">
-                      <video controls>
-                        <source
-                          src={`https://api.sadashrijewelkart.com/assets/${origVideo.file}`}
-                          type="video/mp4"
-                        />
-                      </video>
-                      <IconButton
-                        className="deleteButton"
-                        // onClick={() => setShowVideoDeleteDialog(true)}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </div>
-                  )}
+                  {origVideo !== undefined &&
+                    origVideo &&
+                    origVideo !== "Product Infographics doesn't exist." && (
+                      <div className="previewContainer">
+                        <video controls>
+                          <source
+                            src={`https://api.sadashrijewelkart.com/assets/${origVideo.file}`}
+                            type="video/mp4"
+                          />
+                        </video>
+                        <IconButton
+                          className="deleteButton"
+                          // onClick={() => setShowVideoDeleteDialog(true)}
+                        >
+                          <Delete />
+                        </IconButton>
+                      </div>
+                    )}
                   {video && (
                     <div className="previewContainer">
                       <video controls>

@@ -600,9 +600,10 @@ const EditProduct = () => {
       toast.success("Product saved successfully!");
       navigate("/products");
     } catch (error) {
+      console.log(error);
       console.error("Error saving product:", error);
       setLoading(false);
-      toast.error("Error saving product. Please try again.");
+      toast.error("Error saving product. " + error.response.data.message);
     }
   };
 

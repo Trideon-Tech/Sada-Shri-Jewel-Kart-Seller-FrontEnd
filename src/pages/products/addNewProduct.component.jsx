@@ -259,8 +259,7 @@ const AddNewProduct = () => {
     const file = e.target.files[0];
     if (!file) return;
     try {
-      const videoBlob = new Blob([file], { type: file.type });
-      setVideo(videoBlob);
+      setVideo(file);
     } catch (error) {
       console.error("Error handling video:", error);
     }

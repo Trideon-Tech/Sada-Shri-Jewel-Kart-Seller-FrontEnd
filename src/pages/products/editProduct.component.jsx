@@ -20,7 +20,7 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import Cropper from "react-easy-crop";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -100,11 +100,13 @@ const EditProduct = () => {
   const [size, setSize] = useState();
   const [hsnCode, setHsnCode] = useState();
   const [inventoryQty, setInventoryQty] = useState(false);
+  const [showVideoDeleteDialog, setShowVideoDeleteDialog] = useState(false);
 
   const [origImages, setOrigImages] = useState([]);
   const [images, setImages] = useState([]);
   const [origVideo, setOrigVideo] = useState(null);
   const [video, setVideo] = useState(null);
+  const [videoIndex, setVideoIndex] = useState(null);
 
   const [product, setProduct] = useState(null);
 
@@ -119,6 +121,9 @@ const EditProduct = () => {
   const [showDeleteImageDialog, setShowDeleteImageDialog] = useState(false);
   const [deleteImageIndex, setDeleteImageIndex] = useState();
   const [deleteImageType, setDeleteImageType] = useState();
+
+  const fileInputRef = useRef(null);
+
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -198,9 +203,12 @@ const EditProduct = () => {
 
       const productData = response.data.response;
       setProduct(productData);
+      console.log(productData);
 
       setOrigImages(productData.images);
-      setOrigVideo(productData.video);
+      if (typeof productData.video !== "string") {
+        setOrigVideo(productData.video);
+      }
 
       const category = categoriesData.find(
         (cat) => cat.name === productData.category
@@ -263,6 +271,9 @@ const EditProduct = () => {
         productData.customizations[0]?.stone_info?.stone_wt
       );
       setStoneGSTPercent(productData.customizations[0]?.stone_info?.gst_perc);
+      setVideoIndex(productData.video.id);
+      setVideo(productData.video.file);
+      console.log(productData.video.file);
     } catch (error) {
       console.error("Error fetching product data:", error);
     }
@@ -290,10 +301,25 @@ const EditProduct = () => {
     reader.readAsDataURL(file);
   };
 
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Check file size
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Video size exceeds 10MB limit");
+      e.target.value = null; // Clear the input
+      return;
+    }
+
+    // Set the video directly without creating a new Blob
+    setVideo(file);
+    fileInputRef.current.value = null;
+    console.log("Video set:", file);
+  };
+
   const deleteExistingImage = async (index) => {
     let deleteImage = origImages[index];
-
-    console.log(deleteImage);
 
     await axios.delete(
       `https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php`,
@@ -310,6 +336,30 @@ const EditProduct = () => {
 
     toast("Image deleted successfully", generalToastStyle);
 
+    fetchProduct();
+  };
+
+  const deleteExistingVideo = async () => {
+    let deleteVideo = origVideo;
+    if (deleteVideo !== null) {
+    await axios.delete(
+      `https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          type: "infographics",
+          infographics_id: deleteVideo.id,
+        },
+        }
+      );
+    }
+
+    toast("Video deleted successfully", generalToastStyle);
+
+    setVideo(null);
+    setOrigVideo(null);
     fetchProduct();
   };
 
@@ -533,8 +583,6 @@ const EditProduct = () => {
         },
       };
 
-      console.log(JSON.stringify(formData));
-
       const productResponse = await axios.put(
         "https://api.sadashrijewelkart.com/v1.0.0/seller/product/update.php",
         formData,
@@ -557,6 +605,7 @@ const EditProduct = () => {
         imageFormData.append("is_primary", index === 0 ? true : false);
         imageFormData.append("file_type", "img");
         imageFormData.append("file", image);
+
 
         uploadPromises.push(
           axios.post(
@@ -600,7 +649,6 @@ const EditProduct = () => {
       toast.success("Product saved successfully!");
       navigate("/products");
     } catch (error) {
-      console.log(error);
       console.error("Error saving product:", error);
       setLoading(false);
       toast.error("Error saving product. " + error.response.data.message);
@@ -827,6 +875,48 @@ const EditProduct = () => {
         </DialogActions>
       </Dialog>
 
+      {/* Delete Video Dialog */}
+      <Dialog
+        open={showVideoDeleteDialog}
+        onClose={() => setShowVideoDeleteDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to remove this video?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setShowVideoDeleteDialog(false);
+            }}
+            sx={{
+              color: "#666",
+              fontFamily: '"Work Sans", sans-serif',
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              deleteExistingVideo();
+              setShowVideoDeleteDialog(false);
+            }}
+            variant="contained"
+            sx={{
+              backgroundColor: "#a36e29",
+              fontFamily: '"Work Sans", sans-serif',
+              "&:hover": {
+                backgroundColor: "#8b5d23",
+              },
+            }}
+          >
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       {/* Heading */}
       <div
         className="head"
@@ -911,7 +1001,7 @@ const EditProduct = () => {
                     {images.map((image, index) => (
                       <div key={index} className="imagePreview">
                         <img
-                          src={URL.createObjectURL(image)}
+                          src={image ? URL.createObjectURL(image) : ""}
                           alt={`Preview ${index + 1}`}
                         />
                         <IconButton
@@ -949,16 +1039,8 @@ const EditProduct = () => {
                     type="file"
                     accept="video/*"
                     id="videoInput"
-                    // onChange={(e) => {
-                    //   const file = e.target.files[0];
-                    //   if (file && file.size > 10 * 1024 * 1024) {
-                    //     // 10MB in bytes
-                    //     toast.error("Video size exceeds 10MB limit");
-                    //     e.target.value = null; // Clear the input
-                    //     return;
-                    //   }
-                    //   handleVideoChange(e.target.value);
-                    // }}
+                    ref={fileInputRef}
+                    onChange={handleVideoChange}
                     style={{ display: "none" }}
                   />
                   <label htmlFor="videoInput">
@@ -968,38 +1050,25 @@ const EditProduct = () => {
                       component="span"
                     >
                       <VideoCameraFront />
-                      Select Video
+                      Select Video      
                     </Button>
                   </label>
-                  {origVideo !== undefined &&
-                    origVideo &&
-                    origVideo !== "Product Infographics doesn't exist." && (
-                      <div className="previewContainer">
-                        <video controls>
-                          <source
-                            src={`https://api.sadashrijewelkart.com/assets/${origVideo.file}`}
-                            type="video/mp4"
-                          />
-                        </video>
-                        <IconButton
-                          className="deleteButton"
-                          // onClick={() => setShowVideoDeleteDialog(true)}
-                        >
-                          <Delete />
-                        </IconButton>
-                      </div>
-                    )}
                   {video && (
                     <div className="previewContainer">
                       <video controls>
                         <source
-                          src={URL.createObjectURL(video)}
+                          src={
+                            video instanceof File
+                              ? URL.createObjectURL(video)
+                              : "https://api.sadashrijewelkart.com/assets/" +
+                                video
+                          }
                           type="video/mp4"
                         />
                       </video>
                       <IconButton
                         className="deleteButton"
-                        // onClick={() => setShowVideoDeleteDialog(true)}
+                        onClick={() => setShowVideoDeleteDialog(true)}
                       >
                         <Delete />
                       </IconButton>
@@ -1284,9 +1353,9 @@ const EditProduct = () => {
                     if (selectedOption) {
                       setRate(
                         rates[
-                          selectedOption === "silver22"
-                            ? "silver"
-                            : selectedOption
+                        selectedOption === "silver22"
+                          ? "silver"
+                          : selectedOption
                         ]
                       );
                     }
@@ -1518,7 +1587,6 @@ const EditProduct = () => {
                   name="makingChargeType"
                   value={makingChargeType}
                   onChange={(e) => {
-                    console.log(e.target.value);
                     setMakingChargeType(e.target.value);
                     setMakingChargeValue();
                   }}
@@ -1560,7 +1628,6 @@ const EditProduct = () => {
                   onChange={(e) => {
                     setMakingChargeValue(e.target.value);
 
-                    console.log(e.target.value);
                     if (makingChargeType == 6) {
                       setMakingChargeAmount(
                         (
@@ -1580,8 +1647,8 @@ const EditProduct = () => {
                       setMakingChargeAmount(
                         parseFloat(
                           e.target.value *
-                            (rate / 100) *
-                            (netWeightAfterWastage || netWeight)
+                          (rate / 100) *
+                          (netWeightAfterWastage || netWeight)
                         ).toFixed(2)
                       );
                     }
@@ -1718,7 +1785,6 @@ const EditProduct = () => {
                   name="gstPercent"
                   value={gstPercent}
                   onChange={(e) => {
-                    console.log("GST Percent changed:", e.target.value);
                     setGstPercent(e.target.value);
                   }}
                   fullWidth
@@ -1920,9 +1986,9 @@ const EditProduct = () => {
                     const total =
                       stoneInternalWeight && e.target.value
                         ? (
-                            parseFloat(stoneInternalWeight) *
-                            parseFloat(e.target.value)
-                          ).toFixed(2)
+                          parseFloat(stoneInternalWeight) *
+                          parseFloat(e.target.value)
+                        ).toFixed(2)
                         : 0;
                     setStoneTotalAmount(total);
                   }}
@@ -1946,7 +2012,7 @@ const EditProduct = () => {
                     const baseAmount =
                       stoneInternalWeight && stoneRate
                         ? parseFloat(stoneInternalWeight) *
-                          parseFloat(stoneRate)
+                        parseFloat(stoneRate)
                         : 0;
                     const gstAmount =
                       baseAmount * (parseFloat(e.target.value) / 100);

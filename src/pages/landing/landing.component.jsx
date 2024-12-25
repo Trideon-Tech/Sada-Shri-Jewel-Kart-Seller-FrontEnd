@@ -61,26 +61,6 @@ const Landing = () => {
                 <ChevronRight className="icon" />
               </Button>
             </div>
-            <div className="comments">
-              <div className="comment-item">
-                <FormatQuoteOutlined
-                  style={{
-                    transform: "scaleX(-1)",
-                  }}
-                />
-                <div className="comment-text">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore etdolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquipex ea commodo consequat.
-                </div>
-                <FormatQuoteOutlined />
-              </div>
-              <div className="comment-author">Shubham Mazumdar</div>
-              <div className="comment-author-title">
-                Founder of meetshubham.com
-              </div>
-            </div>
           </div>
         </div>
         <img
@@ -95,30 +75,30 @@ const Landing = () => {
         <div className="items-row">
           <div className="company">Sadāshrī Ventures Pvt. Ltd.</div>
           <div className="actions">
-            <div
-              onClick={() => handleFooterRedirect("privacy")}
+            <a
+              href="https://blogs.sadashrijewelkart.com/privacy-policy/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="action-item"
             >
               Privacy Policy
-            </div>
-            <div
-              onClick={() => handleFooterRedirect("shipping")}
+            </a>
+            <a
+              href="https://blogs.sadashrijewelkart.com/shipping-and-returns/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="action-item"
             >
               Shipping & Delivery
-            </div>
-            <div
-              onClick={() => handleFooterRedirect("term")}
+            </a>
+            <a
+              href="https://blogs.sadashrijewelkart.com/terms-and-conditions/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="action-item"
             >
               Terms & Conditions
-            </div>
-            <div
-              onClick={() => handleFooterRedirect("shipping")}
-              className="action-item"
-            >
-              Refund Policy
-            </div>
+            </a>
           </div>
         </div>
       </div>

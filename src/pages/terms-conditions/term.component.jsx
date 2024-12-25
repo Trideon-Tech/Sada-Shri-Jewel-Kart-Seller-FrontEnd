@@ -23,9 +23,6 @@ const TermsandConditions = () => {
     navigate("/");
   };
 
-  const handleFooterRedirect = (item) => {
-    navigate(`/${item}`);
-  };
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClose = () => {
@@ -621,30 +618,38 @@ const TermsandConditions = () => {
             <div className="items-row">
               <div className="company">Sada Shri Jewel Kart Pvt. Ltd.</div>
               <div className="actions">
-                <div
-                  onClick={() => handleFooterRedirect("privacy")}
+                <a
+                  href="https://blogs.sadashrijewelkart.com/privacy-policy/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="action-item"
                 >
                   Privacy Policy
-                </div>
-                <div
-                  onClick={() => handleFooterRedirect("shipping")}
+                </a>
+                <a
+                  href="https://blogs.sadashrijewelkart.com/shipping-and-returns/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="action-item"
                 >
                   Shipping & Delivery
-                </div>
-                <div
-                  onClick={() => handleFooterRedirect("term")}
+                </a>
+                <a
+                  href="https://blogs.sadashrijewelkart.com/terms-and-conditions/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="action-item"
                 >
                   Terms & Conditions
-                </div>
-                <div
-                  onClick={() => handleFooterRedirect("shipping")}
+                </a>
+                <a
+                  href="https://google.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="action-item"
                 >
                   Refund Policy
-                </div>
+                </a>
               </div>
             </div>
           </div>
@@ -674,24 +679,34 @@ const TermsandConditions = () => {
               style={{ textAlign: "left", paddingLeft: "10%", color: "gray" }}
             >
               <Grid item xs={6}>
-                <Typography onClick={() => handleFooterRedirect("privacy")}>
-                  Privacy Policy
-                </Typography>
+                <a
+                  href="https://blogs.sadashrijewelkart.com/privacy-policy/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <Typography>Privacy Policy</Typography>
+                </a>
               </Grid>
               <Grid item xs={6}>
-                <Typography onClick={() => handleFooterRedirect("shipping")}>
-                  Shipping & Delivery
-                </Typography>
+                <a
+                  href="https://blogs.sadashrijewelkart.com/shipping-and-returns/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <Typography>Shipping & Delivery</Typography>
+                </a>
               </Grid>
               <Grid item xs={6}>
-                <Typography onClick={() => handleFooterRedirect("term")}>
-                  Terms & Conditions
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography onClick={() => handleFooterRedirect("shipping")}>
-                  Refund Policy
-                </Typography>
+                <a
+                  href="https://blogs.sadashrijewelkart.com/terms-and-conditions/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <Typography>Terms & Conditions</Typography>
+                </a>
               </Grid>
             </Grid>
           </div>

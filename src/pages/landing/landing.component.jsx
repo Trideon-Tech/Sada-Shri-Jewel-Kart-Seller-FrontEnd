@@ -93,7 +93,7 @@ const Landing = () => {
       <div className="footer">
         <div className="seperator" />
         <div className="items-row">
-          <div className="company">Sadāshrī Jewelkart Pvt. Ltd.</div>
+          <div className="company">Sadāshrī Ventures Pvt. Ltd.</div>
           <div className="actions">
             <div
               onClick={() => handleFooterRedirect("privacy")}

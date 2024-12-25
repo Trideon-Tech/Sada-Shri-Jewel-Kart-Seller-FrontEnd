@@ -24,7 +24,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Work Sans", sans-serif',
+    fontFamily: '"Roboto", sans-serif',
   },
 
   background: {
@@ -128,7 +128,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               style={{
                 fontWeight: 800,
                 color: "#333333",
-                fontFamily: '"Work Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
               }}
             >
               <b>Settlement : {orderList[0]?.settlement_public_id}</b>
@@ -137,7 +137,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               style={{
                 fontWeight: 800,
                 color: "gray",
-                fontFamily: '"Work Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
               }}
             >
               {new Date(orderList[0]?.settlement_date).toLocaleDateString(
@@ -160,7 +160,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               style={{
                 fontWeight: 800,
                 color: "gray",
-                fontFamily: '"Work Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
               }}
             >
               Settlement ID
@@ -168,7 +168,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
             <p
               style={{
                 color: "#333333",
-                fontFamily: '"Work Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
               }}
             >
               <b>{orderList[0]?.settlement_public_id} </b>
@@ -190,7 +190,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               style={{
                 fontWeight: 800,
                 color: "gray",
-                fontFamily: '"Work Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
               }}
             >
               Settlement Amount
@@ -198,7 +198,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
             <p
               style={{
                 color: "#333333",
-                fontFamily: '"Work Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
               }}
             >
               <b>{Number(payementDetails?.total_settled_amount).toFixed(2)} </b>
@@ -221,7 +221,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                 fontWeight: 800,
                 fontSize: "1.5rem",
                 color: "#333333",
-                fontFamily: '"Work Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
               }}
             >
               Settlement Details
@@ -265,7 +265,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                     fontWeight: 800,
                     color: "gray",
                     fontSize: "1.1rem",
-                    fontFamily: '"Work Sans", sans-serif',
+                    fontFamily: '"Roboto", sans-serif',
                   }}
                 >
                   Type
@@ -276,7 +276,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                     color: "rgba(0,0,0,0.8)",
                     fontWeight: 500,
                     fontSize: "1.1rem",
-                    fontFamily: '"Work Sans", sans-serif',
+                    fontFamily: '"Roboto", sans-serif',
                   }}
                 >
                   Normal Settlement
@@ -295,7 +295,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                     fontWeight: 800,
                     color: "gray",
                     fontSize: "1.1rem",
-                    fontFamily: '"Work Sans", sans-serif',
+                    fontFamily: '"Roboto", sans-serif',
                   }}
                 >
                   Setted On
@@ -306,7 +306,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                     fontSize: "1.1rem",
                     color: "rgba(0,0,0,0.8)",
                     fontWeight: 500,
-                    fontFamily: '"Work Sans", sans-serif',
+                    fontFamily: '"Roboto", sans-serif',
                   }}
                 >
                   {new Date(orderList[0]?.settlement_date).toLocaleDateString(
@@ -327,7 +327,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                     fontWeight: 800,
                     color: "gray",
                     fontSize: "1.1rem",
-                    fontFamily: '"Work Sans", sans-serif',
+                    fontFamily: '"Roboto", sans-serif',
                   }}
                 >
                   Account
@@ -338,7 +338,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                     fontSize: "1.1rem",
                     color: "rgba(0,0,0,0.8)",
                     fontWeight: 500,
-                    fontFamily: '"Work Sans", sans-serif',
+                    fontFamily: '"Roboto", sans-serif',
                   }}
                 >
                   {sellerBankDetails?.ac_number?.replace(/.(?=.{4})/g, "*")}
@@ -369,7 +369,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                     fontWeight: 800,
                     color: "gray",
                     fontSize: "1.1rem",
-                    fontFamily: '"Work Sans", sans-serif',
+                    fontFamily: '"Roboto", sans-serif',
                   }}
                 >
                   UTR No.
@@ -380,7 +380,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                     fontSize: "1.1rem",
                     color: "rgba(0,0,0,0.8)",
                     fontWeight: 500,
-                    fontFamily: '"Work Sans", sans-serif',
+                    fontFamily: '"Roboto", sans-serif',
                   }}
                 >
                   {orderList[0]?.utr_number}
@@ -399,7 +399,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                     fontWeight: 800,
                     color: "gray",
                     fontSize: "1.1rem",
-                    fontFamily: '"Work Sans", sans-serif',
+                    fontFamily: '"Roboto", sans-serif',
                   }}
                 >
                   Bank Name
@@ -410,7 +410,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                     fontSize: "1.1rem",
                     color: "rgba(0,0,0,0.8)",
                     fontWeight: 500,
-                    fontFamily: '"Work Sans", sans-serif',
+                    fontFamily: '"Roboto", sans-serif',
                   }}
                 >
                   {sellerBankDetails?.ac_bank_name}
@@ -429,7 +429,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                     fontWeight: 800,
                     color: "gray",
                     fontSize: "1.1rem",
-                    fontFamily: '"Work Sans", sans-serif',
+                    fontFamily: '"Roboto", sans-serif',
                   }}
                 >
                   IFSC Code
@@ -440,7 +440,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                     color: "rgba(0,0,0,0.8)",
                     fontWeight: 500,
                     fontSize: "1.1rem",
-                    fontFamily: '"Work Sans", sans-serif',
+                    fontFamily: '"Roboto", sans-serif',
                   }}
                 >
                   {sellerBankDetails?.ac_ifsc}
@@ -462,7 +462,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               fontWeight: 800,
               fontSize: "1.5rem",
               color: "#333333",
-              fontFamily: '"Work Sans", sans-serif',
+              fontFamily: '"Roboto", sans-serif',
             }}
           >
             Settlement Against Orders

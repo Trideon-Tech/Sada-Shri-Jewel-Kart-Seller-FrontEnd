@@ -364,13 +364,13 @@ const Profile = () => {
                     style={{ marginRight: "40%", width: "30%" }}
                     InputProps={{
                       style: {
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                         color: "#000",
                       },
                     }}
                     InputLabelProps={{
                       style: {
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                       },
                     }}
                   />
@@ -385,13 +385,13 @@ const Profile = () => {
                     style={{ marginRight: "auto", width: "30%" }}
                     InputProps={{
                       style: {
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                         color: "#000",
                       },
                     }}
                     InputLabelProps={{
                       style: {
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                       },
                     }}
                   />
@@ -436,13 +436,13 @@ const Profile = () => {
                     style={{ marginRight: "40%", width: "30%" }}
                     InputProps={{
                       style: {
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                         color: "#000",
                       },
                     }}
                     InputLabelProps={{
                       style: {
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                       },
                     }}
                   />
@@ -505,13 +505,13 @@ const Profile = () => {
                     style={{ marginRight: "40%", width: "30%" }}
                     InputProps={{
                       style: {
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                         color: "#000",
                       },
                     }}
                     InputLabelProps={{
                       style: {
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                       },
                     }}
                   />
@@ -525,13 +525,13 @@ const Profile = () => {
                     style={{ marginRight: "auto", width: "30%" }}
                     InputProps={{
                       style: {
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                         color: "#000",
                       },
                     }}
                     InputLabelProps={{
                       style: {
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                       },
                     }}
                   />

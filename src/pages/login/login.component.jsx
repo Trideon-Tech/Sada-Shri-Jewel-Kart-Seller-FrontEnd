@@ -27,7 +27,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Work Sans", sans-serif',
+    fontFamily: '"Roboto", sans-serif',
   },
 });
 
@@ -189,7 +189,7 @@ const Login = () => {
           <div className="content">
             <div className="heading">Login</div>
             <Grid container className="register-grid" spacing={2}>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{ marginBottom: "1rem" }}>
               <TextField
                 variant="outlined"
                 size="small"
@@ -337,46 +337,9 @@ const Login = () => {
                 }}
               />
             </Grid>
-
-            <Grid item xs={12}>
-              {otp?.length > 3 ? (
-                <Button
-                  fullWidth
-                  variant="solid"
-                  color="primary"
-                  size="lg"
-                  onClick={() => verifyOTPHandler()}
-                  style={{
-                    color: "white",
-                    fontFamily: '"Roboto", sans-serif',
-                    fontSize: "0.8rem",
-                    background:
-                      "linear-gradient(to right, #d4a76a, #a36e29)",
-                  }}
-                  disabled={false}
-                >
-                  Continue
-                </Button>
-              ) : (
-                <Button
-                  fullWidth
-                  variant="solid"
-                  color="neutral"
-                  size="lg"
-                  onClick={verifyOTPHandler}
-                  disabled={true}
-                  style={{
-                    fontFamily: '"Roboto", sans-serif',
-                    fontSize: "0.8rem",
-                  }}
-                >
-                  Continue
-                </Button>
-              )}
-            </Grid>
           </Grid>
             <div className="actions">
-              <Button className="btn-primary" onClick={verifyOTP}>
+              <Button className="btn-primary" onClick={verifyOTP} style={{ backgroundImage:  "linear-gradient(to right, #d4a76a, #a36e29)" }}>
                 LOGIN
               </Button>
             </div>

@@ -87,7 +87,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                 fontWeight: 800,
                 fontSize: "1.2rem",
                 color: "#333333",
-                fontFamily: '"Work Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
               }}
             >
               <b>Order : {payementDetails?.order_id}</b>
@@ -96,7 +96,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               style={{
                 fontWeight: 800,
                 color: "gray",
-                fontFamily: '"Work Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
               }}
             >
               {new Date(payementDetails?.updated_at).toLocaleDateString(
@@ -119,7 +119,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               style={{
                 fontWeight: 800,
                 color: "gray",
-                fontFamily: '"Work Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
               }}
             >
               SETTLEMENT ID
@@ -127,7 +127,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
             <p
               style={{
                 color: "#333333",
-                fontFamily: '"Work Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
               }}
             >
               <b>{payementDetails?.settlement_public_id}</b>
@@ -157,7 +157,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                 style={{
                   fontWeight: 800,
                   color: "gray",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 STATUS:
@@ -174,7 +174,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   paddingRight: "15px",
                   color: "white",
                   borderRadius: "5px",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 <b>{payementDetails?.settlement_status}</b>
@@ -192,7 +192,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                 style={{
                   fontWeight: 800,
                   color: "gray",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 PAYMENT:
@@ -201,7 +201,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                 style={{
                   fontSize: "1.2rem",
                   color: "#333333",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 <b>Rs. {payementDetails?.total_amount}</b>
@@ -228,7 +228,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 800,
                   fontSize: "1.5rem",
                   color: "#333333",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 Settlement Details
@@ -272,7 +272,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontWeight: 800,
                       color: "gray",
                       fontSize: "1.1rem",
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                     }}
                   >
                     Type
@@ -283,7 +283,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       color: "rgba(0,0,0,0.8)",
                       fontWeight: 500,
                       fontSize: "1.1rem",
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                     }}
                   >
                     Normal Settlement
@@ -302,7 +302,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontWeight: 800,
                       color: "gray",
                       fontSize: "1.1rem",
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                     }}
                   >
                     Setted On
@@ -313,7 +313,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontSize: "1.1rem",
                       color: "rgba(0,0,0,0.8)",
                       fontWeight: 500,
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                     }}
                   >
                     {new Date(
@@ -334,7 +334,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontWeight: 800,
                       color: "gray",
                       fontSize: "1.1rem",
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                     }}
                   >
                     Account
@@ -345,7 +345,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontSize: "1.1rem",
                       color: "rgba(0,0,0,0.8)",
                       fontWeight: 500,
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                     }}
                   >
                     {sellerBankDetails?.ac_number?.replace(/.(?=.{4})/g, "*")}
@@ -376,7 +376,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontWeight: 800,
                       color: "gray",
                       fontSize: "1.1rem",
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                     }}
                   >
                     UTR No.
@@ -387,7 +387,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontSize: "1.1rem",
                       color: "rgba(0,0,0,0.8)",
                       fontWeight: 500,
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                     }}
                   >
                     {payementDetails?.utr_number}
@@ -406,7 +406,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontWeight: 800,
                       color: "gray",
                       fontSize: "1.1rem",
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                     }}
                   >
                     Bank Name
@@ -417,7 +417,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontSize: "1.1rem",
                       color: "rgba(0,0,0,0.8)",
                       fontWeight: 500,
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                     }}
                   >
                     {sellerBankDetails?.ac_bank_name}
@@ -436,7 +436,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       fontWeight: 800,
                       color: "gray",
                       fontSize: "1.1rem",
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                     }}
                   >
                     IFSC Code
@@ -447,7 +447,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                       color: "rgba(0,0,0,0.8)",
                       fontWeight: 500,
                       fontSize: "1.1rem",
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                     }}
                   >
                     {sellerBankDetails?.ac_ifsc}
@@ -471,7 +471,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               fontWeight: 800,
               fontSize: "1.5rem",
               color: "#333333",
-              fontFamily: '"Work Sans", sans-serif',
+              fontFamily: '"Roboto", sans-serif',
             }}
           >
             Customer Details
@@ -512,7 +512,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 800,
                   color: "gray",
                   fontSize: "1.1rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 Name
@@ -523,7 +523,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontSize: "1.1rem",
                   color: "rgba(0,0,0,0.8)",
                   fontWeight: 500,
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 {payementDetails?.user_details?.name}
@@ -543,7 +543,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 800,
                   color: "gray",
                   fontSize: "1.1rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 Email Id
@@ -551,7 +551,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               <p
                 style={{
                   width: "75%",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                   fontSize: "1.1rem",
                   color: "rgba(0,0,0,0.8)",
                   fontWeight: 500,
@@ -585,7 +585,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 800,
                   color: "gray",
                   fontSize: "1.1rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 Phone
@@ -593,7 +593,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               <p
                 style={{
                   width: "75%",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                   fontSize: "1.1rem",
                   color: "rgba(0,0,0,0.8)",
                   fontWeight: 500,
@@ -616,7 +616,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 800,
                   color: "gray",
                   fontSize: "1.1rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 User Since
@@ -626,7 +626,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   width: "75%",
                   color: "rgba(0,0,0,0.8)",
                   fontWeight: 500,
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                   fontSize: "1.1rem",
                 }}
               >
@@ -651,7 +651,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               fontWeight: 800,
               fontSize: "1.5rem",
               color: "#333333",
-              fontFamily: '"Work Sans", sans-serif',
+              fontFamily: '"Roboto", sans-serif',
             }}
           >
             Payment Details
@@ -695,7 +695,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   color: "gray",
                   width: "250px",
                   fontSize: "1.2rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 Payment Received :{" "}
@@ -705,7 +705,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 600,
                   color: "green",
                   fontSize: "1.2rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 Rs. {payementDetails?.total_amount}
@@ -725,7 +725,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   color: "gray",
                   width: "250px",
                   fontSize: "1.2rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 Platform Charge :{" "}
@@ -735,7 +735,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 600,
                   color: "red",
                   fontSize: "1.2rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 Rs {payementDetails?.commission_perc}
@@ -755,7 +755,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   color: "gray",
                   width: "250px",
                   fontSize: "1.2rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 PG Charge :
@@ -765,7 +765,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 600,
                   color: "red",
                   fontSize: "1.2rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 Rs {payementDetails?.commission_gst}
@@ -785,7 +785,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   color: "gray",
                   width: "250px",
                   fontSize: "1.2rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 Final Amount :
@@ -795,7 +795,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 600,
                   color: "green",
                   fontSize: "1.2rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 Rs {payementDetails?.settlement_amount}
@@ -826,7 +826,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   color: "gray",
                   width: "250px",
                   fontSize: "1.2rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 TDS :
@@ -836,7 +836,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 600,
                   color: "red",
                   fontSize: "1.2rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 Rs {payementDetails?.tds_perc}
@@ -856,7 +856,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   color: "gray",
                   width: "250px",
                   fontSize: "1.2rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 TCS :
@@ -866,7 +866,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontWeight: 600,
                   color: "red",
                   fontSize: "1.2rem",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                 }}
               >
                 Rs {payementDetails?.tcs_perc}

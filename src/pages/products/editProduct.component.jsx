@@ -35,7 +35,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Work Sans", sans-serif',
+    fontFamily: '"Roboto", sans-serif',
   },
 });
 
@@ -755,14 +755,14 @@ const EditProduct = () => {
         PaperProps={{
           style: {
             backgroundColor: "#fff",
-            fontFamily: '"Work Sans", sans-serif',
+            fontFamily: '"Roboto", sans-serif',
           },
         }}
       >
         <DialogTitle
           sx={{
             color: "#a36e29",
-            fontFamily: '"Work Sans", sans-serif',
+            fontFamily: '"Roboto", sans-serif',
           }}
         >
           Confirm Save
@@ -771,7 +771,7 @@ const EditProduct = () => {
           <Typography
             sx={{
               color: "#333",
-              fontFamily: '"Work Sans", sans-serif',
+              fontFamily: '"Roboto", sans-serif',
             }}
           >
             Are you sure you want to save this product?
@@ -785,7 +785,7 @@ const EditProduct = () => {
             }}
             sx={{
               color: "#666",
-              fontFamily: '"Work Sans", sans-serif',
+              fontFamily: '"Roboto", sans-serif',
             }}
           >
             Cancel
@@ -798,7 +798,7 @@ const EditProduct = () => {
             variant="contained"
             sx={{
               backgroundColor: "#a36e29",
-              fontFamily: '"Work Sans", sans-serif',
+              fontFamily: '"Roboto", sans-serif',
               "&:hover": {
                 backgroundColor: "#8b5d23",
               },
@@ -818,14 +818,14 @@ const EditProduct = () => {
         PaperProps={{
           style: {
             backgroundColor: "#fff",
-            fontFamily: '"Work Sans", sans-serif',
+            fontFamily: '"Roboto", sans-serif',
           },
         }}
       >
         <DialogTitle
           sx={{
             color: "#a36e29",
-            fontFamily: '"Work Sans", sans-serif',
+            fontFamily: '"Roboto", sans-serif',
           }}
         >
           Confirm Delete
@@ -834,7 +834,7 @@ const EditProduct = () => {
           <Typography
             sx={{
               color: "#333",
-              fontFamily: '"Work Sans", sans-serif',
+              fontFamily: '"Roboto", sans-serif',
             }}
           >
             Are you sure you want to remove this image?
@@ -847,7 +847,7 @@ const EditProduct = () => {
             }}
             sx={{
               color: "#666",
-              fontFamily: '"Work Sans", sans-serif',
+              fontFamily: '"Roboto", sans-serif',
             }}
           >
             Cancel
@@ -864,7 +864,7 @@ const EditProduct = () => {
             variant="contained"
             sx={{
               backgroundColor: "#a36e29",
-              fontFamily: '"Work Sans", sans-serif',
+              fontFamily: '"Roboto", sans-serif',
               "&:hover": {
                 backgroundColor: "#8b5d23",
               },
@@ -893,7 +893,7 @@ const EditProduct = () => {
             }}
             sx={{
               color: "#666",
-              fontFamily: '"Work Sans", sans-serif',
+              fontFamily: '"Roboto", sans-serif',
             }}
           >
             Cancel
@@ -906,7 +906,7 @@ const EditProduct = () => {
             variant="contained"
             sx={{
               backgroundColor: "#a36e29",
-              fontFamily: '"Work Sans", sans-serif',
+              fontFamily: '"Roboto", sans-serif',
               "&:hover": {
                 backgroundColor: "#8b5d23",
               },

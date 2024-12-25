@@ -64,7 +64,7 @@ const ProductCardSmall = ({ orderDetails }) => {
             margin: 0,
             fontSize: "1.4rem",
             fontWeight: 600,
-            fontFamily: '"Work Sans", sans-serif',
+            fontFamily: '"Roboto", sans-serif',
           }}
         >
           {orderDetails?.product_name}
@@ -76,7 +76,7 @@ const ProductCardSmall = ({ orderDetails }) => {
             fontWeight: 500,
             lineHeight: "2rem",
             fontSize: "1.1rem",
-            fontFamily: '"Work Sans", sans-serif',
+            fontFamily: '"Roboto", sans-serif',
           }}
         >
           Price :{" "}
@@ -88,7 +88,7 @@ const ProductCardSmall = ({ orderDetails }) => {
             color: "gray",
             fontWeight: 500,
             lineHeight: "2rem",
-            fontFamily: '"Work Sans", sans-serif',
+            fontFamily: '"Roboto", sans-serif',
           }}
         >
           Deliver By: {Date(orderDetails?.estimated_date)}
@@ -330,7 +330,7 @@ const OrderDetail = ({ id }) => {
               margin: 0,
               fontWeight: 600,
               color: "#333333",
-              fontFamily: '"Work Sans", sans-serif',
+              fontFamily: '"Roboto", sans-serif',
             }}
           >
             Fulfill Order
@@ -371,7 +371,7 @@ const OrderDetail = ({ id }) => {
                 style={{
                   fontSize: "1.3rem",
                   fontWeight: "bold",
-                  fontFamily: '"Work Sans", sans-serif',
+                  fontFamily: '"Roboto", sans-serif',
                   marginBottom: "14px",
                   marginTop: "10px",
                 }}
@@ -390,7 +390,7 @@ const OrderDetail = ({ id }) => {
                     style={{
                       color: "gray",
                       fontWeight: 600,
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                       marginBottom: "10px",
                     }}
                   >
@@ -406,7 +406,7 @@ const OrderDetail = ({ id }) => {
                     style={{
                       color: "gray",
                       fontWeight: 600,
-                      fontFamily: '"Work Sans", sans-serif',
+                      fontFamily: '"Roboto", sans-serif',
                       marginBottom: "10px",
                     }}
                   >
@@ -445,7 +445,7 @@ const OrderDetail = ({ id }) => {
                     backgroundColor: "#A36E29",
                     fontWeight: 600,
                     marginTop: "30px",
-                    fontFamily: '"Work Sans", sans-serif',
+                    fontFamily: '"Roboto", sans-serif',
                   }}
                   onClick={() => handleFulfillOrder()}
                 >
@@ -459,7 +459,7 @@ const OrderDetail = ({ id }) => {
                 fontSize: "1.2rem",
                 textAlign: "center",
                 color: "#A36E29",
-                fontFamily: '"Work Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
                 marginTop: "20px",
               }}
             >
@@ -540,7 +540,7 @@ const OrderDetail = ({ id }) => {
                         margin: 0,
                         fontSize: "1.4rem",
                         fontWeight: 600,
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                       }}
                     >
                       {orderDetails?.product_name}
@@ -552,7 +552,7 @@ const OrderDetail = ({ id }) => {
                         fontWeight: 500,
                         lineHeight: "2rem",
                         fontSize: "1.1rem",
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                       }}
                     >
                       Price :{" "}
@@ -567,7 +567,7 @@ const OrderDetail = ({ id }) => {
                         color: "gray",
                         fontWeight: 500,
                         lineHeight: "2rem",
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                       }}
                     >
                       Deliver By: {Date(orderDetails?.estimated_date)}
@@ -584,7 +584,7 @@ const OrderDetail = ({ id }) => {
                         textTransform: "none",
                         fontSize: "1rem",
                         fontWeight: 600,
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                         border: "none",
                         color: "#A36E29",
                       }}
@@ -603,7 +603,7 @@ const OrderDetail = ({ id }) => {
                         textTransform: "none",
                         fontSize: "1rem",
                         fontWeight: 600,
-                        fontFamily: '"Work Sans", sans-serif',
+                        fontFamily: '"Roboto", sans-serif',
                       }}
                       onClick={() => {
                         receiveProduct(orderDetails);

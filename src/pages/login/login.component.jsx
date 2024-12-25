@@ -189,7 +189,7 @@ const Login = () => {
           <div className="content">
             <div className="heading">Login</div>
             <Grid container className="register-grid" spacing={2}>
-            <Grid item xs={12} style={{ marginBottom: "1rem" }}>
+            <Grid item xs={12} style={{ marginBottom: "1rem", }}>
               <TextField
                 variant="outlined"
                 size="small"
@@ -279,10 +279,8 @@ const Login = () => {
                     </InputAdornment>
                   ),
                 }}
-                e
                 sx={{
                   width: "100%",
-                  height: "22px",
                   "& input": {
                     fontFamily: '"Roboto", sans-serif',
                     fontSize: "0.8rem",
@@ -307,7 +305,6 @@ const Login = () => {
                 size="small"
                 sx={{
                   width: "100%",
-                  height: "22px",
                   "& input": {
                     fontFamily: '"Roboto", sans-serif',
                     fontSize: "0.8rem",

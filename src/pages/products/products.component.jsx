@@ -385,7 +385,7 @@ const Products = () => {
             style={{
               fontWeight: 700,
               marginBottom: "20px",
-              fontFamily: '"Open Sans", sans-serif',
+              fontFamily: '"Roboto", sans-serif',
               fontSize: "1.2rem",
               textAlign: "center",
             }}
@@ -407,7 +407,7 @@ const Products = () => {
                 fontWeight: "bold",
                 border: "2px solid #a36e29",
                 color: "#a36e29",
-                fontFamily: '"Open Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
                 fontSize: "0.8rem",
               }}
               onClick={handleCloseDeleteDialog}
@@ -420,7 +420,7 @@ const Products = () => {
                 width: "48%",
                 fontWeight: "bold",
                 background: "#a36e29",
-                fontFamily: '"Open Sans", sans-serif',
+                fontFamily: '"Roboto", sans-serif',
                 fontSize: "0.8rem",
               }}
               onClick={confirmDelete}

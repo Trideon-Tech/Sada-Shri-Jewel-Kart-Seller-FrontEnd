@@ -6,6 +6,7 @@ import {
   InputAdornment,
   OutlinedInput,
   ThemeProvider,
+  TextField,
   Toolbar,
 } from "@mui/material";
 import axios from "axios";
@@ -187,49 +188,193 @@ const Login = () => {
         <Grid item xs={4} className="actions-div">
           <div className="content">
             <div className="heading">Login</div>
-            <div className="input-text-field">
-              <div className="label">Mobile</div>
-              <ThemeProvider theme={theme}>
-                <OutlinedInput
-                  className="field"
-                  value={mobile}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, ""); // Remove non-digits
-                    if (value.length <= 10) {
-                      // Only allow up to 10 digits
-                      setMobile(value);
-                    }
-                  }}
-                  startAdornment={
-                    <InputAdornment position="start">+91</InputAdornment>
+            <Grid container className="register-grid" spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                size="small"
+                placeholder="Enter Your Mobile Number"
+                required
+                value={mobile}
+                onChange={(e) => {
+                  if (Number.isInteger(Number(e.target.value)))
+                    if (e.target.value.length <= 10) setMobile(e.target.value);
+                }}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" && mobile?.length === 10) {
+                    sendOTPHandler();
                   }
-                  endAdornment={
-                    <InputAdornment position="end">
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment
+                      position="start"
+                      style={{
+                        marginLeft: "-13px",
+                      }}
+                    >
                       <Button
-                        disabled={mobile.length !== 10}
-                        onClick={sendOTP}
-                        sx={{
-                          color: "#a36e29",
-                          "&:hover": {
-                            backgroundColor: "transparent",
-                            textDecoration: "underline",
-                          },
+                        variant="solid"
+                        type="submit"
+                        style={{
+                          borderTopLeftRadius: "5px",
+                          borderBottomLeftRadius: "5px",
+                          borderTopRightRadius: 0,
+                          borderBottomRightRadius: 0,
+                          backgroundImage: "linear-gradient(to right, #d4a76a, #a36e29)",
+                          fontFamily: '"Roboto", sans-serif',
+                          fontSize: "0.8rem",
+                          color: "#fff",
+                          fontWeight: "bold",
                         }}
                       >
-                        Send OTP
+                        +91
                       </Button>
                     </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment
+                      position="end"
+                      style={{
+                        marginRight: "-13px",
+                      }}
+                    >
+                      {mobile?.length > 9 ? (
+                        <Button
+                          variant="solid"
+                          loading={otpSent}
+                          type="submit"
+                          style={{
+                            borderTopLeftRadius: 0,
+                            borderBottomLeftRadius: 0,
+                            backgroundImage: "linear-gradient(to right, #d4a76a, #a36e29)",
+                            fontFamily: '"Roboto", sans-serif',
+                            fontSize: "0.8rem",
+                            color: "#fff",
+                            fontWeight: "bold",
+                          }}
+                          onClick={() => sendOTPHandler()}
+                        >
+                          Send OTP
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="solid"
+                          color="neutral"
+                          type="submit"
+                          style={{
+                            borderTopLeftRadius: 0,
+                            borderBottomLeftRadius: 0,
+                            fontFamily: '"Roboto", sans-serif',
+                            backgroundColor: "#F0F4F8",
+                            fontSize: "0.8rem",
+                            color: "#9EA6AC",
+                            fontWeight: "bold",
+                          }}
+                          disabled={true}
+                        >
+                          Send OTP
+                        </Button>
+                      )}
+                    </InputAdornment>
+                  ),
+                }}
+                e
+                sx={{
+                  width: "100%",
+                  height: "22px",
+                  "& input": {
+                    fontFamily: '"Roboto", sans-serif',
+                    fontSize: "0.8rem",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "rgba(0, 0, 0, 0.23)",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "rgba(0, 0, 0, 0.23)",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#a36e29",
+                    },
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                size="small"
+                sx={{
+                  width: "100%",
+                  height: "22px",
+                  "& input": {
+                    fontFamily: '"Roboto", sans-serif',
+                    fontSize: "0.8rem",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "rgba(0, 0, 0, 0.23)",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "rgba(0, 0, 0, 0.23)",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#a36e29",
+                    },
+                  },
+                }}
+                placeholder="Enter OTP"
+                required
+                value={otp}
+                onChange={(e) => {
+                  setOtp(e.target.value);
+                }}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" && otp?.length === 4) {
+                    verifyOTPHandler();
                   }
-                />
-              </ThemeProvider>
-            </div>
-            <InputTextField
-              title={"OTP"}
-              value={otp}
-              onEdit={(e) => {
-                setOtp(e.target.value);
-              }}
-            />
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              {otp?.length > 3 ? (
+                <Button
+                  fullWidth
+                  variant="solid"
+                  color="primary"
+                  size="lg"
+                  onClick={() => verifyOTPHandler()}
+                  style={{
+                    color: "white",
+                    fontFamily: '"Roboto", sans-serif',
+                    fontSize: "0.8rem",
+                    background:
+                      "linear-gradient(to right, #d4a76a, #a36e29)",
+                  }}
+                  disabled={false}
+                >
+                  Continue
+                </Button>
+              ) : (
+                <Button
+                  fullWidth
+                  variant="solid"
+                  color="neutral"
+                  size="lg"
+                  onClick={verifyOTPHandler}
+                  disabled={true}
+                  style={{
+                    fontFamily: '"Roboto", sans-serif',
+                    fontSize: "0.8rem",
+                  }}
+                >
+                  Continue
+                </Button>
+              )}
+            </Grid>
+          </Grid>
             <div className="actions">
               <Button className="btn-primary" onClick={verifyOTP}>
                 LOGIN

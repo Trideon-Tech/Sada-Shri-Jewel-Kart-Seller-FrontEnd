@@ -425,7 +425,7 @@ const Products = () => {
               }}
               onClick={confirmDelete}
             >
-              Delete
+              Disable
             </Button>
           </Box>
         </Box>

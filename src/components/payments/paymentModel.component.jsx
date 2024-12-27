@@ -73,13 +73,13 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
           </div>
           <div
             style={{
-              width: "50%",
+              width: "40%",
               height: "100%",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "flex-start",
-              marginRight: "auto",
+              marginRight: "0px",
             }}
           >
             <div
@@ -88,6 +88,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                 fontSize: "1.2rem",
                 color: "#333333",
                 fontFamily: '"Roboto", sans-serif',
+                width: "40%",
               }}
             >
               <b>Order : {payementDetails?.order_id}</b>
@@ -112,7 +113,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
               flexDirection: "column",
               justifyContent: "space-around",
               alignItems: "flex-start",
-              marginRight: "auto",
+              marginRight: "0px",
             }}
           >
             <p
@@ -135,13 +136,13 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
           </div>
           <div
             style={{
-              width: "15%",
+              width: "20%",
               height: "100%",
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-around",
               alignItems: "flex-start",
-              marginLeft: "auto",
+              marginLeft: "0px",
               marginRight: "20px",
             }}
           >

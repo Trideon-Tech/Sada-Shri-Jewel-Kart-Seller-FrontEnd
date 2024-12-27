@@ -57,7 +57,7 @@ const EditProduct = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   const [desc, setDesc] = useState();
-  const [purity, setPurity] = useState();
+  const [purity, setPurity] = useState('');
   const [customizationTypes, setCustomizationTypes] = useState([]);
   const [categoriesData, setCategoriesData] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -68,7 +68,7 @@ const EditProduct = () => {
     useState("");
   const [customizationOptions, setCustomizationOptions] = useState([]);
   const [dropdownValues, setDropdownValues] = useState();
-  const [metalType, setMetalType] = useState();
+  const [metalType, setMetalType] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [grossWeight, setGrossWeight] = useState();
   const [stoneWeight, setStoneWeight] = useState(0);
@@ -87,7 +87,7 @@ const EditProduct = () => {
   const [rate, setRate] = useState(0);
   const [amount, setAmount] = useState(0);
   const [stoneTotalAmount, setStoneTotalAmount] = useState(0);
-  const [stoneType, setStoneType] = useState();
+  const [stoneType, setStoneType] = useState('');
   const [stoneClass, setStoneClass] = useState();
   const [stoneCut, setStoneCut] = useState();
   const [stonePieces, setStonePieces] = useState();
@@ -98,7 +98,7 @@ const EditProduct = () => {
   const [stoneGSTPercent, setStoneGSTPercent] = useState();
   const [qualityName, setQualityName] = useState();
   const [size, setSize] = useState();
-  const [hsnCode, setHsnCode] = useState();
+  const [hsnCode, setHsnCode] = useState('');
   const [inventoryQty, setInventoryQty] = useState(false);
   const [showVideoDeleteDialog, setShowVideoDeleteDialog] = useState(false);
 
@@ -223,9 +223,10 @@ const EditProduct = () => {
       setSize(productData.size);
 
       const hsn = dropdownValues?.[0]?.customization_fields
-        .find((field) => field.name === "hsn")
+        .find((field) => field.name === 'hsn')
         ?.property_value.find((option) => option.name === productData.hsn);
-      setHsnCode(hsn ? hsn.name : "");
+      setHsnCode(hsn ? hsn.name : '');
+      console.log("hsn code", hsn);
 
       setInventoryQty(productData.quantity);
 
@@ -242,6 +243,8 @@ const EditProduct = () => {
       setWastagePercent(
         productData.customizations[0]?.metal_info?.wastage_prec || 0
       );
+      setMetalType(productData.customizations[0]?.metal_info?.metal);
+      setPurity(productData.customizations[0]?.metal_info?.quality);
       setWastageWeight(productData.customizations[0]?.metal_info?.wastage_wt);
       setNetWeightAfterWastage(
         productData.customizations[0]?.metal_info?.net_wt_after_wastage || 0
@@ -270,10 +273,11 @@ const EditProduct = () => {
       setStoneInternalWeight(
         productData.customizations[0]?.stone_info?.stone_wt
       );
-      setStoneGSTPercent(productData.customizations[0]?.stone_info?.gst_perc);
+      setStoneGSTPercent("stone " + stoneGSTPercent);
       setVideoIndex(productData.video.id);
       setVideo(productData.video.file);
       console.log(productData.video.file);
+      console.log(productData.customizations[0]?.stone_info?.gst_perc);
     } catch (error) {
       console.error("Error fetching product data:", error);
     }
@@ -689,6 +693,7 @@ const EditProduct = () => {
         const categories = categoriesResponse.data.response || [];
         setCategoriesData(() => categories);
         setRates(ratesResponse.data.response?.jewelry_prices || []);
+        console.log('dropdownResponse.data.response', dropdownResponse.data.response);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -1371,18 +1376,18 @@ const EditProduct = () => {
                     dropdownValues?.[0]?.customization_fields
                       .find((field) => field.name === "gold_quality")
                       ?.property_value.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
+                        <MenuItem key={option.name} value={option.name}>
                           {option.display_name}
                         </MenuItem>
                       ))}
                   {metalType === "silver" &&
                     dropdownValues?.[1]?.customization_fields
                       .find((field) => field.name === "silver_quality")
-                      ?.property_value.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
+                      ?.property_value.map((option) => { console.log("option", option); return (
+                        <MenuItem key={option.name} value={option.name}>
                           {option.display_name}
                         </MenuItem>
-                      ))}
+                      )})}
                 </Select>
               </FormControl>
             </Grid>

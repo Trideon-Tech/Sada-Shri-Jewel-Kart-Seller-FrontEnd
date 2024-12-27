@@ -89,13 +89,13 @@ const EditProduct = () => {
   const [stoneTotalAmount, setStoneTotalAmount] = useState(0);
   const [stoneType, setStoneType] = useState('');
   const [stoneClass, setStoneClass] = useState();
-  const [stoneCut, setStoneCut] = useState();
+  const [stoneCut, setStoneCut] = useState('');
   const [stonePieces, setStonePieces] = useState();
   const [stoneCarat, setStoneCarat] = useState();
-  const [stoneClarity, setStoneClarity] = useState();
+  const [stoneClarity, setStoneClarity] = useState('');
   const [stoneRate, setStoneRate] = useState();
   const [stoneInternalWeight, setStoneInternalWeight] = useState();
-  const [stoneGSTPercent, setStoneGSTPercent] = useState();
+  const [stoneGSTPercent, setStoneGSTPercent] = useState('');
   const [qualityName, setQualityName] = useState();
   const [size, setSize] = useState();
   const [hsnCode, setHsnCode] = useState('');
@@ -266,14 +266,17 @@ const EditProduct = () => {
       );
 
       //stone details
+      setStoneType(productData.customizations[0]?.stone_info?.stone_type);
+      setStoneClarity(productData.customizations[0]?.stone_info?.clarity);
       setStoneClass(productData.customizations[0]?.stone_info?.class);
+      setStoneCut(productData.customizations[0]?.stone_info?.cut);
       setStonePieces(productData.customizations[0]?.stone_info?.pieces);
       setStoneCarat(productData.customizations[0]?.stone_info?.carat);
       setStoneRate(productData.customizations[0]?.stone_info?.stone_rate);
       setStoneInternalWeight(
         productData.customizations[0]?.stone_info?.stone_wt
       );
-      setStoneGSTPercent("stone " + stoneGSTPercent);
+      setStoneGSTPercent(productData.customizations[0]?.stone_info?.gst_perc);
       setVideoIndex(productData.video.id);
       setVideo(productData.video.file);
       console.log(productData.video.file);

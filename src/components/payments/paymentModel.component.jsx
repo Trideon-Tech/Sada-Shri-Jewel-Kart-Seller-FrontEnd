@@ -1,11 +1,13 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, Button, Card, Divider, Modal } from "@mui/material";
+import { Box, Button, Card, Divider, Modal, Typography } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
 const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
   const [payementDetails, setPaymentDetails] = useState({});
   const [sellerBankDetails, setSellerBankDetails] = useState();
+  const [orderDetails, setOrderDetails] = useState([]);
+  const [products, setProducts] = useState([]);
   useEffect(() => {
     (async () => {
       console.log(selectedPaymentId);
@@ -13,18 +15,48 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
       if (!selectedPaymentId) return;
       if (!token) return;
 
-      const { data } = await axios.get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=payment_detail&order_record_id=${selectedPaymentId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      try {
+        const response = await axios.get(
+          `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=payment_detail&order_record_id=${selectedPaymentId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
-      setPaymentDetails(data?.response?.payment_list[0]);
-      setSellerBankDetails(data?.response?.payment_list[0]?.seller_bank[0]);
+        setPaymentDetails(response?.data?.response?.payment_list[0]);
+        setSellerBankDetails(response?.data?.response?.payment_list[0]?.seller_bank[0]);
+
+        // Get order details for each payment
+        response?.data?.response?.payment_list.forEach(async (payment_list) => {
+          await axios.get(
+            `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=order_details&order_id=${payment_list?.order_record_id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          ).then((response) => {
+            setOrderDetails(() => response.data.response);
+            console.log('orderResponse.data', response.data.response);
+
+            // make another api call to get product details
+            axios.get(
+              "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php?type=item",
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            )
+          });
+        });
+      } catch (error) {
+        console.error("Error fetching payment details:", error);
+      }
     })();
   }, [selectedPaymentId]);
 
@@ -638,6 +670,85 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
             </div>
           </div>
         </div>
+        <Divider />
+        
+        <div
+          className="card-content"
+          style={{ 
+            textAlign: "left", 
+            padding: "30px 50px",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "20px",
+            justifyContent: "flex-start"
+          }}
+        >
+          {orderDetails.map((order, index) => (
+            <Card
+              key={index}
+              elevation={2}
+              style={{
+                padding: "15px",
+                borderRadius: "10px",
+                width: "calc(33.33% - 20px)", // Show 3 cards per row with gap
+                minWidth: "250px",
+                flex: "0 1 auto"
+              }}
+            >
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
+                <div>
+                  <Typography
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "1.1rem",
+                      marginBottom: "8px",
+                      fontFamily: '"Roboto", sans-serif',
+                    }}
+                  >
+                    {order.product_name}
+                  </Typography>
+                  <Typography
+                    style={{
+                      color: "gray",
+                      fontSize: "0.9rem",
+                      fontFamily: '"Roboto", sans-serif',
+                    }}
+                  >
+                    SKU: {order.sku_code}
+                  </Typography>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <Typography
+                    style={{
+                      fontWeight: "bold",
+                      color: "#a36e29",
+                      fontSize: "1.1rem",
+                      fontFamily: '"Roboto", sans-serif',
+                    }}
+                  >
+                    ₹{order.price}
+                  </Typography>
+                  <Typography
+                    style={{
+                      color: "gray",
+                      fontSize: "0.9rem",
+                      fontFamily: '"Roboto", sans-serif',
+                    }}
+                  >
+                    Quantity: {order.quantity}
+                  </Typography>
+                </div>
+              </Box>
+            </Card>
+          ))}
+        </div>
+
         <Divider />
         <div
           style={{

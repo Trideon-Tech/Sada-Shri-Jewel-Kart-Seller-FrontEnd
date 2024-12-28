@@ -57,8 +57,10 @@ const Landing = () => {
                 <ChevronRight className="icon" />
               </Button>
               <Button className="btn-secondary">
-                <div className="btn-text">Know More</div>
-                <ChevronRight className="icon" />
+                <a href="https://blogs.sadashrijewelkart.com/seller-registration-guide/" target="_blank" rel="noopener noreferrer">
+                  <div className="btn-text">Know More <ChevronRight className="icon" /></div>
+                  
+                </a>
               </Button>
             </div>
           </div>

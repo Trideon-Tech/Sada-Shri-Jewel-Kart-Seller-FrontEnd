@@ -84,6 +84,22 @@ const RegistrationUserDetails = () => {
 
   const verifyOTPHandler = () => {
     const formData = new FormData();
+    if(firstName === "" || typeof firstName === "undefined"){
+      toast.warn("First Name is required!", generalToastStyle);
+      return;
+    }
+    if(lastName === "" || typeof lastName === "undefined"){
+      toast.warn("Last Name is required!", generalToastStyle);
+      return;
+    }
+    if(mobile === "" || typeof mobile === "undefined"){
+      toast.warn("Mobile is required!", generalToastStyle);
+      return;
+    }
+    if(otp === "" || typeof otp === "undefined"){
+      toast.warn("OTP is required!", generalToastStyle);
+      return;
+    }
     formData.append("type", "verify_otp");
     formData.append("mobile", `91${mobile}`);
     formData.append("otp", otp);
@@ -207,10 +223,7 @@ const RegistrationUserDetails = () => {
         </Grid>
       </Grid>
       <div className="divider" />
-      <div className="actions">
-        <Button className="btn-secondary" disabled={true}>
-          Prev. Step
-        </Button>
+      <div className="actions" style={{display: "flex", justifyContent: "flex-end"}}>
         <Button className="btn-primary" onClick={verifyOTPHandler}>
           {nextStepLoading ? (
             <ThemeProvider theme={theme}>

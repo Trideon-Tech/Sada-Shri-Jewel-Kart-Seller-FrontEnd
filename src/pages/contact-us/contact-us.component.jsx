@@ -7,6 +7,7 @@ import {
   ThemeProvider,
   Toolbar,
   Typography,
+  Box,
 } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
@@ -154,20 +155,35 @@ const ContactUs = () => {
                         setName(e.target.value);
                       }}
                     />
-                    <InputTextField
-                      title={"Email ID"}
-                      value={emailId}
-                      onEdit={(e) => {
-                        setEmailId(e.target.value);
+                    <Box
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        width: "100%",
+                        gap: "16px"
                       }}
-                    />
-                    <InputTextField
-                      title={"Phone Number"}
-                      value={phone}
-                      onEdit={(e) => {
-                        setPhone(e.target.value);
-                      }}
-                    />
+                    >
+                      <Box sx={{ flex: 1 }}>
+                        <InputTextField
+                          title={"Email ID"}
+                          value={emailId}
+                          onEdit={(e) => {
+                            setEmailId(e.target.value);
+                          }}
+                          style={{ width: "100%" }}
+                        />
+                      </Box>
+                      <Box sx={{ flex: 1 }}>
+                        <InputTextField
+                          title={"Phone Number"}
+                          value={phone}
+                          onEdit={(e) => {
+                            setPhone(e.target.value);
+                          }}
+                          style={{ width: "100%" }}
+                        />
+                      </Box>
+                    </Box>
                     <InputTextField
                       title={"Message"}
                       value={message}

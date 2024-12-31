@@ -98,6 +98,7 @@ const EditProduct = () => {
   const [stoneGSTPercent, setStoneGSTPercent] = useState('');
   const [qualityName, setQualityName] = useState();
   const [size, setSize] = useState();
+  const [tags, setTags] = useState();
   const [hsnCode, setHsnCode] = useState('');
   const [inventoryQty, setInventoryQty] = useState(false);
   const [showVideoDeleteDialog, setShowVideoDeleteDialog] = useState(false);
@@ -221,6 +222,7 @@ const EditProduct = () => {
       setSelectedSubcategory(subcategory ? subcategory.id : "");
 
       setSize(productData.size);
+      setTags(productData.tags);
 
       const hsn = dropdownValues?.[0]?.customization_fields
         .find((field) => field.name === 'hsn')
@@ -559,6 +561,7 @@ const EditProduct = () => {
         size: size || "",
         hsn: hsnCode || "",
         quantity: inventoryQty || 1,
+        tags: tags || "",
         metal: {
           metal: metalType || "",
           quality: qualityName || "",
@@ -575,7 +578,7 @@ const EditProduct = () => {
           stone_amount: stoneAmount || "",
           hallmark_charge: hallmarkCharge || "",
           rodium_charge: rodiumCharge || "",
-          gst_perc: gstPercent || "",
+          gst_perc: gstPercent || ""
         },
         stone: {
           stone_type: stoneType || "",
@@ -591,7 +594,7 @@ const EditProduct = () => {
       };
 
       const productResponse = await axios.put(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/update.php",
+        "http://localhost:5055/v1.0.0/seller/product/update.php",
         formData,
         {
           headers: {
@@ -1288,8 +1291,29 @@ const EditProduct = () => {
                 />
               </FormControl>
             </Grid>
+            <Grid item xs={1}>
+              <div className="label">Tags</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="tags"
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                  fullWidth
+                  placeholder="Enter Tags"
+                  inputProps={{ min: 0 }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector(".quill-container .ql-editor")
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
 
-            <Grid item xs={5.5}>
+            <Grid item xs={4.5}>
               <div className="label">Description</div>
               <TextField
                 multiline

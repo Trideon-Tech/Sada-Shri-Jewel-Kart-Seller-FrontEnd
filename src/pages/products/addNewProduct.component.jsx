@@ -61,6 +61,7 @@ const AddNewProduct = () => {
   const [metalType, setMetalType] = useState();
   const [quantity, setQuantity] = useState(1);
   const [grossWeight, setGrossWeight] = useState();
+  const [tags, setTags] = useState();
   const [stoneWeight, setStoneWeight] = useState(0);
   const [netWeight, setNetWeight] = useState();
   const [wastagePercent, setWastagePercent] = useState(0);
@@ -518,6 +519,7 @@ const AddNewProduct = () => {
         size: size || "",
         hsn: hsnCode || "",
         quantity: inventoryQty || 1,
+        tags: tags || "",
         metal: {
           metal: metalType || "",
           quality: qualityName || "",
@@ -534,7 +536,7 @@ const AddNewProduct = () => {
           stone_amount: stoneAmount || "",
           hallmark_charge: hallmarkCharge || "",
           rodium_charge: rodiumCharge || "",
-          gst_perc: gstPercent || "",
+          gst_perc: gstPercent || ""
         },
         stone: {
           stone_type: stoneType || "",
@@ -550,7 +552,7 @@ const AddNewProduct = () => {
       };
 
       const productResponse = await axios.post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/addProduct.php",
+        "http://localhost:5055/v1.0.0/seller/product/addProduct.php",
         formData,
         {
           headers: {
@@ -1163,6 +1165,27 @@ const AddNewProduct = () => {
               </FormControl>
             </Grid>
             <Grid item xs={1}>
+              <div className="label">Tags</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="tags"
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                  fullWidth
+                  placeholder="Enter Tags"
+                  inputProps={{ min: 0 }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector(".quill-container .ql-editor")
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1}>
               <div className="label">Quantity</div>
               <FormControl fullWidth>
                 <TextField
@@ -1187,7 +1210,7 @@ const AddNewProduct = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={5.5}>
+            <Grid item xs={4.5}>
               <div className="label">Description</div>
               <TextField
                 multiline

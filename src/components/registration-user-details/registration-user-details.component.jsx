@@ -84,19 +84,19 @@ const RegistrationUserDetails = () => {
 
   const verifyOTPHandler = () => {
     const formData = new FormData();
-    if(firstName === "" || typeof firstName === "undefined"){
+    if (firstName === "" || typeof firstName === "undefined") {
       toast.warn("First Name is required!", generalToastStyle);
       return;
     }
-    if(lastName === "" || typeof lastName === "undefined"){
+    if (lastName === "" || typeof lastName === "undefined") {
       toast.warn("Last Name is required!", generalToastStyle);
       return;
     }
-    if(mobile === "" || typeof mobile === "undefined"){
+    if (mobile === "" || typeof mobile === "undefined") {
       toast.warn("Mobile is required!", generalToastStyle);
       return;
     }
-    if(otp === "" || typeof otp === "undefined"){
+    if (otp === "" || typeof otp === "undefined") {
       toast.warn("OTP is required!", generalToastStyle);
       return;
     }
@@ -175,24 +175,67 @@ const RegistrationUserDetails = () => {
             onEdit={(e) => setLastName(e.target.value)}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={6} style={{ paddingRight: "0rem", display: "flex", justifyContent: "flex-end" }}>
+          <Button
+            variant="solid"
+            type="submit"
+            style={{
+              backgroundImage: sendOTPAdornment ? "linear-gradient(to right, #d4a76a, #a36e29)" : "linear-gradient(to right, #d4a76a, #a36e29)",
+              fontFamily: '"Roboto", sans-serif',
+              fontSize: "1rem",
+              color: "#fff",
+              fontWeight: "bold",
+              marginTop: "2.15rem",
+              height: "3.45rem",
+              width: "18%",
+              cursor: "default",
+              borderRadius: "4px 0 0 4px",
+              borderRight: "none"
+            }}
+          >
+            +91
+          </Button>
           <InputTextField
             title={"Mobile"}
             value={mobile}
+            style={{
+              marginLeft: "-5px"
+            }}
+            inputProps={{
+              style: {
+                borderRadius: "0",
+                borderLeft: "none",
+                width: "110%"
+              }
+            }}
             onEdit={(e) => {
-              if (e.target.value?.length > 11) return;
-              setMobile(e.target.value);
-              if (e.target.value.length === 10) activateSendOTPAdornment(true);
-              else activateSendOTPAdornment(false);
+              const value = e.target.value || '';
+              if (value.length > 10) return;
+              if(value.length < 10) {
+                activateSendOTPAdornment(false);
+              }
+              setMobile(value);
+              activateSendOTPAdornment(value.length === 10);
             }}
             adornment={
-              <InputAdornment position="end">
-                <Done
-                  className={
-                    sendOTPAdornment ? "adornment-active" : "adornment-inactive"
-                  }
-                  onClick={sendOTP}
-                />
+              <InputAdornment position="end" style={{ marginRight: "-13px" }}>
+                <Button
+                  variant="solid"
+                  type="submit"
+                  style={{
+                    backgroundImage: sendOTPAdornment ? "linear-gradient(to right, #d4a76a, #a36e29)" : "",
+                    backgroundColor: sendOTPAdornment ? "" : "#F0F4F8",
+                    fontFamily: '"Roboto", sans-serif',
+                    fontSize: "0.8rem",
+                    color: sendOTPAdornment ? "#fff" : "#9EA6AC",
+                    fontWeight: "bold",
+                    height: "3.4rem",
+                    width: "150%"
+                  }}
+                  onClick={() => sendOTPHandler()}
+                >
+                  Send OTP
+                </Button>
               </InputAdornment>
             }
           />
@@ -202,28 +245,37 @@ const RegistrationUserDetails = () => {
             title={"OTP"}
             value={otp}
             onEdit={(e) => {
-              if (e.target.value?.length > 4) return;
-              setOtp(e.target.value);
-              if (e.target.value.length === 6) activateVerifyOTPAdornment(true);
-              else activateVerifyOTPAdornment(false);
+              const value = e.target.value || '';
+              if (value.length > 4) return;
+              setOtp(value);
+              activateVerifyOTPAdornment(value.length === 4);
             }}
             adornment={
-              <InputAdornment position="end">
-                <Done
-                  className={
-                    verifyOTPAdornment
-                      ? "adornment-active"
-                      : "adornment-inactive"
-                  }
+              <InputAdornment position="end" style={{ marginRight: "-13px" }}>
+                <Button
+                  variant="solid"
+                  type="submit"
+                  style={{
+                    backgroundImage: verifyOTPAdornment ? "linear-gradient(to right, #d4a76a, #a36e29)" : "",
+                    backgroundColor: verifyOTPAdornment ? "" : "#F0F4F8",
+                    fontFamily: '"Roboto", sans-serif',
+                    fontSize: "0.8rem",
+                    color: verifyOTPAdornment ? "#fff" : "#9EA6AC",
+                    fontWeight: "bold",
+                    height: "3.4rem",
+                    width: "150%"
+                  }}
                   onClick={verifyOTP}
-                />
+                >
+                  Verify OTP
+                </Button>
               </InputAdornment>
             }
           />
         </Grid>
       </Grid>
       <div className="divider" />
-      <div className="actions" style={{display: "flex", justifyContent: "flex-end"}}>
+      <div className="actions" style={{ display: "flex", justifyContent: "flex-end" }}>
         <Button className="btn-primary" onClick={verifyOTPHandler}>
           {nextStepLoading ? (
             <ThemeProvider theme={theme}>

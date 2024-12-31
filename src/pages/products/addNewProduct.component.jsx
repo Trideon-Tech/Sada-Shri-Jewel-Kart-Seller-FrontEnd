@@ -552,7 +552,7 @@ const AddNewProduct = () => {
       };
 
       const productResponse = await axios.post(
-        "http://localhost:5055/v1.0.0/seller/product/addProduct.php",
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/addProduct.php",
         formData,
         {
           headers: {

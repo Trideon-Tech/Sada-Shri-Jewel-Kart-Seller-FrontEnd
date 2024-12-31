@@ -594,7 +594,7 @@ const EditProduct = () => {
       };
 
       const productResponse = await axios.put(
-        "http://localhost:5055/v1.0.0/seller/product/update.php",
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/update.php",
         formData,
         {
           headers: {

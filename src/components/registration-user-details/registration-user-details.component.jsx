@@ -6,6 +6,8 @@ import {
   Grid,
   InputAdornment,
   ThemeProvider,
+  TextField,
+  Label
 } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
@@ -175,69 +177,125 @@ const RegistrationUserDetails = () => {
             onEdit={(e) => setLastName(e.target.value)}
           />
         </Grid>
-        <Grid item xs={6} style={{ paddingRight: "0rem", display: "flex", justifyContent: "flex-end" }}>
-          <Button
-            variant="solid"
-            type="submit"
-            style={{
-              backgroundImage: sendOTPAdornment ? "linear-gradient(to right, #d4a76a, #a36e29)" : "linear-gradient(to right, #d4a76a, #a36e29)",
-              fontFamily: '"Roboto", sans-serif',
-              fontSize: "1rem",
-              color: "#fff",
-              fontWeight: "bold",
-              marginTop: "2.15rem",
-              height: "3.45rem",
-              width: "18%",
-              cursor: "default",
-              borderRadius: "4px 0 0 4px",
-              borderRight: "none"
-            }}
-          >
-            +91
-          </Button>
-          <InputTextField
-            title={"Mobile"}
+        <Grid item xs={6} className="padding-right">
+          <div className="label">Mobile</div>
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Enter Your Mobile Number"
+            required
             value={mobile}
-            style={{
-              marginLeft: "-5px"
+            onChange={(e) => {
+              if (Number.isInteger(Number(e.target.value)))
+                if (e.target.value.length <= 10) setMobile(e.target.value);
             }}
-            inputProps={{
-              style: {
-                borderRadius: "0",
-                borderLeft: "none",
-                width: "110%"
+            onKeyPress={(e) => {
+              if (e.key === "Enter" && mobile?.length === 10) {
+                sendOTPHandler();
               }
             }}
-            onEdit={(e) => {
-              const value = e.target.value || '';
-              if (value.length > 10) return;
-              if(value.length < 10) {
-                activateSendOTPAdornment(false);
-              }
-              setMobile(value);
-              activateSendOTPAdornment(value.length === 10);
-            }}
-            adornment={
-              <InputAdornment position="end" style={{ marginRight: "-13px" }}>
-                <Button
-                  variant="solid"
-                  type="submit"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment
+                  position="start"
                   style={{
-                    backgroundImage: sendOTPAdornment ? "linear-gradient(to right, #d4a76a, #a36e29)" : "",
-                    backgroundColor: sendOTPAdornment ? "" : "#F0F4F8",
-                    fontFamily: '"Roboto", sans-serif',
-                    fontSize: "0.8rem",
-                    color: sendOTPAdornment ? "#fff" : "#9EA6AC",
-                    fontWeight: "bold",
-                    height: "3.4rem",
-                    width: "150%"
+                    marginLeft: "-13px",
                   }}
-                  onClick={() => sendOTPHandler()}
                 >
-                  Send OTP
-                </Button>
-              </InputAdornment>
-            }
+                  <Button
+                    variant="solid"
+                    type="submit"
+                    style={{
+                      borderTopLeftRadius: "5px",
+                      borderBottomLeftRadius: "5px",
+                      borderTopRightRadius: 0,
+                      borderBottomRightRadius: 0,
+                      backgroundImage: "linear-gradient(to right, #d4a76a, #a36e29)",
+                      fontFamily: '"Roboto", sans-serif',
+                      fontSize: "0.8rem",
+                      color: "#fff",
+                      fontWeight: "bold",
+                      height: "3.4rem",
+                      padding: "0 1rem",
+                      minWidth: "4rem"
+                    }}
+                  >
+                    +91
+                  </Button>
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment
+                  position="end"
+                  style={{
+                    marginRight: "-13px",
+                  }}
+                >
+                  {mobile?.length > 9 ? (
+                    <Button
+                      variant="solid"
+                      loading={otpSent}
+                      type="submit"
+                      style={{
+                        borderTopLeftRadius: 0,
+                        borderBottomLeftRadius: 0,
+                        backgroundImage: "linear-gradient(to right, #d4a76a, #a36e29)",
+                        fontFamily: '"Roboto", sans-serif',
+                        fontSize: "0.8rem",
+                        color: "#fff",
+                        fontWeight: "bold",
+                        height: "3.4rem",
+                        padding: "0 1rem",
+                        minWidth: "6rem"
+                      }}
+                      onClick={() => sendOTPHandler()}
+                    >
+                      Send OTP
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="solid"
+                      color="neutral"
+                      type="submit"
+                      style={{
+                        borderTopLeftRadius: 0,
+                        borderBottomLeftRadius: 0,
+                        fontFamily: '"Roboto", sans-serif',
+                        backgroundColor: "#F0F4F8",
+                        fontSize: "0.8rem",
+                        color: "#9EA6AC",
+                        fontWeight: "bold",
+                        height: "3.4rem",
+                        padding: "0 1rem",
+                        minWidth: "4rem"
+                      }}
+                      disabled={true}
+                    >
+                      Send OTP
+                    </Button>
+                  )}
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              width: "100%",
+              "& input": {
+                fontFamily: '"Roboto", sans-serif',
+                fontSize: "0.8rem",
+                padding: "1.2rem 1rem"
+              },
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "rgba(0, 0, 0, 0.23)",
+                },
+                "&:hover fieldset": {
+                  borderColor: "rgba(0, 0, 0, 0.23)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#a36e29",
+                },
+              },
+            }}
           />
         </Grid>
         <Grid item xs={6}>

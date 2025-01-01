@@ -30,7 +30,7 @@
       border-radius: 100%;
     }
   }
-  
+
   .adornment-active {
     color: #a36e29;
     cursor: pointer;
@@ -66,4 +66,13 @@
       border: 1.5px solid #a36e29;
     }
   }
+}
+
+.label {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.padding-right {
+  padding-right: 50px;
 }

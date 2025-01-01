@@ -204,7 +204,6 @@ const EditProduct = () => {
 
       const productData = response.data.response;
       setProduct(productData);
-      console.log(productData);
 
       setOrigImages(productData.images);
       if (typeof productData.video !== "string") {
@@ -228,7 +227,6 @@ const EditProduct = () => {
         .find((field) => field.name === 'hsn')
         ?.property_value.find((option) => option.name === productData.hsn);
       setHsnCode(hsn ? hsn.name : '');
-      console.log("hsn code", hsn);
 
       setInventoryQty(productData.quantity);
 
@@ -247,25 +245,22 @@ const EditProduct = () => {
       );
       setMetalType(productData.customizations[0]?.metal_info?.metal);
       setPurity(productData.customizations[0]?.metal_info?.quality);
+
+      // Set the rate based on quality/purity
+      const metalQuality = productData.customizations[0]?.metal_info?.quality;
+      if (metalQuality) {
+        const rateKey = metalQuality === "silver22" ? "silver" : metalQuality;
+        setRate(rates[rateKey] || 0);
+      }
+
       setWastageWeight(productData.customizations[0]?.metal_info?.wastage_wt);
-      setNetWeightAfterWastage(
-        productData.customizations[0]?.metal_info?.net_wt_after_wastage || 0
-      );
-      setMakingChargeValue(
-        productData.customizations[0]?.metal_info?.making_charge_value
-      );
-      setMakingChargeAmount(
-        productData.customizations[0]?.metal_info?.making_charge_amount
-      );
-      setStoneAmount(
-        productData.customizations[0]?.metal_info?.stone_amount || 0
-      );
-      setHallmarkCharge(
-        productData.customizations[0]?.metal_info?.hallmark_charge || 0
-      );
-      setRodiumCharge(
-        productData.customizations[0]?.metal_info?.rodium_charge || 0
-      );
+      setNetWeightAfterWastage(productData.customizations[0]?.metal_info?.net_wt_after_wastage || 0);
+      setMakingChargeValue(productData.customizations[0]?.metal_info?.making_charge_value);
+      setMakingChargeAmount(productData.customizations[0]?.metal_info?.making_charge_amount);
+      setStoneAmount(productData.customizations[0]?.metal_info?.stone_amount || 0);
+      setHallmarkCharge(productData.customizations[0]?.metal_info?.hallmark_charge || 0);
+      setRodiumCharge(productData.customizations[0]?.metal_info?.rodium_charge || 0);
+      setGstPercent(productData.customizations[0]?.metal_info?.gst_perc || 3);
 
       //stone details
       setStoneType(productData.customizations[0]?.stone_info?.stone_type);
@@ -281,8 +276,6 @@ const EditProduct = () => {
       setStoneGSTPercent(productData.customizations[0]?.stone_info?.gst_perc);
       setVideoIndex(productData.video.id);
       setVideo(productData.video.file);
-      console.log(productData.video.file);
-      console.log(productData.customizations[0]?.stone_info?.gst_perc);
     } catch (error) {
       console.error("Error fetching product data:", error);
     }
@@ -313,7 +306,7 @@ const EditProduct = () => {
   const handleVideoChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     // Check file size
     if (file.size > 10 * 1024 * 1024) {
       toast.error("Video size exceeds 10MB limit");
@@ -324,7 +317,6 @@ const EditProduct = () => {
     // Set the video directly without creating a new Blob
     setVideo(file);
     fileInputRef.current.value = null;
-    console.log("Video set:", file);
   };
 
   const deleteExistingImage = async (index) => {
@@ -351,16 +343,16 @@ const EditProduct = () => {
   const deleteExistingVideo = async () => {
     let deleteVideo = origVideo;
     if (deleteVideo !== null) {
-    await axios.delete(
-      `https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        data: {
-          type: "infographics",
-          infographics_id: deleteVideo.id,
-        },
+      await axios.delete(
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: {
+            type: "infographics",
+            infographics_id: deleteVideo.id,
+          },
         }
       );
     }
@@ -699,7 +691,6 @@ const EditProduct = () => {
         const categories = categoriesResponse.data.response || [];
         setCategoriesData(() => categories);
         setRates(ratesResponse.data.response?.jewelry_prices || []);
-        console.log('dropdownResponse.data.response', dropdownResponse.data.response);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -1061,7 +1052,7 @@ const EditProduct = () => {
                       component="span"
                     >
                       <VideoCameraFront />
-                      Select Video      
+                      Select Video
                     </Button>
                   </label>
                   {video && (
@@ -1072,7 +1063,7 @@ const EditProduct = () => {
                             video instanceof File
                               ? URL.createObjectURL(video)
                               : "https://api.sadashrijewelkart.com/assets/" +
-                                video
+                              video
                           }
                           type="video/mp4"
                         />
@@ -1410,11 +1401,12 @@ const EditProduct = () => {
                   {metalType === "silver" &&
                     dropdownValues?.[1]?.customization_fields
                       .find((field) => field.name === "silver_quality")
-                      ?.property_value.map((option) => { console.log("option", option); return (
-                        <MenuItem key={option.name} value={option.name}>
-                          {option.display_name}
-                        </MenuItem>
-                      )})}
+                      ?.property_value.map((option) => {return (
+                          <MenuItem key={option.name} value={option.name}>
+                            {option.display_name}
+                          </MenuItem>
+                        )
+                      })}
                 </Select>
               </FormControl>
             </Grid>

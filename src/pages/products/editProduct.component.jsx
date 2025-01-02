@@ -744,6 +744,58 @@ const EditProduct = () => {
     makingChargeType,
   ]);
 
+  const handlePurityChange = (e) => {
+    setPurity(e.target.value);
+
+    let selectedOption;
+    if (metalType === "gold") {
+      selectedOption = dropdownValues?.[0]?.customization_fields
+        .find((field) => field.name === "gold_quality")
+        ?.property_value.find(
+          (opt) => opt.name === e.target.value
+        )?.name;
+    } else if (metalType === "silver") {
+      selectedOption = dropdownValues?.[1]?.customization_fields
+        .find((field) => field.name === "silver_quality")
+        ?.property_value.find(
+          (opt) => opt.name === e.target.value
+        )?.name;
+    }
+
+    setQualityName(selectedOption);
+
+    if (selectedOption) {
+      const rateKey = selectedOption === "silver22" ? "silver" : selectedOption;
+      setRate(rates[rateKey] || 0);
+    }
+  };
+
+  const handleMetalTypeChange = (e) => {
+    setMetalType(e.target.value);
+    setMakingChargeType(9);
+    setPurity(''); // Reset purity when metal type changes
+    setRate(0); // Reset rate when metal type changes
+  };
+
+  const handleMakingChargeValueChange = (e) => {
+    const value = e.target.value;
+    setMakingChargeValue(value);
+
+    if (makingChargeType == 6) {
+      setMakingChargeAmount(
+        (parseFloat(value) * parseFloat(netWeightAfterWastage || 0)).toFixed(2)
+      );
+    } else if (makingChargeType == 7 || makingChargeType == 8) {
+      setMakingChargeAmount(parseFloat(value || 0).toFixed(2));
+    } else if (makingChargeType == 9) {
+      setMakingChargeAmount(
+        parseFloat(
+          value * (rate / 100) * (netWeightAfterWastage || netWeight || 0)
+        ).toFixed(2)
+      );
+    }
+  };
+
   return (
     <div className="AddNewProduct">
       <ToastContainer />
@@ -1329,10 +1381,7 @@ const EditProduct = () => {
                 <Select
                   name="metalType"
                   value={metalType}
-                  onChange={(e) => {
-                    setMetalType(e.target.value);
-                    setMakingChargeType(9);
-                  }}
+                  onChange={handleMetalTypeChange}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
@@ -1353,36 +1402,7 @@ const EditProduct = () => {
                 <Select
                   name="purity"
                   value={purity}
-                  onChange={(e) => {
-                    setPurity(e.target.value);
-
-                    let selectedOption;
-                    if (metalType === "gold") {
-                      selectedOption = dropdownValues?.[0]?.customization_fields
-                        .find((field) => field.name === "gold_quality")
-                        ?.property_value.find(
-                          (opt) => opt.id === e.target.value
-                        )?.name;
-                    } else if (metalType === "silver") {
-                      selectedOption = dropdownValues?.[1]?.customization_fields
-                        .find((field) => field.name === "silver_quality")
-                        ?.property_value.find(
-                          (opt) => opt.id === e.target.value
-                        )?.name;
-                    }
-
-                    setQualityName(selectedOption);
-
-                    if (selectedOption) {
-                      setRate(
-                        rates[
-                        selectedOption === "silver22"
-                          ? "silver"
-                          : selectedOption
-                        ]
-                      );
-                    }
-                  }}
+                  onChange={handlePurityChange}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
@@ -1649,34 +1669,7 @@ const EditProduct = () => {
                   name="makingChargeValue"
                   type="number"
                   value={makingChargeValue}
-                  onChange={(e) => {
-                    setMakingChargeValue(e.target.value);
-
-                    if (makingChargeType == 6) {
-                      setMakingChargeAmount(
-                        (
-                          parseFloat(e.target.value) *
-                          parseFloat(netWeightAfterWastage)
-                        ).toFixed(2)
-                      );
-                    } else if (makingChargeType == 7) {
-                      setMakingChargeAmount(
-                        parseFloat(e.target.value).toFixed(2)
-                      );
-                    } else if (makingChargeType == 8) {
-                      setMakingChargeAmount(
-                        parseFloat(e.target.value).toFixed(2)
-                      );
-                    } else if (makingChargeType == 9) {
-                      setMakingChargeAmount(
-                        parseFloat(
-                          e.target.value *
-                          (rate / 100) *
-                          (netWeightAfterWastage || netWeight)
-                        ).toFixed(2)
-                      );
-                    }
-                  }}
+                  onChange={handleMakingChargeValueChange}
                   fullWidth
                   placeholder="Enter making charge value"
                   InputProps={{

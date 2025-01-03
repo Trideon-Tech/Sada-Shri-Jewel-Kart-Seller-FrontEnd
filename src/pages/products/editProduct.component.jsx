@@ -744,6 +744,24 @@ const EditProduct = () => {
     makingChargeType,
   ]);
 
+  useEffect(() => {
+    if (stoneInternalWeight && stoneRate) {
+      const baseStoneAmount = parseFloat(stoneInternalWeight) * parseFloat(stoneRate);
+      let totalStoneAmount = baseStoneAmount;
+      
+      // Add GST if present
+      if (stoneGSTPercent) {
+        totalStoneAmount += (baseStoneAmount * parseFloat(stoneGSTPercent)) / 100;
+      }
+      
+      setStoneTotalAmount(totalStoneAmount.toFixed(2));
+      setStoneAmount(totalStoneAmount.toFixed(2)); // Update stoneAmount to match stoneTotalAmount
+    } else {
+      setStoneTotalAmount(0);
+      setStoneAmount(0);
+    }
+  }, [stoneInternalWeight, stoneRate, stoneGSTPercent]);
+
   const handlePurityChange = (e) => {
     setPurity(e.target.value);
 

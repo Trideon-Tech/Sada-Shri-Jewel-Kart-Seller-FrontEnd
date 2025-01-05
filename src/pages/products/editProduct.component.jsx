@@ -249,8 +249,9 @@ const EditProduct = () => {
       // Set the rate based on quality/purity
       const metalQuality = productData.customizations[0]?.metal_info?.quality;
       if (metalQuality) {
-        const rateKey = metalQuality === "silver22" ? "silver" : metalQuality;
+        const rateKey = metalQuality.toLowerCase();
         setRate(rates[rateKey] || 0);
+        console.log("Metal Quality:", metalQuality, "Rate Key:", rateKey, "Rate:", rates[rateKey]);
       }
 
       setWastageWeight(productData.customizations[0]?.metal_info?.wastage_wt);
@@ -371,172 +372,6 @@ const EditProduct = () => {
   };
 
   const handleProductSave = async () => {
-    // Validate required fields
-    // if (!productName) {
-    //   toast.error("Please enter product name", generalToastStyle);
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!selectedCategory) {
-    //   toast.error("Please select a category", generalToastStyle);
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!selectedSubcategory) {
-    //   toast.error("Please select a subcategory", generalToastStyle);
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!desc) {
-    //   toast.error("Please enter product description", generalToastStyle);
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!inventoryQty) {
-    //   toast.error("Please enter product quantity", generalToastStyle);
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!images || images.length === 0) {
-    //   toast.error(
-    //     "Please select at least one product image",
-    //     generalToastStyle
-    //   );
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!video) {
-    //   toast.error("Please select a product video", generalToastStyle);
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!metalType && !stoneType) {
-    //   toast.error(
-    //     "Please select either metal type or stone type",
-    //     generalToastStyle
-    //   );
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (metalType) {
-    //   if (makingChargeType == 8) {
-    //     // Only validate making charge and GST for type 8
-    //     if (!makingChargeValue) {
-    //       toast.error("Please enter making charge value", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!makingChargeAmount) {
-    //       toast.error("Please enter making charge amount", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!gstPercent) {
-    //       console.log(gstPercent);
-    //       toast.error("Please enter GST percentage", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //   } else {
-    //     // Validate all fields for other types
-    //     if (!purity) {
-    //       toast.error("Please select quality/purity", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!quantity) {
-    //       toast.error("Please enter quantity", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!grossWeight) {
-    //       toast.error("Please enter gross weight", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!netWeight) {
-    //       toast.error("Please enter net weight", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!netWeightAfterWastage) {
-    //       toast.error(
-    //         "Please enter net weight after wastage",
-    //         generalToastStyle
-    //       );
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!makingChargeType) {
-    //       toast.error("Please select making charge type", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!makingChargeValue) {
-    //       toast.error("Please enter making charge value", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!makingChargeAmount) {
-    //       toast.error("Please enter making charge amount", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!hallmarkCharge) {
-    //       toast.error("Please enter hallmark charge", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!gstPercent) {
-    //       console.log(gstPercent);
-    //       toast.error("Please enter GST percentage", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //   }
-    // }
-    // if (stoneType) {
-    //   if (!stoneClass) {
-    //     toast.error("Please select stone class", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stoneClarity) {
-    //     toast.error("Please select stone clarity", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stoneCut) {
-    //     toast.error("Please select stone cut", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stonePieces) {
-    //     toast.error("Please enter number of stone pieces", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stoneCarat) {
-    //     toast.error("Please enter stone carat", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stoneInternalWeight) {
-    //     toast.error("Please enter stone weight", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stoneRate) {
-    //     toast.error("Please enter stone rate", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stoneGSTPercent) {
-    //     toast.error("Please enter stone GST percentage", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    // }
 
     try {
       // First save the product details
@@ -813,6 +648,125 @@ const EditProduct = () => {
       );
     }
   };
+
+  const calculateTotalPrice = (metalInfo, stoneInfo) => {
+    const metal = typeof metalInfo === 'string' ? JSON.parse(metalInfo) : metalInfo;
+    const stone = typeof stoneInfo === 'string' ? JSON.parse(stoneInfo) : stoneInfo;
+
+    const metalRate = rates[metal.quality] || 0;
+    console.log("Metal Rate:", metalRate);
+
+    // Calculate net weight
+    const netWeight = parseFloat(metal.gross_wt) - parseFloat(metal.stone_wt);
+    console.log("Net Weight:", netWeight);
+
+    const wastageWeight = netWeight * (parseFloat(metal.wastage_prec) / 100);
+    console.log("Wastage Weight:", wastageWeight);
+
+    const netWeightAfterWastage = netWeight + wastageWeight;
+    console.log("Net Weight After Wastage:", netWeightAfterWastage);
+
+    // Calculate metal base amount
+    let metalBaseAmount;
+    if (metal.making_charge_type === "8") {
+      metalBaseAmount = parseFloat(metal.making_charge_amount);
+    } else {
+      metalBaseAmount = netWeightAfterWastage * metalRate;
+      metalBaseAmount += parseFloat(metal.making_charge_amount) +
+        parseFloat(metal.stone_amount || 0) +
+        parseFloat(metal.hallmark_charge || 0) +
+        parseFloat(metal.rodium_charge || 0);
+    }
+    console.log("Metal Base Amount:", metalBaseAmount);
+
+    // Calculate GST for metal
+    const metalGst = metalBaseAmount * (parseFloat(metal.gst_perc) / 100);
+    console.log("Metal GST:", metalGst);
+
+    const metalNetAmount = metalBaseAmount + metalGst;
+    console.log("Metal Net Amount:", metalNetAmount);
+
+    // Stone calculations (already correct)
+    const stoneWeight = parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
+    console.log("Stone Weight:", stoneWeight);
+
+    const stoneBaseAmount = parseFloat(stone.stone_rate) * stoneWeight;
+    console.log("Stone Base Amount:", stoneBaseAmount);
+
+    const stoneGst = stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
+    console.log("Stone GST:", stoneGst);
+
+    const stoneNetAmount = stoneBaseAmount + stoneGst;
+    console.log("Stone Net Amount:", stoneNetAmount);
+
+    // Total price
+    const totalPrice = metalNetAmount + stoneNetAmount;
+    console.log("Total Price:", totalPrice);
+
+    return {
+      total_price: totalPrice.toFixed(2),
+      metal_calculation: {
+        net_weight: netWeight,
+        wastage_weight: wastageWeight,
+        net_weight_after_wastage: netWeightAfterWastage,
+        base_amount: metalBaseAmount,
+        gst_amount: metalGst,
+        net_amount: metalNetAmount
+      },
+      stone_calculation: {
+        stone_weight: stoneWeight,
+        base_amount: stoneBaseAmount,
+        gst_amount: stoneGst,
+        net_amount: stoneNetAmount
+      }
+    };
+  };
+
+  useEffect(() => {
+    if (product) {
+      const metalInfo = {
+        gross_wt: grossWeight,
+        stone_wt: stoneWeight,
+        wastage_prec: wastagePercent,
+        making_charge_type: makingChargeType,
+        making_charge_amount: makingChargeAmount,
+        stone_amount: stoneAmount,
+        hallmark_charge: hallmarkCharge,
+        rodium_charge: rodiumCharge,
+        gst_perc: gstPercent,
+        quality: purity,
+      };
+
+      const stoneInfo = {
+        pieces: stonePieces,
+        carat: stoneCarat,
+        stone_rate: stoneRate,
+        gst_perc: stoneGSTPercent,
+      };
+
+      console.log(metalInfo, stoneInfo);
+      const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
+      console.log("Price Details:", priceDetails);
+      setAmount(parseFloat(priceDetails.metal_calculation.net_amount));
+      setStoneTotalAmount(parseFloat(priceDetails.stone_calculation.net_amount));
+    }
+  }, [
+    grossWeight,
+    stoneWeight,
+    wastagePercent,
+    makingChargeType,
+    makingChargeAmount,
+    stoneAmount,
+    hallmarkCharge,
+    rodiumCharge,
+    gstPercent,
+    purity,
+    stonePieces,
+    stoneCarat,
+    stoneRate,
+    stoneGSTPercent,
+    product,
+  ]);
 
   return (
     <div className="AddNewProduct">
@@ -1215,7 +1169,7 @@ const EditProduct = () => {
               <div style={{ marginRight: "20px" }}>
                 <div>Metal Amount</div>
                 <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
-                  {amount.toFixed(2)}
+                  {Number(amount).toFixed(2)}
                 </div>
               </div>
               <div style={{ marginRight: "20px" }}>

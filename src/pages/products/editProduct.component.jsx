@@ -1635,7 +1635,7 @@ const EditProduct = () => {
               </FormControl>
             </Grid>
             <Grid item xs={1.5}>
-              <div className="label">MC</div>
+              <div className="label">MC %</div>
               <FormControl fullWidth>
                 <TextField
                   name="makingChargeValue"
@@ -1821,7 +1821,7 @@ const EditProduct = () => {
               </FormControl>
             </Grid>
             <Grid item xs={1.33}>
-              <div className="label">Class</div>
+              <div className="label">Color</div>
               <FormControl fullWidth>
                 <TextField
                   name="stoneClass"

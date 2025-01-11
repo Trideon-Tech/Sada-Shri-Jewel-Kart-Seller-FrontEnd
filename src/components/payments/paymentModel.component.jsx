@@ -850,7 +850,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontFamily: '"Roboto", sans-serif',
                 }}
               >
-                Rs {payementDetails?.commission_perc}
+                Rs {parseFloat(payementDetails?.commission_perc).toFixed(2)}
               </p>
             </div>
             <div
@@ -880,7 +880,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontFamily: '"Roboto", sans-serif',
                 }}
               >
-                Rs {payementDetails?.commission_gst}
+                Rs {parseFloat(payementDetails?.commission_gst).toFixed(2)}
               </p>
             </div>
             <div
@@ -951,7 +951,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontFamily: '"Roboto", sans-serif',
                 }}
               >
-                Rs {payementDetails?.tds_perc}
+                Rs {parseFloat(payementDetails?.tds_perc).toFixed(2)}
               </p>
             </div>
             <div
@@ -981,7 +981,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
                   fontFamily: '"Roboto", sans-serif',
                 }}
               >
-                Rs {payementDetails?.tcs_perc}
+                Rs {parseFloat(payementDetails?.tcs_perc).toFixed(2)}
               </p>
             </div>
           </Box>

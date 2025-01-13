@@ -308,12 +308,12 @@ const EditProduct = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Check file size
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("Video size exceeds 10MB limit");
-      e.target.value = null; // Clear the input
-      return;
-    }
+    // // Check file size
+    // if (file.size > 10 * 1024 * 1024) {
+    //   toast.error("Video size exceeds 10MB limit");
+    //   e.target.value = null; // Clear the input
+    //   return;
+    // }
 
     // Set the video directly without creating a new Blob
     setVideo(file);

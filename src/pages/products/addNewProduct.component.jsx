@@ -1093,12 +1093,12 @@ const AddNewProduct = () => {
                     id="videoInput"
                     onChange={(e) => {
                       const file = e.target.files[0];
-                      if (file && file.size > 10 * 1024 * 1024) {
-                        // 10MB in bytes
-                        toast.error("Video size exceeds 10MB limit");
-                        e.target.value = null; // Clear the input
-                        return;
-                      }
+                      // if (file && file.size > 10 * 1024 * 1024) {
+                      //   // 10MB in bytes
+                      //   toast.error("Video size exceeds 10MB limit");
+                      //   e.target.value = null; // Clear the input
+                      //   return;
+                      // }
                       handleVideoChange(e);
                     }}
                     style={{ display: "none" }}

@@ -895,7 +895,7 @@ const AddNewProduct = () => {
               fontFamily: '"Roboto", sans-serif',
             }}
           >
-            Are you sure you want to remove this image?
+            Are you sure you want to delete this image?
           </Typography>
         </DialogContent>
         <DialogActions>
@@ -924,7 +924,7 @@ const AddNewProduct = () => {
               },
             }}
           >
-            Yes
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
@@ -957,7 +957,7 @@ const AddNewProduct = () => {
               fontFamily: '"Roboto", sans-serif',
             }}
           >
-            Are you sure you want to remove this video?
+            Are you sure you want to delete this video?
           </Typography>
         </DialogContent>
         <DialogActions>
@@ -986,7 +986,7 @@ const AddNewProduct = () => {
               },
             }}
           >
-            Yes
+            Delete
           </Button>
         </DialogActions>
       </Dialog>

@@ -863,7 +863,7 @@ const EditProduct = () => {
               fontFamily: '"Roboto", sans-serif',
             }}
           >
-            Are you sure you want to remove this image?
+            Are you sure you want to delete this image?
           </Typography>
         </DialogContent>
         <DialogActions>
@@ -896,7 +896,7 @@ const EditProduct = () => {
               },
             }}
           >
-            Yes
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
@@ -910,7 +910,7 @@ const EditProduct = () => {
       >
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to remove this video?</Typography>
+          <Typography>Are you sure you want to delete this video?</Typography>
         </DialogContent>
         <DialogActions>
           <Button
@@ -938,7 +938,7 @@ const EditProduct = () => {
               },
             }}
           >
-            Yes
+            Delete
           </Button>
         </DialogActions>
       </Dialog>

@@ -1211,6 +1211,27 @@ const AddNewProduct = () => {
           </div>
           <Divider />
           <Grid container spacing={2}>
+          <Grid item xs={1}>
+              <div className="label">Tags</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="tags"
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                  fullWidth
+                  placeholder="Enter Tags"
+                  inputProps={{ min: 0 }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector(".quill-container .ql-editor")
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
             <Grid item xs={1.5}>
               <div className="label">Product Name</div>
               <FormControl fullWidth>
@@ -1332,27 +1353,6 @@ const AddNewProduct = () => {
                       </MenuItem>
                     ))}
                 </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={1}>
-              <div className="label">Tags</div>
-              <FormControl fullWidth>
-                <TextField
-                  name="tags"
-                  value={tags}
-                  onChange={(e) => setTags(e.target.value)}
-                  fullWidth
-                  placeholder="Enter Tags"
-                  inputProps={{ min: 0 }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      document
-                        .querySelector(".quill-container .ql-editor")
-                        ?.focus();
-                    }
-                  }}
-                />
               </FormControl>
             </Grid>
             <Grid item xs={1}>

@@ -583,12 +583,12 @@ const EditProduct = () => {
     if (stoneInternalWeight && stoneRate) {
       const baseStoneAmount = parseFloat(stoneInternalWeight) * parseFloat(stoneRate);
       let totalStoneAmount = baseStoneAmount;
-      
+
       // Add GST if present
       if (stoneGSTPercent) {
         totalStoneAmount += (baseStoneAmount * parseFloat(stoneGSTPercent)) / 100;
       }
-      
+
       setStoneTotalAmount(totalStoneAmount.toFixed(2));
       setStoneAmount(totalStoneAmount.toFixed(2)); // Update stoneAmount to match stoneTotalAmount
     } else {
@@ -1182,6 +1182,27 @@ const EditProduct = () => {
           </div>
           <Divider />
           <Grid container spacing={2}>
+            <Grid item xs={1}>
+              <div className="label">Tags</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="tags"
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                  fullWidth
+                  placeholder="Enter Tags"
+                  inputProps={{ min: 0 }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector(".quill-container .ql-editor")
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
             <Grid item xs={1.5}>
               <div className="label">Product Name</div>
               <FormControl fullWidth>
@@ -1306,27 +1327,6 @@ const EditProduct = () => {
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={1}>
-              <div className="label">Tags</div>
-              <FormControl fullWidth>
-                <TextField
-                  name="tags"
-                  value={tags}
-                  onChange={(e) => setTags(e.target.value)}
-                  fullWidth
-                  placeholder="Enter Tags"
-                  inputProps={{ min: 0 }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      document
-                        .querySelector(".quill-container .ql-editor")
-                        ?.focus();
-                    }
-                  }}
-                />
-              </FormControl>
-            </Grid>
 
             <Grid item xs={4.5}>
               <div className="label">Description</div>
@@ -1393,7 +1393,8 @@ const EditProduct = () => {
                   {metalType === "silver" &&
                     dropdownValues?.[1]?.customization_fields
                       .find((field) => field.name === "silver_quality")
-                      ?.property_value.map((option) => {return (
+                      ?.property_value.map((option) => {
+                        return (
                           <MenuItem key={option.name} value={option.name}>
                             {option.display_name}
                           </MenuItem>

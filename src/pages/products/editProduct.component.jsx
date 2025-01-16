@@ -123,7 +123,7 @@ const EditProduct = () => {
   const [deleteImageIndex, setDeleteImageIndex] = useState();
   const [deleteImageType, setDeleteImageType] = useState();
   const [productName, setProductName] = useState(productNameQuery);
-
+  const [discount, setDiscount] = useState(0);
   const fileInputRef = useRef(null);
 
 
@@ -274,6 +274,7 @@ const EditProduct = () => {
       setStoneInternalWeight(
         productData.customizations[0]?.stone_info?.stone_wt
       );
+      setDiscount(productData.discount_perc);
       setStoneGSTPercent(productData.customizations[0]?.stone_info?.gst_perc);
       setVideoIndex(productData.video.id);
       setVideo(productData.video.file);
@@ -389,6 +390,7 @@ const EditProduct = () => {
         hsn: hsnCode || "",
         quantity: inventoryQty || 1,
         tags: tags || "",
+        discount_perc: discount || "0",
         metal: {
           metal: metalType || "",
           quantity: quantity || "0",
@@ -1176,6 +1178,28 @@ const EditProduct = () => {
                 <div>Stone Amount</div>
                 <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
                   {parseFloat(stoneTotalAmount).toFixed(2)}
+                </div>
+              </div>
+              <div style={{ marginRight: "20px" }}>
+                <div>Total Amount</div>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {parseFloat(amount + stoneTotalAmount).toFixed(2)}
+                </div>
+              </div>
+              <div style={{ marginRight: "20px" }}>
+                <div>Discount %</div>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  <TextField
+                    type="number"
+                    value={discount}
+                    onChange={(e) => setDiscount(e.target.value)}
+                    style={{ width: "100px" }}
+                    InputProps={{
+                      style: {
+                        padding: "4px",
+                      },
+                    }}
+                  />
                 </div>
               </div>
             </div>

@@ -91,6 +91,7 @@ const AddNewProduct = () => {
   const [size, setSize] = useState();
   const [hsnCode, setHsnCode] = useState();
   const [inventoryQty, setInventoryQty] = useState(false);
+  const [discount, setDiscount] = useState(0);
 
   // Crop related states
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
@@ -690,6 +691,7 @@ const AddNewProduct = () => {
         hsn: hsnCode || "",
         quantity: inventoryQty || 1,
         tags: tags || "",
+        discount_perc: discount || "0",
         metal: {
           metal: metalType || "",
           quality: qualityName || "",
@@ -1205,6 +1207,30 @@ const AddNewProduct = () => {
                 <div>Stone Amount</div>
                 <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
                   {parseFloat(stoneTotalAmount).toFixed(2)}
+                </div>
+              </div>
+              <div style={{ marginRight: "20px" }}>
+                <div>Total Amount</div>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {parseFloat(amount + isNaN(stoneTotalAmount) ? 0 : stoneTotalAmount).toFixed(2)}
+                </div>
+              </div>
+              <div style={{ marginRight: "20px" }}>
+                <div>Discount %</div>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  <TextField
+                    type="number"
+                    value={discount}
+                    onChange={(e) => setDiscount(e.target.value)}
+                    fullWidth
+                    placeholder="Enter discount"
+                    style={{ width: "100px" }}
+                    InputProps={{
+                      style: {
+                        padding: "4px",
+                      },
+                    }}
+                  />
                 </div>
               </div>
             </div>

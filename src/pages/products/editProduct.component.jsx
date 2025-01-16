@@ -391,8 +391,8 @@ const EditProduct = () => {
         tags: tags || "",
         metal: {
           metal: metalType || "",
-          quality: qualityName || "",
           quantity: quantity || "0",
+          quality: purity || "",
           gross_wt: grossWeight || "0",
           stone_wt: stoneWeight || "0",
           net_wt: netWeight || "0",
@@ -1206,7 +1206,7 @@ const EditProduct = () => {
             <Grid item xs={1.5}>
               <div className="label">Product Name</div>
               <FormControl fullWidth>
-                <TextField name="Name" value={productName} disabled fullWidth />
+                <TextField name="Name" value={productName} fullWidth />
               </FormControl>
             </Grid>
             <Grid item xs={1}>

@@ -484,7 +484,8 @@ const EditProduct = () => {
       // Wait for all uploads to complete
       await Promise.all(uploadPromises);
       toast.success("Product saved successfully!");
-      navigate("/products");
+      setLoading(false);
+      // navigate("/products");
     } catch (error) {
       console.error("Error saving product:", error);
       setLoading(false);

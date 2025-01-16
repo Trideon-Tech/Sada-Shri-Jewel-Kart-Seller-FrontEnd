@@ -41,7 +41,9 @@ const Products = () => {
   let navigate = useNavigate();
   let token = localStorage.getItem("token");
   const [products, setProducts] = useState();
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(
+    localStorage.getItem("page") ? localStorage.getItem("page") : 0
+  );
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [productsLoaded, setProductsLoaded] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -73,6 +75,7 @@ const Products = () => {
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
+    localStorage.setItem("page", newPage);
   };
 
   const handleDeleteProduct = (productId) => {
@@ -101,6 +104,7 @@ const Products = () => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
+    localStorage.setItem("rowsPerPage", +event.target.value);
   };
 
   const handleAddNewProduct = () => {

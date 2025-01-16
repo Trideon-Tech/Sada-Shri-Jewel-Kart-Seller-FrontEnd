@@ -50,7 +50,7 @@ const EditProduct = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const productId = searchParams.get("id");
-  const productName = searchParams.get("name");
+  const productNameQuery = searchParams.get("name");
   const hash = searchParams.get("hash");
 
   const [loading, setLoading] = useState(false);
@@ -122,6 +122,7 @@ const EditProduct = () => {
   const [showDeleteImageDialog, setShowDeleteImageDialog] = useState(false);
   const [deleteImageIndex, setDeleteImageIndex] = useState();
   const [deleteImageType, setDeleteImageType] = useState();
+  const [productName, setProductName] = useState(productNameQuery);
 
   const fileInputRef = useRef(null);
 
@@ -262,7 +263,6 @@ const EditProduct = () => {
       setHallmarkCharge(productData.customizations[0]?.metal_info?.hallmark_charge || 0);
       setRodiumCharge(productData.customizations[0]?.metal_info?.rodium_charge || 0);
       setGstPercent(productData.customizations[0]?.metal_info?.gst_perc || 3);
-
       //stone details
       setStoneType(productData.customizations[0]?.stone_info?.stone_type);
       setStoneClarity(productData.customizations[0]?.stone_info?.clarity);
@@ -484,8 +484,7 @@ const EditProduct = () => {
       // Wait for all uploads to complete
       await Promise.all(uploadPromises);
       toast.success("Product saved successfully!");
-      setLoading(false);
-      // navigate("/products");
+      navigate("/products");
     } catch (error) {
       console.error("Error saving product:", error);
       setLoading(false);
@@ -1207,7 +1206,7 @@ const EditProduct = () => {
             <Grid item xs={1.5}>
               <div className="label">Product Name</div>
               <FormControl fullWidth>
-                <TextField name="Name" value={productName} fullWidth />
+                <TextField name="Name" value={productName} fullWidth onChange={(e) => setProductName(e.target.value)}/>
               </FormControl>
             </Grid>
             <Grid item xs={1}>

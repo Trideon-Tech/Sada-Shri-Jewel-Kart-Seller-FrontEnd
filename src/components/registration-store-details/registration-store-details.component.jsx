@@ -4,6 +4,7 @@ import {
   createTheme,
   Grid,
   ThemeProvider,
+  Tooltip
 } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
@@ -230,7 +231,11 @@ const RegistrationStoreDetails = () => {
         <Grid item xs={1} />
         <Grid item xs={5} className="image-item">
           <div className="info">
-            <div className="label">Brand Proof (Trademark Certificate)</div>
+            <Tooltip title={"Trademark Certificate, Corporate Registration Document or No Objection Claim(NOC)"} arrow>
+              <div className="label">
+                Brand Proof (Trademark Certificate, Cor...)
+              </div>
+            </Tooltip>
             <input
               type="file"
               id="brand-proof"

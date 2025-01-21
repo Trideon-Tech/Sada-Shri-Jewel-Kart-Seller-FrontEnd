@@ -39,6 +39,21 @@ const theme = createTheme({
   },
 });
 
+// Example HSN mapping
+const hsnMapping = {
+  "GOLD JEWELLERY": "Gold Jewelry - 7113",
+  "SILVER ARTICLES": "Silver Articles - 7114",
+  "SILVER JEWELLERY": "Silver Jewelry - 7113",
+  "GEMSTONE": "Gemstone Jewelry - 7113",
+  "DIAMOND JEWELLERY": "Diamond Jewelry - 7113 ",
+  // Add more mappings as needed
+};
+
+const typeMapping = {
+  "GOLD JEWELLERY": "gold",
+  "SILVER JEWELLERY": "silver",
+};
+
 const AddNewProduct = () => {
   let navigate = useNavigate();
   let token = localStorage.getItem("token");
@@ -47,7 +62,7 @@ const AddNewProduct = () => {
   const [video, setVideo] = useState(null);
   const [productName, setProductName] = useState();
   const [desc, setDesc] = useState();
-  const [purity, setPurity] = useState();
+  const [purity, setPurity] = useState("gold22");
   const [customizationTypes, setCustomizationTypes] = useState([]);
   const [categoriesData, setCategoriesData] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -58,7 +73,7 @@ const AddNewProduct = () => {
     useState("");
   const [customizationOptions, setCustomizationOptions] = useState([]);
   const [dropdownValues, setDropdownValues] = useState();
-  const [metalType, setMetalType] = useState();
+  const [metalType, setMetalType] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [grossWeight, setGrossWeight] = useState();
   const [tags, setTags] = useState();
@@ -89,10 +104,11 @@ const AddNewProduct = () => {
   const [stoneGSTPercent, setStoneGSTPercent] = useState();
   const [qualityName, setQualityName] = useState();
   const [size, setSize] = useState();
-  const [hsnCode, setHsnCode] = useState();
+  const [hsnCode, setHsnCode] = useState("");
   const [inventoryQty, setInventoryQty] = useState(false);
   const [discount, setDiscount] = useState(0);
-
+  const [stoneColor, setStoneColor] = useState();
+  const [totalAmount, setTotalAmount] = useState(0);
   // Crop related states
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState(null);
@@ -133,9 +149,9 @@ const AddNewProduct = () => {
       metalBaseAmount = parseFloat(metal.making_charge_amount);
     } else {
       console.log("Metal Rate:", metalRate);
-      console.log("netWeightAfterWastage:",netWeightAfterWastage);
+      console.log("netWeightAfterWastage:", netWeightAfterWastage);
       metalBaseAmount = parseFloat(netWeightAfterWastage * metalRate);
-      console.log("metalBaseAmount:",metalBaseAmount);
+      console.log("metalBaseAmount:", metalBaseAmount);
       metalBaseAmount += parseFloat(metal.making_charge_amount) +
         parseFloat(metal.stone_amount || 0) +
         parseFloat(metal.hallmark_charge || 0) +
@@ -207,28 +223,6 @@ const AddNewProduct = () => {
 
   const handlePurityChange = (e) => {
     setPurity(e.target.value);
-
-    let selectedOption;
-    if (metalType === "gold") {
-      selectedOption = dropdownValues?.[0]?.customization_fields
-        .find((field) => field.name === "gold_quality")
-        ?.property_value.find(
-          (opt) => opt.name === e.target.value
-        )?.name;
-    } else if (metalType === "silver") {
-      selectedOption = dropdownValues?.[1]?.customization_fields
-        .find((field) => field.name === "silver_quality")
-        ?.property_value.find(
-          (opt) => opt.name === e.target.value
-        )?.name;
-    }
-
-    setQualityName(selectedOption);
-
-    if (selectedOption) {
-      const rateKey = selectedOption === "silver22" ? "silver" : selectedOption;
-      setRate(rates[rateKey] || 0);
-    }
   };
 
   useEffect(() => {
@@ -257,8 +251,8 @@ const AddNewProduct = () => {
     setMakingChargeAmount(makingChargeAmount);
 
     const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
-    setAmount(parseFloat(priceDetails.total_price));
-    setStoneTotalAmount(parseFloat(priceDetails.stone_calculation.net_amount));
+    setStoneTotalAmount(parseFloat(isNaN(priceDetails.stone_calculation.net_amount) ? 0 : priceDetails.stone_calculation.net_amount));
+    setTotalAmount(parseFloat((isNaN(stoneTotalAmount) ? 0 : stoneTotalAmount) + amount));
   }, [
     grossWeight,
     stoneWeight,
@@ -277,6 +271,30 @@ const AddNewProduct = () => {
     netWeightAfterWastage,
     rate,
   ]);
+
+  useEffect(() => {
+    let selectedOption;
+    if (metalType === "gold") {
+      selectedOption = dropdownValues?.[0]?.customization_fields
+        .find((field) => field.name === "gold_quality")
+        ?.property_value.find(
+          (opt) => opt.name === purity
+        )?.name;
+    } else if (metalType === "silver") {
+      selectedOption = dropdownValues?.[1]?.customization_fields
+        .find((field) => field.name === "silver_quality")
+        ?.property_value.find(
+          (opt) => opt.name === purity
+        )?.name;
+    }
+
+    setQualityName(selectedOption);
+
+    if (selectedOption) {
+      const rateKey = selectedOption === "silver22" ? "silver" : selectedOption;
+      setRate(rates[rateKey] || 0);
+    }
+  }, [metalType, purity])
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -309,6 +327,7 @@ const AddNewProduct = () => {
     ])
       .then(([dropdownResponse, categoriesResponse, ratesResponse]) => {
         setDropdownValues(dropdownResponse.data.response);
+        console.log("dropdownResponse.data.response", dropdownResponse.data.response);
         const categories = categoriesResponse.data.response || [];
         setCategoriesData(categories);
         setRates(ratesResponse.data.response.jewelry_prices);
@@ -798,8 +817,15 @@ const AddNewProduct = () => {
 
   const handleCategoryChange = (e) => {
     const categoryId = e.target.value;
+    const selectedCategory = categoriesData.find(category => category.id === categoryId);
     setSelectedCategory(categoryId);
-    setSelectedSubcategory("");
+
+    if (selectedCategory) {
+      const hsn = hsnMapping[selectedCategory.name];
+      console.log("hsn", hsn);
+      setHsnCode(hsn || "");
+      setMetalType(typeMapping[selectedCategory.name] || "");
+    }
   };
 
   return (
@@ -1212,7 +1238,7 @@ const AddNewProduct = () => {
               <div style={{ marginRight: "20px" }}>
                 <div>Total Amount</div>
                 <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
-                  {parseFloat(amount + isNaN(stoneTotalAmount) ? 0 : stoneTotalAmount).toFixed(2)}
+                  {parseFloat(totalAmount).toFixed(2)}
                 </div>
               </div>
               <div style={{ marginRight: "20px" }}>
@@ -1237,7 +1263,7 @@ const AddNewProduct = () => {
           </div>
           <Divider />
           <Grid container spacing={2}>
-          <Grid item xs={1}>
+            <Grid item xs={1}>
               <div className="label">Tags</div>
               <FormControl fullWidth>
                 <TextField
@@ -1374,7 +1400,7 @@ const AddNewProduct = () => {
                   {dropdownValues?.[0]?.customization_fields
                     .find((field) => field.name === "hsn")
                     ?.property_value.map((option) => (
-                      <MenuItem key={option.name} value={option.name}>
+                      <MenuItem key={option.name} value={option.name.replace(/\n/g, '').replace(/&NoBreak;/g, '')}>
                         {option.display_name}
                       </MenuItem>
                     ))}
@@ -1472,12 +1498,11 @@ const AddNewProduct = () => {
                   {metalType === "silver" &&
                     dropdownValues?.[1]?.customization_fields
                       .find((field) => field.name === "silver_quality")
-                      ?.property_value.map((option) => {return (
-                          <MenuItem key={option.name} value={option.name}>
-                            {option.display_name}
-                          </MenuItem>
-                        )
-                      })}
+                      ?.property_value.map((option) => (
+                        <MenuItem key={option.name} value={option.name}>
+                          {option.display_name}
+                        </MenuItem>
+                      ))}
                 </Select>
               </FormControl>
             </Grid>
@@ -1902,24 +1927,21 @@ const AddNewProduct = () => {
               </FormControl>
             </Grid>
             <Grid item xs={1.33}>
-              <div className="label">Class</div>
+              <div className="label">Color</div>
               <FormControl fullWidth>
-                <TextField
-                  name="stoneClass"
-                  type="text"
-                  value={stoneClass}
-                  onChange={(e) => setStoneClass(e.target.value)}
-                  fullWidth
-                  placeholder="Enter class"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      document
-                        .querySelector('input[name="stoneClarity"]')
-                        ?.focus();
-                    }
-                  }}
-                />
+                <Select
+                  name="stoneColor"
+                  value={stoneColor}
+                  onChange={(e) => setStoneColor(e.target.value)}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "color")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
               </FormControl>
             </Grid>
             <Grid item xs={1.33}>
@@ -2056,9 +2078,9 @@ const AddNewProduct = () => {
                     const total =
                       stoneInternalWeight && e.target.value
                         ? (
-                            parseFloat(stoneInternalWeight) *
-                            parseFloat(e.target.value)
-                          ).toFixed(2)
+                          parseFloat(stoneInternalWeight) *
+                          parseFloat(e.target.value)
+                        ).toFixed(2)
                         : 0;
                     setStoneTotalAmount(total);
                   }}
@@ -2082,7 +2104,7 @@ const AddNewProduct = () => {
                     const baseAmount =
                       stoneInternalWeight && stoneRate
                         ? parseFloat(stoneInternalWeight) *
-                          parseFloat(stoneRate)
+                        parseFloat(stoneRate)
                         : 0;
                     const gstAmount =
                       baseAmount * (parseFloat(e.target.value) / 100);

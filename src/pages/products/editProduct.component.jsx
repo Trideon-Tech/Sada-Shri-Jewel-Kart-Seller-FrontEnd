@@ -102,6 +102,7 @@ const EditProduct = () => {
   const [hsnCode, setHsnCode] = useState('');
   const [inventoryQty, setInventoryQty] = useState(false);
   const [showVideoDeleteDialog, setShowVideoDeleteDialog] = useState(false);
+  const [stoneColor, setStoneColor] = useState('');
 
   const [origImages, setOrigImages] = useState([]);
   const [images, setImages] = useState([]);
@@ -592,10 +593,8 @@ const EditProduct = () => {
       }
 
       setStoneTotalAmount(totalStoneAmount.toFixed(2));
-      setStoneAmount(totalStoneAmount.toFixed(2)); // Update stoneAmount to match stoneTotalAmount
     } else {
       setStoneTotalAmount(0);
-      setStoneAmount(0);
     }
   }, [stoneInternalWeight, stoneRate, stoneGSTPercent]);
 
@@ -749,7 +748,7 @@ const EditProduct = () => {
       console.log(metalInfo, stoneInfo);
       const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
       console.log("Price Details:", priceDetails);
-      setAmount(parseFloat(priceDetails.metal_calculation.net_amount));
+      // setAmount(parseFloat(priceDetails.metal_calculation.net_amount));
       setStoneTotalAmount(parseFloat(priceDetails.stone_calculation.net_amount));
     }
   }, [
@@ -1230,7 +1229,7 @@ const EditProduct = () => {
             <Grid item xs={1.5}>
               <div className="label">Product Name</div>
               <FormControl fullWidth>
-                <TextField name="Name" value={productName} fullWidth onChange={(e) => setProductName(e.target.value)}/>
+                <TextField name="Name" value={productName} fullWidth onChange={(e) => setProductName(e.target.value)} />
               </FormControl>
             </Grid>
             <Grid item xs={1}>
@@ -1493,6 +1492,7 @@ const EditProduct = () => {
                     setNetWeightAfterWastage(
                       grossWeight - e.target.value + wastageWeight
                     );
+                    console.log("values", grossWeight, e.target.value, wastageWeight, netWeightAfterWastage);
                   }}
                   fullWidth
                   placeholder="Enter stone weight"
@@ -1550,7 +1550,7 @@ const EditProduct = () => {
                       (grossWeight - stoneWeight) * (e.target.value / 100)
                     );
                     setNetWeightAfterWastage(
-                      (grossWeight - stoneWeight) * (1 + e.target.value / 100)
+                      (grossWeight - stoneWeight) + wastageWeight
                     );
                   }}
                   fullWidth
@@ -1848,22 +1848,19 @@ const EditProduct = () => {
             <Grid item xs={1.33}>
               <div className="label">Color</div>
               <FormControl fullWidth>
-                <TextField
-                  name="stoneClass"
-                  type="text"
-                  value={stoneClass}
-                  onChange={(e) => setStoneClass(e.target.value)}
-                  fullWidth
-                  placeholder="Enter class"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      document
-                        .querySelector('input[name="stoneClarity"]')
-                        ?.focus();
-                    }
-                  }}
-                />
+                <Select
+                  name="stoneColor"
+                  value={stoneColor}
+                  onChange={(e) => setStoneColor(e.target.value)}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "color")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
               </FormControl>
             </Grid>
             <Grid item xs={1.33}>

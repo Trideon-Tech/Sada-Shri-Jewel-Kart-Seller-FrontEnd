@@ -154,7 +154,7 @@ const Profile = () => {
         });
     }
 
-    toast("Update success!", generalToastStyle);
+    toast("Successfully saved!", generalToastStyle);
   };
 
   return (

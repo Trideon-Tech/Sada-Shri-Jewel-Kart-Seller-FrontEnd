@@ -134,10 +134,6 @@ const ContactUs = () => {
                   </Typography>
                   <br />
                   <Typography variant="body1">
-                    <strong>Contact number:</strong> +91 9380179994
-                  </Typography>
-                  <br />
-                  <Typography variant="body1">
                     #1323/1324, 2nd floor, 3rd phase, B-sector, Sanitary core
                     site, New Town, Yelhanka, Bangalore - 560064
                   </Typography>

@@ -228,7 +228,8 @@ const EditProduct = () => {
       const hsn = dropdownValues?.[0]?.customization_fields
         .find((field) => field.name === 'hsn')
         ?.property_value.find((option) => option.name === productData.hsn);
-      setHsnCode(hsn ? hsn.name : '');
+
+      setHsnCode('Gold Jewelry - 7113');
 
       setInventoryQty(productData.quantity);
 
@@ -253,7 +254,6 @@ const EditProduct = () => {
       if (metalQuality) {
         const rateKey = metalQuality.toLowerCase();
         setRate(rates[rateKey] || 0);
-        console.log("Metal Quality:", metalQuality, "Rate Key:", rateKey, "Rate:", rates[rateKey]);
       }
 
       setWastageWeight(productData.customizations[0]?.metal_info?.wastage_wt);
@@ -272,6 +272,7 @@ const EditProduct = () => {
       setStonePieces(productData.customizations[0]?.stone_info?.pieces);
       setStoneCarat(productData.customizations[0]?.stone_info?.carat);
       setStoneRate(productData.customizations[0]?.stone_info?.stone_rate);
+      setStoneColor(productData.customizations[0]?.stone_info?.color);
       setStoneInternalWeight(
         productData.customizations[0]?.stone_info?.stone_wt
       );
@@ -655,17 +656,13 @@ const EditProduct = () => {
     const stone = typeof stoneInfo === 'string' ? JSON.parse(stoneInfo) : stoneInfo;
 
     const metalRate = rates[metal.quality] || 0;
-    console.log("Metal Rate:", metalRate);
 
     // Calculate net weight
     const netWeight = parseFloat(metal.gross_wt) - parseFloat(metal.stone_wt);
-    console.log("Net Weight:", netWeight);
 
     const wastageWeight = netWeight * (parseFloat(metal.wastage_prec) / 100);
-    console.log("Wastage Weight:", wastageWeight);
 
     const netWeightAfterWastage = netWeight + wastageWeight;
-    console.log("Net Weight After Wastage:", netWeightAfterWastage);
 
     // Calculate metal base amount
     let metalBaseAmount;
@@ -678,31 +675,23 @@ const EditProduct = () => {
         parseFloat(metal.hallmark_charge || 0) +
         parseFloat(metal.rodium_charge || 0);
     }
-    console.log("Metal Base Amount:", metalBaseAmount);
 
     // Calculate GST for metal
     const metalGst = metalBaseAmount * (parseFloat(metal.gst_perc) / 100);
-    console.log("Metal GST:", metalGst);
 
     const metalNetAmount = metalBaseAmount + metalGst;
-    console.log("Metal Net Amount:", metalNetAmount);
 
     // Stone calculations (already correct)
     const stoneWeight = parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
-    console.log("Stone Weight:", stoneWeight);
 
     const stoneBaseAmount = parseFloat(stone.stone_rate) * stoneWeight;
-    console.log("Stone Base Amount:", stoneBaseAmount);
 
     const stoneGst = stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
-    console.log("Stone GST:", stoneGst);
 
     const stoneNetAmount = stoneBaseAmount + stoneGst;
-    console.log("Stone Net Amount:", stoneNetAmount);
 
     // Total price
     const totalPrice = metalNetAmount + stoneNetAmount;
-    console.log("Total Price:", totalPrice);
 
     return {
       total_price: totalPrice.toFixed(2),
@@ -745,9 +734,7 @@ const EditProduct = () => {
         gst_perc: stoneGSTPercent,
       };
 
-      console.log(metalInfo, stoneInfo);
       const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
-      console.log("Price Details:", priceDetails);
       // setAmount(parseFloat(priceDetails.metal_calculation.net_amount));
       setStoneTotalAmount(parseFloat(priceDetails.stone_calculation.net_amount));
     }
@@ -1492,7 +1479,6 @@ const EditProduct = () => {
                     setNetWeightAfterWastage(
                       grossWeight - e.target.value + wastageWeight
                     );
-                    console.log("values", grossWeight, e.target.value, wastageWeight, netWeightAfterWastage);
                   }}
                   fullWidth
                   placeholder="Enter stone weight"

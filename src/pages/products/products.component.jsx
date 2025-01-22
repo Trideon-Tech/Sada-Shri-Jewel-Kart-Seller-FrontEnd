@@ -181,7 +181,7 @@ const Products = () => {
                           tabIndex={-1}
                           key={row.id}
                         >
-                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{index + (page * rowsPerPage + 1)}</TableCell>
                           <TableCell>{row.created_at}</TableCell>
                           <TableCell className="name-content">
                             <img

@@ -1933,7 +1933,7 @@ const AddNewProduct = () => {
                   {dropdownValues?.[0]?.customization_fields
                     .find((field) => field.name === "color")
                     ?.property_value.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
+                      <MenuItem key={option.id} value={option.name}>
                         {option.display_name}
                       </MenuItem>
                     ))}

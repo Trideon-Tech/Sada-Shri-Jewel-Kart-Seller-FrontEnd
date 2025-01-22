@@ -159,6 +159,7 @@ const Products = () => {
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
+                    <TableCell>Index</TableCell>
                     <TableCell>Created On</TableCell>
                     <TableCell>Name</TableCell>
                     <TableCell>Price</TableCell>
@@ -171,6 +172,7 @@ const Products = () => {
                 <TableBody>
                   {products
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
                     .map((row) => {
                       return (
                         <TableRow
@@ -179,6 +181,7 @@ const Products = () => {
                           tabIndex={-1}
                           key={row.id}
                         >
+                          <TableCell>{row.id + 1}</TableCell>
                           <TableCell>{row.created_at}</TableCell>
                           <TableCell className="name-content">
                             <img

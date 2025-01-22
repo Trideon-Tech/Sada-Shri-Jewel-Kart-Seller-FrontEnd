@@ -412,7 +412,7 @@ const EditProduct = () => {
         },
         stone: {
           stone_type: stoneType || "",
-          class: stoneClass || "",
+          color: stoneColor || "",
           clarity: stoneClarity || "",
           cut: stoneCut || "",
           pieces: stonePieces || "0",

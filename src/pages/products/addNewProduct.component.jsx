@@ -128,60 +128,55 @@ const AddNewProduct = () => {
     const metal = typeof metalInfo === 'string' ? JSON.parse(metalInfo) : metalInfo;
     const stone = typeof stoneInfo === 'string' ? JSON.parse(stoneInfo) : stoneInfo;
 
-    console.log("Metal info:", metalInfo);
-    console.log("Metal rates:", metal.quality);
     const metalRate = rates[metal.quality_name] || 0;
-    console.log("Metal Rate:", metalRate);
-
     // Calculate net weight
     const netWeight = parseFloat(metal.gross_wt) - parseFloat(metal.stone_wt);
-    console.log("Net Weight:", netWeight);
-
     const wastageWeight = netWeight * (parseFloat(metal.wastage_prec) / 100);
-    console.log("Wastage Weight:", wastageWeight);
 
     const netWeightAfterWastage = netWeight + wastageWeight;
-    console.log("Net Weight After Wastage:", netWeightAfterWastage);
 
     // Calculate metal base amount
-    let metalBaseAmount;
+    let metalBaseAmount = 0;
+
     if (metal.making_charge_type === "8") {
-      metalBaseAmount = parseFloat(metal.making_charge_amount);
+      metalBaseAmount = parseFloat(metal.making_charge_amount || 0);
     } else {
-      console.log("Metal Rate:", metalRate);
-      console.log("netWeightAfterWastage:", netWeightAfterWastage);
       metalBaseAmount = parseFloat(netWeightAfterWastage * metalRate);
-      console.log("metalBaseAmount:", metalBaseAmount);
-      metalBaseAmount += parseFloat(metal.making_charge_amount) +
+      metalBaseAmount += parseFloat(metal.making_charge_amount || 0) +
         parseFloat(metal.stone_amount || 0) +
         parseFloat(metal.hallmark_charge || 0) +
         parseFloat(metal.rodium_charge || 0);
     }
-    console.log("Metal Base Amount:", metalBaseAmount);
+
+    // set making charge amount
+    if (makingChargeType == 6) {
+      setMakingChargeAmount(
+        (parseFloat(metal.making_charge_value) * parseFloat(netWeightAfterWastage || 0)).toFixed(2)
+      );
+    } else if (makingChargeType == 7 || makingChargeType == 8) {
+      setMakingChargeAmount(parseFloat(metal.making_charge_value || 0).toFixed(2));
+    } else if (makingChargeType == 9) {
+      setMakingChargeAmount(
+        parseFloat(
+          isNaN(metal.making_charge_value * (rate / 100) * (netWeightAfterWastage || netWeight || 0)) ? 0 : metal.making_charge_value * (rate / 100) * (netWeightAfterWastage || netWeight || 0)
+        ).toFixed(2)
+      );
+    }
 
     // Calculate GST for metal
     const metalGst = metalBaseAmount * (parseFloat(metal.gst_perc) / 100);
-    console.log("Metal GST:", metalGst);
-
     const metalNetAmount = metalBaseAmount + metalGst;
-    console.log("Metal Net Amount:", metalNetAmount);
 
     // Stone calculations (already correct)
     const stoneWeight = parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
-    console.log("Stone Weight:", stoneWeight);
-
     const stoneBaseAmount = parseFloat(stone.stone_rate) * stoneWeight;
-    console.log("Stone Base Amount:", stoneBaseAmount);
-
-    const stoneGst = stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
-    console.log("Stone GST:", stoneGst);
-
+    const stoneGst = isNaN(stoneBaseAmount * (parseFloat(stone.gst_perc) / 100)) ? 0 : stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
     const stoneNetAmount = stoneBaseAmount + stoneGst;
-    console.log("Stone Net Amount:", stoneNetAmount);
 
+    console.log("stoneNetAmount", stoneNetAmount);
     // Total price
-    const totalPrice = metalNetAmount + stoneNetAmount;
-    console.log("Total Price:", totalPrice);
+    const totalPrice = (metalNetAmount || 0) + (stoneNetAmount || 0);
+    console.log("totalPrice", totalPrice);
 
     return {
       total_price: totalPrice.toFixed(2),
@@ -252,7 +247,7 @@ const AddNewProduct = () => {
 
     const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
     setStoneTotalAmount(parseFloat(isNaN(priceDetails.stone_calculation.net_amount) ? 0 : priceDetails.stone_calculation.net_amount));
-    setTotalAmount(parseFloat((isNaN(stoneTotalAmount) ? 0 : stoneTotalAmount) + amount));
+    setTotalAmount(parseFloat(isNaN(priceDetails.total_price) ? 0 : priceDetails.total_price));
   }, [
     grossWeight,
     stoneWeight,
@@ -270,6 +265,7 @@ const AddNewProduct = () => {
     stoneGSTPercent,
     netWeightAfterWastage,
     rate,
+    makingChargeAmount
   ]);
 
   useEffect(() => {
@@ -731,7 +727,7 @@ const AddNewProduct = () => {
         },
         stone: {
           stone_type: stoneType || "",
-          class: stoneClass || "",
+          color: stoneColor || "",
           clarity: stoneClarity || "",
           cut: stoneCut || "0",
           pieces: stonePieces || "0",

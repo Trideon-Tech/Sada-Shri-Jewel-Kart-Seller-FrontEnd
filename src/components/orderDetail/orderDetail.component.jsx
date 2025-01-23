@@ -42,7 +42,7 @@ const ProductCardSmall = ({ orderDetails }) => {
         }}
       >
         <img
-          src={`https://api.sadashrijewelkart.com/assets/${orderDetails?.images[0]["file"]}`}
+          src={`${process.env.REACT_APP_API_BASE_URL}/assets/${orderDetails?.images[0]["file"]}`}
           alt=""
           style={{
             borderRadius: "12px",
@@ -127,7 +127,7 @@ const OrderDetail = ({ id }) => {
       if (!token) return;
 
       const { data } = await axios.get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=order_details&order_id=${id}`,
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/orders/all.php?type=order_details&order_id=${id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -170,7 +170,7 @@ const OrderDetail = ({ id }) => {
     formData.append("order_detail_ids", orderDetailIds);
 
     await axios.post(
-      `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php`,
+      `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/orders/all.php`,
       formData,
       {
         headers: {
@@ -181,7 +181,7 @@ const OrderDetail = ({ id }) => {
     );
 
     const { data } = await axios.get(
-      `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=order_details&order_id=${id}`,
+      `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/orders/all.php?type=order_details&order_id=${id}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -204,7 +204,7 @@ const OrderDetail = ({ id }) => {
     formData.append("order_detail_id", orderDetail?.order_detail_id);
 
     const { data } = await axios.post(
-      `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php`,
+      `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/orders/all.php`,
       formData,
       {
         headers: {
@@ -219,7 +219,7 @@ const OrderDetail = ({ id }) => {
     } else {
       (async () => {
         const { data } = await axios.get(
-          `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=order_details&order_id=${id}`,
+          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/orders/all.php?type=order_details&order_id=${id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -236,63 +236,6 @@ const OrderDetail = ({ id }) => {
       })();
     }
   };
-
-  // Verify HUID
-  // const verifyHuid = async () => {
-  //   try {
-  //     const response = await axios.post(
-  //       "https://kyc-api.surepass.io/api/v1/huid/verify",
-  //       {
-  //         id_number: huidValue,
-  //       },
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization:
-  //             "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyNDY1NTYxNiwianRpIjoiN2FhYWJkNjctYTk2OS00MTA0LWI1MjUtOWY4OGM5NWU0OTljIiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LnNhZGFzaHJpamV3ZWxAc3VyZXBhc3MuaW8iLCJuYmYiOjE3MjQ2NTU2MTYsImV4cCI6MjA0MDAxNTYxNiwiZW1haWwiOiJzYWRhc2hyaWpld2VsQHN1cmVwYXNzLmlvIiwidGVuYW50X2lkIjoibWFpbiIsInVzZXJfY2xhaW1zIjp7InNjb3BlcyI6WyJ1c2VyIl19fQ.XzfFcgWopXR8Nj31l3_Ke8g0fjp9QgW9ab4nn-Rl2ts",
-  //         },
-  //       }
-  //     );
-
-  //     console.log("HUID verification response:", response.data);
-
-  //     if (response.data.success) {
-  //       const formData = new FormData();
-  //       formData.append("type", "verify_product");
-  //       formData.append("order_detail_id", huidOrderDetailId);
-  //       formData.append(
-  //         "verification_details",
-  //         JSON.stringify(response.data.data)
-  //       );
-
-  //       const result = await axios.post(
-  //         "https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php",
-  //         formData,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //             "Content-Type": "multipart/form-data",
-  //           },
-  //         }
-  //       );
-
-  //       if (result.data) {
-  //         setHuidValue("");
-  //         toast.success("HUID verification successful", generalToastStyle);
-  //         // Wait for both API calls and toast to complete
-  //       }
-  //     } else {
-  //       toast.error("HUID verification failed", generalToastStyle);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error verifying HUID:", error);
-  //     if (error.response && error.response.status === 422) {
-  //       toast.error("Invalid HUID", generalToastStyle);
-  //     } else {
-  //       toast.error("Error verifying HUID", generalToastStyle);
-  //     }
-  //   }
-  // };
 
   return (
     <div
@@ -517,7 +460,7 @@ const OrderDetail = ({ id }) => {
                     }}
                   >
                     <img
-                      src={`https://api.sadashrijewelkart.com/assets/${orderDetails?.images[0]["file"]}`}
+                      src={`${process.env.REACT_APP_API_BASE_URL}/assets/${orderDetails?.images[0]["file"]}`}
                       alt=""
                       style={{
                         borderRadius: "12px",

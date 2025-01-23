@@ -65,7 +65,7 @@ const Login = () => {
     //call API for OTP verification
     axios
       .post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/otp.php",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/otp.php`,
         formData,
         {
           headers: {
@@ -95,7 +95,7 @@ const Login = () => {
 
     axios
       .get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/otp.php?type=verify_otp&otp=${otp}&mobile=${`${mobile}`}`,
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/otp.php?type=verify_otp&otp=${otp}&mobile=${`${mobile}`}`,
         {
           headers: {
             "Content-Type": "multipart/form-data",

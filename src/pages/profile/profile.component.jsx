@@ -31,7 +31,7 @@ const Profile = () => {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: "https://api.sadashrijewelkart.com/v1.0.0/seller/all.php?type=seller_details",
+      url: `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/all.php?type=seller_details`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -100,7 +100,7 @@ const Profile = () => {
 
       axios
         .post(
-          "https://api.sadashrijewelkart.com/v1.0.0/seller/add.php",
+          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/add.php`,
           imageData,
           {
             headers: {
@@ -134,7 +134,7 @@ const Profile = () => {
 
       axios
         .post(
-          "https://api.sadashrijewelkart.com/v1.0.0/seller/register.php",
+          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/register.php`,
           data,
           {
             headers: {
@@ -302,7 +302,7 @@ const Profile = () => {
                     src={
                       newProfileImage
                         ? URL.createObjectURL(newProfileImage)
-                        : `https://api.sadashrijewelkart.com/assets/${profileImage}`
+                        : `${process.env.REACT_APP_API_BASE_URL}/assets/${profileImage}`
                     }
                     style={{
                       width: "130px",
@@ -335,10 +335,10 @@ const Profile = () => {
                     src={
                       newCoverImage
                         ? URL.createObjectURL(newCoverImage)
-                        : `https://api.sadashrijewelkart.com/assets/${coverImage}`
+                        : `${process.env.REACT_APP_API_BASE_URL}/assets/${coverImage}`
                     }
-                    style={{ width: "100%" }}
                     alt="Cover Image not found!"
+                    style={{ width: "100%" }}
                   />
                 </Box>
               </Box>

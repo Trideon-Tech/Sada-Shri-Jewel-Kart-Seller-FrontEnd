@@ -22,7 +22,7 @@ import PaymentsPage from "./pages/payments/paymentsPage.component";
 
 function App() {
   const isMobile = window.innerWidth <= 768;
-
+  console.log(process.env.NODE_ENV);
   if (isMobile) {
     return (
       <div

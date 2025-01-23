@@ -196,7 +196,7 @@ const EditProduct = () => {
   const fetchProduct = async () => {
     try {
       const response = await axios.get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/details.php?name=${productName}&hash=${hash}`,
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/details.php?name=${productName}&hash=${hash}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -327,7 +327,7 @@ const EditProduct = () => {
     let deleteImage = origImages[index];
 
     await axios.delete(
-      `https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php`,
+      `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -348,7 +348,7 @@ const EditProduct = () => {
     let deleteVideo = origVideo;
     if (deleteVideo !== null) {
       await axios.delete(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php`,
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -425,7 +425,7 @@ const EditProduct = () => {
       };
 
       const productResponse = await axios.put(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/update.php",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/update.php`,
         formData,
         {
           headers: {
@@ -450,7 +450,7 @@ const EditProduct = () => {
 
         uploadPromises.push(
           axios.post(
-            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+            `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
             imageFormData,
             {
               headers: {
@@ -473,7 +473,7 @@ const EditProduct = () => {
 
         uploadPromises.push(
           axios.post(
-            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+            `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
             videoFormData,
             {
               headers: {
@@ -501,7 +501,7 @@ const EditProduct = () => {
 
     Promise.all([
       axios.get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/all.php?type=product_add_template",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/customization/all.php?type=product_add_template`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -509,7 +509,7 @@ const EditProduct = () => {
         }
       ),
       axios.get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php?type=category",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/all.php?type=category`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -517,7 +517,7 @@ const EditProduct = () => {
         }
       ),
       axios.get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/jewelleryInventory/jewellryInventory.php?type=get_latest",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/jewelleryInventory/jewellryInventory.php?type=get_latest`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -997,7 +997,7 @@ const EditProduct = () => {
                       origImages.map((image, index) => (
                         <div key={index} className="imagePreview">
                           <img
-                            src={`https://api.sadashrijewelkart.com/assets/${image.file}`}
+                            src={`${process.env.REACT_APP_API_BASE_URL}/assets/${image.file}`}
                             alt={`Preview ${index + 1}`}
                           />
                           <IconButton
@@ -1074,7 +1074,7 @@ const EditProduct = () => {
                           src={
                             video instanceof File
                               ? URL.createObjectURL(video)
-                              : "https://api.sadashrijewelkart.com/assets/" +
+                              : `${process.env.REACT_APP_API_BASE_URL}/assets/` +
                               video
                           }
                           type="video/mp4"

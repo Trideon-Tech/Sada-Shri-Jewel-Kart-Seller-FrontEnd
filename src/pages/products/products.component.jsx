@@ -4,6 +4,8 @@ import {
   CircularProgress,
   createTheme,
   Divider,
+  IconButton,
+  InputAdornment,
   Modal,
   Paper,
   Table,
@@ -20,7 +22,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
-import { Close, Done, Edit } from "@mui/icons-material";
+import { Clear, Close, Done, Edit } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { generalToastStyle } from "../../utils/toast.styles";
@@ -51,6 +53,8 @@ const Products = () => {
   const [editingId, setEditingId] = useState();
   const [editQuantity, setEditQuantity] = useState();
 
+  const [searchResults, setSearchResults] = useState([]);
+
   const getProductList = () => {
     axios
       .get(
@@ -64,6 +68,7 @@ const Products = () => {
       .then((response) => {
         console.log(response.data);
         setProducts(response.data.response);
+        setSearchResults(response.data.response);
         setProductsLoaded(true);
       })
       .catch((error) => {
@@ -126,6 +131,22 @@ const Products = () => {
     handleCloseDeleteDialog();
   };
 
+  const search = (query) => {
+    if (query === "") {
+      setSearchResults(products);
+      return;
+    }
+    const results = products.filter(
+      (product) =>
+        product.tags.toLowerCase().includes(query.toLowerCase()) ||
+        product.customizations.variants.options[0].metal_info.gross_wt
+          .toString()
+          .toLowerCase()
+          .includes(query.toLowerCase())
+    );
+    setSearchResults(results);
+  };
+
   useEffect(() => {
     getProductList();
   }, []);
@@ -135,10 +156,37 @@ const Products = () => {
       <ToastContainer />
       <div className="head">
         <div className="head-txt">Products</div>
-
-        <Button className="button" onClick={handleAddNewProduct}>
-          Add New Product +
-        </Button>
+        <div>
+          <TextField
+            variant="outlined"
+            placeholder="Search Products"
+            onChange={(e) => search(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => {
+                      search("");
+                      document.getElementById("searchField").value = "";
+                    }}
+                  >
+                    <Clear />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              marginRight: "16px",
+              width: "300px",
+              backgroundColor: "#fff",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+            id="searchField"
+          />
+          <Button className="button" onClick={handleAddNewProduct}>
+            Add New Product +
+          </Button>
+        </div>
       </div>
       <Divider />
       <ThemeProvider theme={theme}>
@@ -163,6 +211,8 @@ const Products = () => {
                     <TableCell>Created On</TableCell>
                     <TableCell>Name</TableCell>
                     <TableCell>Price</TableCell>
+                    <TableCell>Tag</TableCell>
+                    <TableCell>Gross Weight</TableCell>
                     <TableCell>Stock</TableCell>
                     <TableCell>Admin Verified</TableCell>
                     <TableCell>View in Store</TableCell>
@@ -170,9 +220,11 @@ const Products = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {products
+                  {searchResults
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+                    .sort(
+                      (a, b) => new Date(a.created_at) - new Date(b.created_at)
+                    )
                     .map((row, index) => {
                       return (
                         <TableRow
@@ -181,7 +233,9 @@ const Products = () => {
                           tabIndex={-1}
                           key={row.id}
                         >
-                          <TableCell>{index + (page * rowsPerPage + 1)}</TableCell>
+                          <TableCell>
+                            {index + (page * rowsPerPage + 1)}
+                          </TableCell>
                           <TableCell>{row.created_at}</TableCell>
                           <TableCell className="name-content">
                             <img
@@ -197,6 +251,10 @@ const Products = () => {
                           </TableCell>
                           <TableCell>
                             ₹{row.customizations.variants.options[0]?.price}
+                          </TableCell>
+                          <TableCell>{row.tags}</TableCell>
+                          <TableCell>
+                            {`${row.customizations.variants.options[0]?.metal_info.gross_wt} gm`}
                           </TableCell>
                           <TableCell style={{ position: "relative" }}>
                             {editingId === row.id ? (

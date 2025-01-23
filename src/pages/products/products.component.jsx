@@ -144,6 +144,7 @@ const Products = () => {
           .toLowerCase()
           .includes(query.toLowerCase())
     );
+    setPage(0);
     setSearchResults(results);
   };
 
@@ -203,7 +204,7 @@ const Products = () => {
               }}
             />
           ) : products && products.length > 0 ? (
-            <TableContainer sx={{ maxHeight: 850 }}>
+            <TableContainer sx={{ maxHeight: "70vh" }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>

@@ -39,6 +39,25 @@ const theme = createTheme({
   },
 });
 
+// Example HSN mapping
+const hsnMapping = {
+  "GOLD JEWELLERY": "Gold Jewelry - 7113",
+  "SILVER ARTICLES": "Silver Articles - 7114",
+  "SILVER JEWELLERY": "Silver Jewelry - 7113",
+  "GEMSTONE": "Gemstone Jewelry - 7113",
+  "DIAMOND JEWELLERY": "Diamond Jewelry - 7113 ",
+  // Add more mappings as needed
+};
+
+const typeMapping = {
+  "GOLD JEWELLERY": "gold",
+  "SILVER JEWELLERY": "silver",
+};
+
+const purityMapping = {
+  "GOLD JEWELLERY": "gold22",
+  "SILVER JEWELLERY": "silver22",
+};
 /* 
 Delete Image Types
 1. Existing Image
@@ -289,6 +308,16 @@ const EditProduct = () => {
     const categoryId = e.target.value;
     setSelectedCategory(categoryId);
     setSelectedSubcategory("");
+
+    // Find the category name from the categoriesData
+    const category = categoriesData.find(cat => cat.id === categoryId)?.name;
+
+    // Set HSN code, type, and purity based on the category name
+    if (category) {
+      setHsnCode(hsnMapping[category] || '');
+      setMetalType(typeMapping[category] || '');
+      setPurity(purityMapping[category] || ''); // Set purity based on category
+    }
   };
 
   const handleImageChange = (e) => {
@@ -1216,7 +1245,14 @@ const EditProduct = () => {
             <Grid item xs={1.5}>
               <div className="label">Product Name</div>
               <FormControl fullWidth>
-                <TextField name="Name" value={productName} fullWidth onChange={(e) => setProductName(e.target.value)} />
+                <TextField name="Name" value={productName} fullWidth onChange={(e) => setProductName(
+                  e.target.value
+                    .split(" ")
+                    .map(
+                      (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                    )
+                    .join(" ")
+                )} />
               </FormControl>
             </Grid>
             <Grid item xs={1}>

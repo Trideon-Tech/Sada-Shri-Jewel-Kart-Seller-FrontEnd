@@ -17,7 +17,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
 
       try {
         const response = await axios.get(
-          `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=payment_detail&order_record_id=${selectedPaymentId}`,
+          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/orders/all.php?type=payment_detail&order_record_id=${selectedPaymentId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -32,7 +32,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
         // Get order details for each payment
         response?.data?.response?.payment_list.forEach(async (payment_list) => {
           await axios.get(
-            `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=order_details&order_id=${payment_list?.order_record_id}`,
+            `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/orders/all.php?type=order_details&order_id=${payment_list?.order_record_id}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -45,7 +45,7 @@ const PaymentModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
 
             // make another api call to get product details
             axios.get(
-              "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php?type=item",
+              `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/all.php?type=item`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,

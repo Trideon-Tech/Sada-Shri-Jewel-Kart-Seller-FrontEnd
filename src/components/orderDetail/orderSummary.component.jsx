@@ -41,7 +41,7 @@ const OrderInfoCard = ({ orderDetail }) => {
         );
 
         const result = await axios.post(
-          "https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php",
+          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/orders/all.php`,
           formData,
           {
             headers: {
@@ -92,7 +92,7 @@ const OrderInfoCard = ({ orderDetail }) => {
         }}
       >
         <img
-          src={`https://api.sadashrijewelkart.com/assets/${orderDetail.images[0]["file"]}`}
+          src={`${process.env.REACT_APP_API_BASE_URL}/assets/${orderDetail.images[0]["file"]}`}
           alt=""
           style={{ width: "100%" }}
         />

@@ -65,7 +65,7 @@ const RegistrationBankDetails = () => {
 
       axios
         .post(
-          "https://api.sadashrijewelkart.com/v1.0.0/seller/add.php",
+          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/add.php`,
           formData,
           {
             headers: {
@@ -84,24 +84,6 @@ const RegistrationBankDetails = () => {
           toast.warn(error.response.data.message, generalToastStyle);
         });
     }
-    // const formData = new FormData();
-    // formData.append("mobile", registeredMobile);
-    // formData.append("accountNumber", accountNumber);
-    // formData.append("accountHolderName", accountHolderName);
-    // formData.append("ifsc", ifsc);
-    // formData.append("bankName", bankName);
-    // formData.append("key", "company_bank_account");
-    // axios
-    //   .post("https://api.sadashrijewelkart.com/v1.0.0/seller/add.php", formData)
-    //   .then((response) => {
-    //     // Handle the response
-    //     console.log("Response:", response.data);
-    //     navigate("/home");
-    //   })
-    //   .catch((error) => {
-    //     // Handle errors
-    //     console.error("Error:", error);
-    //   });
   };
   return (
     <div className="registration-bank-details">

@@ -39,6 +39,25 @@ const theme = createTheme({
   },
 });
 
+// Example HSN mapping
+const hsnMapping = {
+  "GOLD JEWELLERY": "Gold Jewelry - 7113",
+  "SILVER ARTICLES": "Silver Articles - 7114",
+  "SILVER JEWELLERY": "Silver Jewelry - 7113",
+  "GEMSTONE": "Gemstone Jewelry - 7113",
+  "DIAMOND JEWELLERY": "Diamond Jewelry - 7113 ",
+  // Add more mappings as needed
+};
+
+const typeMapping = {
+  "GOLD JEWELLERY": "gold",
+  "SILVER JEWELLERY": "silver",
+};
+
+const purityMapping = {
+  "GOLD JEWELLERY": "gold22",
+  "SILVER JEWELLERY": "silver22",
+};
 /* 
 Delete Image Types
 1. Existing Image
@@ -196,7 +215,7 @@ const EditProduct = () => {
   const fetchProduct = async () => {
     try {
       const response = await axios.get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/details.php?name=${productName}&hash=${hash}`,
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/details.php?name=${productName}&hash=${hash}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -289,6 +308,16 @@ const EditProduct = () => {
     const categoryId = e.target.value;
     setSelectedCategory(categoryId);
     setSelectedSubcategory("");
+
+    // Find the category name from the categoriesData
+    const category = categoriesData.find(cat => cat.id === categoryId)?.name;
+
+    // Set HSN code, type, and purity based on the category name
+    if (category) {
+      setHsnCode(hsnMapping[category] || '');
+      setMetalType(typeMapping[category] || '');
+      setPurity(purityMapping[category] || ''); // Set purity based on category
+    }
   };
 
   const handleImageChange = (e) => {
@@ -327,7 +356,7 @@ const EditProduct = () => {
     let deleteImage = origImages[index];
 
     await axios.delete(
-      `https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php`,
+      `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -348,7 +377,7 @@ const EditProduct = () => {
     let deleteVideo = origVideo;
     if (deleteVideo !== null) {
       await axios.delete(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php`,
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -425,7 +454,7 @@ const EditProduct = () => {
       };
 
       const productResponse = await axios.put(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/update.php",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/update.php`,
         formData,
         {
           headers: {
@@ -450,7 +479,7 @@ const EditProduct = () => {
 
         uploadPromises.push(
           axios.post(
-            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+            `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
             imageFormData,
             {
               headers: {
@@ -473,7 +502,7 @@ const EditProduct = () => {
 
         uploadPromises.push(
           axios.post(
-            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+            `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
             videoFormData,
             {
               headers: {
@@ -501,7 +530,7 @@ const EditProduct = () => {
 
     Promise.all([
       axios.get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/all.php?type=product_add_template",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/customization/all.php?type=product_add_template`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -509,7 +538,7 @@ const EditProduct = () => {
         }
       ),
       axios.get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php?type=category",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/all.php?type=category`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -517,7 +546,7 @@ const EditProduct = () => {
         }
       ),
       axios.get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/jewelleryInventory/jewellryInventory.php?type=get_latest",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/jewelleryInventory/jewellryInventory.php?type=get_latest`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -632,23 +661,68 @@ const EditProduct = () => {
     setRate(0); // Reset rate when metal type changes
   };
 
-  const handleMakingChargeValueChange = (e) => {
-    const value = e.target.value;
-    setMakingChargeValue(value);
+  const calculateMakingChargeAmount = () => {
+    console.log("Calculating Making Charge Amount");
+    console.log("Making Charge Type:", makingChargeType);
+    console.log("Net Weight After Wastage:", netWeightAfterWastage);
+    console.log("Making Charge Value:", makingChargeValue);
+    console.log("Rate:", rate);
 
-    if (makingChargeType == 6) {
+    if (makingChargeType === 6) {
       setMakingChargeAmount(
-        (parseFloat(value) * parseFloat(netWeightAfterWastage || 0)).toFixed(2)
+        (parseFloat(makingChargeValue) * parseFloat(netWeightAfterWastage || 0)).toFixed(2)
       );
-    } else if (makingChargeType == 7 || makingChargeType == 8) {
-      setMakingChargeAmount(parseFloat(value || 0).toFixed(2));
-    } else if (makingChargeType == 9) {
+    } else if (makingChargeType === 7 || makingChargeType === 8) {
+      setMakingChargeAmount(parseFloat(makingChargeValue || 0).toFixed(2));
+    } else if (makingChargeType === 9) {
       setMakingChargeAmount(
         parseFloat(
-          value * (rate / 100) * (netWeightAfterWastage || netWeight || 0)
+          makingChargeValue * (rate / 100) * (netWeightAfterWastage || netWeight || 0)
         ).toFixed(2)
       );
     }
+  };
+
+  const handleGrossWeightChange = (e) => {
+    const newGrossWeight = e.target.value;
+    setGrossWeight(newGrossWeight);
+    const newNetWeight = newGrossWeight - stoneWeight;
+    setNetWeight(newNetWeight);
+    const newWastageWeight = newNetWeight * (wastagePercent / 100);
+    setWastageWeight(newWastageWeight);
+    const newNetWeightAfterWastage = newNetWeight + newWastageWeight;
+    setNetWeightAfterWastage(newNetWeightAfterWastage);
+
+    calculateMakingChargeAmount();
+  };
+
+  const handleStoneWeightChange = (e) => {
+    const newStoneWeight = e.target.value;
+    setStoneWeight(newStoneWeight);
+    const newNetWeight = grossWeight - newStoneWeight;
+    setNetWeight(newNetWeight);
+    const newWastageWeight = newNetWeight * (wastagePercent / 100);
+    setWastageWeight(newWastageWeight);
+    const newNetWeightAfterWastage = newNetWeight + newWastageWeight;
+    setNetWeightAfterWastage(newNetWeightAfterWastage);
+
+    calculateMakingChargeAmount();
+  };
+
+  const handleWastagePercentChange = (e) => {
+    const newWastagePercent = e.target.value;
+    setWastagePercent(newWastagePercent);
+    const newWastageWeight = netWeight * (newWastagePercent / 100);
+    setWastageWeight(newWastageWeight);
+    const newNetWeightAfterWastage = netWeight + newWastageWeight;
+    setNetWeightAfterWastage(newNetWeightAfterWastage);
+
+    calculateMakingChargeAmount();
+  };
+
+  const handleMakingChargeValueChange = (e) => {
+    setMakingChargeValue(e.target.value);
+    calculateMakingChargeAmount();
   };
 
   const calculateTotalPrice = (metalInfo, stoneInfo) => {
@@ -735,6 +809,7 @@ const EditProduct = () => {
       };
 
       const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
+      calculateMakingChargeAmount();
       // setAmount(parseFloat(priceDetails.metal_calculation.net_amount));
       setStoneTotalAmount(parseFloat(priceDetails.stone_calculation.net_amount));
     }
@@ -997,7 +1072,7 @@ const EditProduct = () => {
                       origImages.map((image, index) => (
                         <div key={index} className="imagePreview">
                           <img
-                            src={`https://api.sadashrijewelkart.com/assets/${image.file}`}
+                            src={`${process.env.REACT_APP_API_BASE_URL}/assets/${image.file}`}
                             alt={`Preview ${index + 1}`}
                           />
                           <IconButton
@@ -1074,7 +1149,7 @@ const EditProduct = () => {
                           src={
                             video instanceof File
                               ? URL.createObjectURL(video)
-                              : "https://api.sadashrijewelkart.com/assets/" +
+                              : `${process.env.REACT_APP_API_BASE_URL}/assets/` +
                               video
                           }
                           type="video/mp4"
@@ -1216,7 +1291,14 @@ const EditProduct = () => {
             <Grid item xs={1.5}>
               <div className="label">Product Name</div>
               <FormControl fullWidth>
-                <TextField name="Name" value={productName} fullWidth onChange={(e) => setProductName(e.target.value)} />
+                <TextField name="Name" value={productName} fullWidth onChange={(e) => setProductName(
+                  e.target.value
+                    .split(" ")
+                    .map(
+                      (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                    )
+                    .join(" ")
+                )} />
               </FormControl>
             </Grid>
             <Grid item xs={1}>
@@ -1441,13 +1523,7 @@ const EditProduct = () => {
                   name="grossWeight"
                   type="number"
                   value={grossWeight}
-                  onChange={(e) => {
-                    setGrossWeight(e.target.value);
-                    setNetWeight(e.target.value - stoneWeight);
-                    setNetWeightAfterWastage(
-                      e.target.value - stoneWeight + wastageWeight
-                    );
-                  }}
+                  onChange={handleGrossWeightChange}
                   fullWidth
                   placeholder="Enter gross weight"
                   InputProps={{
@@ -1473,13 +1549,7 @@ const EditProduct = () => {
                   name="stoneWeight"
                   type="number"
                   value={stoneWeight}
-                  onChange={(e) => {
-                    setStoneWeight(e.target.value);
-                    setNetWeight(grossWeight - e.target.value);
-                    setNetWeightAfterWastage(
-                      grossWeight - e.target.value + wastageWeight
-                    );
-                  }}
+                  onChange={handleStoneWeightChange}
                   fullWidth
                   placeholder="Enter stone weight"
                   InputProps={{
@@ -1491,7 +1561,7 @@ const EditProduct = () => {
                     if (e.key === "Enter") {
                       e.preventDefault();
                       document
-                        .querySelector('input[name="makingChargeType"]')
+                        .querySelector('input[name="wastagePercent"]')
                         ?.focus();
                     }
                   }}
@@ -1530,15 +1600,7 @@ const EditProduct = () => {
                   name="wastagePercent"
                   type="number"
                   value={wastagePercent}
-                  onChange={(e) => {
-                    setWastagePercent(e.target.value);
-                    setWastageWeight(
-                      (grossWeight - stoneWeight) * (e.target.value / 100)
-                    );
-                    setNetWeightAfterWastage(
-                      (grossWeight - stoneWeight) + wastageWeight
-                    );
-                  }}
+                  onChange={handleWastagePercentChange}
                   fullWidth
                   placeholder="Enter wastage percentage"
                   InputProps={{
@@ -1628,14 +1690,6 @@ const EditProduct = () => {
                 >
                   {metalType === "gold" &&
                     dropdownValues?.[0]?.customization_fields
-                      .find((field) => field.name === "making_charge_type")
-                      ?.property_value.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option.display_name}
-                        </MenuItem>
-                      ))}
-                  {metalType === "silver" &&
-                    dropdownValues?.[1]?.customization_fields
                       .find((field) => field.name === "making_charge_type")
                       ?.property_value.map((option) => (
                         <MenuItem key={option.id} value={option.id}>

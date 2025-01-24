@@ -297,7 +297,7 @@ const AddNewProduct = () => {
 
     Promise.all([
       axios.get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/all.php?type=product_add_template",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/customization/all.php?type=product_add_template`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -305,7 +305,7 @@ const AddNewProduct = () => {
         }
       ),
       axios.get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php?type=category",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/all.php?type=category`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -313,7 +313,7 @@ const AddNewProduct = () => {
         }
       ),
       axios.get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/jewelleryInventory/jewellryInventory.php?type=get_latest",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/jewelleryInventory/jewellryInventory.php?type=get_latest`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -392,7 +392,7 @@ const AddNewProduct = () => {
   const getAllCustomizationFields = () => {
     axios
       .get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/field/all.php",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/customization/field/all.php`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -411,7 +411,7 @@ const AddNewProduct = () => {
     if (selectedCustomizationTypeId > 0)
       axios
         .get(
-          `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedCustomizationTypeId}`,
+          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedCustomizationTypeId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -739,7 +739,7 @@ const AddNewProduct = () => {
       };
 
       const productResponse = await axios.post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/addProduct.php",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/addProduct.php`,
         formData,
         {
           headers: {
@@ -765,7 +765,7 @@ const AddNewProduct = () => {
 
         uploadPromises.push(
           axios.post(
-            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+            `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
             imageFormData,
             {
               headers: {
@@ -788,7 +788,7 @@ const AddNewProduct = () => {
 
         uploadPromises.push(
           axios.post(
-            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+            `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
             videoFormData,
             {
               headers: {

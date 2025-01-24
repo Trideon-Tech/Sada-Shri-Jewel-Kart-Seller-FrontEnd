@@ -661,23 +661,68 @@ const EditProduct = () => {
     setRate(0); // Reset rate when metal type changes
   };
 
-  const handleMakingChargeValueChange = (e) => {
-    const value = e.target.value;
-    setMakingChargeValue(value);
+  const calculateMakingChargeAmount = () => {
+    console.log("Calculating Making Charge Amount");
+    console.log("Making Charge Type:", makingChargeType);
+    console.log("Net Weight After Wastage:", netWeightAfterWastage);
+    console.log("Making Charge Value:", makingChargeValue);
+    console.log("Rate:", rate);
 
-    if (makingChargeType == 6) {
+    if (makingChargeType === 6) {
       setMakingChargeAmount(
-        (parseFloat(value) * parseFloat(netWeightAfterWastage || 0)).toFixed(2)
+        (parseFloat(makingChargeValue) * parseFloat(netWeightAfterWastage || 0)).toFixed(2)
       );
-    } else if (makingChargeType == 7 || makingChargeType == 8) {
-      setMakingChargeAmount(parseFloat(value || 0).toFixed(2));
-    } else if (makingChargeType == 9) {
+    } else if (makingChargeType === 7 || makingChargeType === 8) {
+      setMakingChargeAmount(parseFloat(makingChargeValue || 0).toFixed(2));
+    } else if (makingChargeType === 9) {
       setMakingChargeAmount(
         parseFloat(
-          value * (rate / 100) * (netWeightAfterWastage || netWeight || 0)
+          makingChargeValue * (rate / 100) * (netWeightAfterWastage || netWeight || 0)
         ).toFixed(2)
       );
     }
+  };
+
+  const handleGrossWeightChange = (e) => {
+    const newGrossWeight = e.target.value;
+    setGrossWeight(newGrossWeight);
+    const newNetWeight = newGrossWeight - stoneWeight;
+    setNetWeight(newNetWeight);
+    const newWastageWeight = newNetWeight * (wastagePercent / 100);
+    setWastageWeight(newWastageWeight);
+    const newNetWeightAfterWastage = newNetWeight + newWastageWeight;
+    setNetWeightAfterWastage(newNetWeightAfterWastage);
+
+    calculateMakingChargeAmount();
+  };
+
+  const handleStoneWeightChange = (e) => {
+    const newStoneWeight = e.target.value;
+    setStoneWeight(newStoneWeight);
+    const newNetWeight = grossWeight - newStoneWeight;
+    setNetWeight(newNetWeight);
+    const newWastageWeight = newNetWeight * (wastagePercent / 100);
+    setWastageWeight(newWastageWeight);
+    const newNetWeightAfterWastage = newNetWeight + newWastageWeight;
+    setNetWeightAfterWastage(newNetWeightAfterWastage);
+
+    calculateMakingChargeAmount();
+  };
+
+  const handleWastagePercentChange = (e) => {
+    const newWastagePercent = e.target.value;
+    setWastagePercent(newWastagePercent);
+    const newWastageWeight = netWeight * (newWastagePercent / 100);
+    setWastageWeight(newWastageWeight);
+    const newNetWeightAfterWastage = netWeight + newWastageWeight;
+    setNetWeightAfterWastage(newNetWeightAfterWastage);
+
+    calculateMakingChargeAmount();
+  };
+
+  const handleMakingChargeValueChange = (e) => {
+    setMakingChargeValue(e.target.value);
+    calculateMakingChargeAmount();
   };
 
   const calculateTotalPrice = (metalInfo, stoneInfo) => {
@@ -764,6 +809,7 @@ const EditProduct = () => {
       };
 
       const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
+      calculateMakingChargeAmount();
       // setAmount(parseFloat(priceDetails.metal_calculation.net_amount));
       setStoneTotalAmount(parseFloat(priceDetails.stone_calculation.net_amount));
     }
@@ -1477,13 +1523,7 @@ const EditProduct = () => {
                   name="grossWeight"
                   type="number"
                   value={grossWeight}
-                  onChange={(e) => {
-                    setGrossWeight(e.target.value);
-                    setNetWeight(e.target.value - stoneWeight);
-                    setNetWeightAfterWastage(
-                      e.target.value - stoneWeight + wastageWeight
-                    );
-                  }}
+                  onChange={handleGrossWeightChange}
                   fullWidth
                   placeholder="Enter gross weight"
                   InputProps={{
@@ -1509,13 +1549,7 @@ const EditProduct = () => {
                   name="stoneWeight"
                   type="number"
                   value={stoneWeight}
-                  onChange={(e) => {
-                    setStoneWeight(e.target.value);
-                    setNetWeight(grossWeight - e.target.value);
-                    setNetWeightAfterWastage(
-                      grossWeight - e.target.value + wastageWeight
-                    );
-                  }}
+                  onChange={handleStoneWeightChange}
                   fullWidth
                   placeholder="Enter stone weight"
                   InputProps={{
@@ -1527,7 +1561,7 @@ const EditProduct = () => {
                     if (e.key === "Enter") {
                       e.preventDefault();
                       document
-                        .querySelector('input[name="makingChargeType"]')
+                        .querySelector('input[name="wastagePercent"]')
                         ?.focus();
                     }
                   }}
@@ -1566,15 +1600,7 @@ const EditProduct = () => {
                   name="wastagePercent"
                   type="number"
                   value={wastagePercent}
-                  onChange={(e) => {
-                    setWastagePercent(e.target.value);
-                    setWastageWeight(
-                      (grossWeight - stoneWeight) * (e.target.value / 100)
-                    );
-                    setNetWeightAfterWastage(
-                      (grossWeight - stoneWeight) + wastageWeight
-                    );
-                  }}
+                  onChange={handleWastagePercentChange}
                   fullWidth
                   placeholder="Enter wastage percentage"
                   InputProps={{
@@ -1664,14 +1690,6 @@ const EditProduct = () => {
                 >
                   {metalType === "gold" &&
                     dropdownValues?.[0]?.customization_fields
-                      .find((field) => field.name === "making_charge_type")
-                      ?.property_value.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option.display_name}
-                        </MenuItem>
-                      ))}
-                  {metalType === "silver" &&
-                    dropdownValues?.[1]?.customization_fields
                       .find((field) => field.name === "making_charge_type")
                       ?.property_value.map((option) => (
                         <MenuItem key={option.id} value={option.id}>

@@ -26,6 +26,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { generalToastStyle } from "../../utils/toast.styles";
+import PriceBreakout from "./priceBreakout.component";
 import "./addNewProduct.styles.scss";
 
 const theme = createTheme({
@@ -145,6 +146,9 @@ const EditProduct = () => {
   const [productName, setProductName] = useState(productNameQuery);
   const [discount, setDiscount] = useState(0);
   const fileInputRef = useRef(null);
+  const [showPriceBreakout, setShowPriceBreakout] = useState(false);
+  const [productAmountData, setProductAmountData] = useState(null);
+  const [adminCommissionPerc, setAdminCommissionPerc] = useState(0);
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -238,7 +242,9 @@ const EditProduct = () => {
       const subcategory = category?.sub_categories.find(
         (subcat) => subcat.name === productData.sub_category
       );
-      setSelectedSubcategory(subcategory ? subcategory.id : "");
+      console.log("subcategory", subcategory);
+      setSelectedSubcategory(subcategory ? `${subcategory.id}_${subcategory.admin_comm_perc}` : "");
+      setAdminCommissionPerc(subcategory.admin_comm_perc);
 
       setSize(productData.size);
       setTags(productData.tags);
@@ -328,9 +334,9 @@ const EditProduct = () => {
       setHsnCode(hsnMapping[category] || "");
       setMetalType(typeMapping[category] || "");
       setPurity(purityMapping[category] || ""); // Set purity based on category
-      if(purityMapping[category] == "silver22"){
+      if (purityMapping[category] == "silver22") {
         setRate(rates["silver"] || 0);
-      }else{
+      } else {
         setRate(rates[purityMapping[category]] || 0);
       }
     }
@@ -427,7 +433,7 @@ const EditProduct = () => {
         id: productId,
         type: "update_item",
         category: selectedCategory || "",
-        sub_category: selectedSubcategory || "",
+        sub_category: (selectedSubcategory).split("_")[0] || "",
         name: productName || "",
         desc: desc || "",
         customization_option: [quantity, makingChargeType, stoneType]
@@ -468,6 +474,8 @@ const EditProduct = () => {
           gst_perc: stoneGSTPercent || "0",
         },
       };
+
+      console.log("formData", formData);
 
       const productResponse = await axios.put(
         `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/update.php`,
@@ -693,8 +701,8 @@ const EditProduct = () => {
       setMakingChargeAmount(
         parseFloat(
           makingChargeValue *
-            (rate / 100) *
-            (netWeightAfterWastage || netWeight || 0)
+          (rate / 100) *
+          (netWeightAfterWastage || netWeight || 0)
         ).toFixed(2)
       );
     }
@@ -790,6 +798,7 @@ const EditProduct = () => {
 
     return {
       total_price: totalPrice.toFixed(2),
+      admin_commission_perc: adminCommissionPerc,
       metal_calculation: {
         net_weight: netWeight,
         wastage_weight: wastageWeight,
@@ -797,12 +806,15 @@ const EditProduct = () => {
         base_amount: metalBaseAmount,
         gst_amount: metalGst,
         net_amount: metalNetAmount,
+        mc: metal.making_charge_amount,
+        gst_perc: metal.gst_perc,
       },
       stone_calculation: {
         stone_weight: stoneWeight,
         base_amount: stoneBaseAmount,
         gst_amount: stoneGst,
         net_amount: stoneNetAmount,
+        gst_perc: stone.gst_perc,
       },
     };
   };
@@ -830,6 +842,7 @@ const EditProduct = () => {
       };
 
       const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
+      setProductAmountData(priceDetails);
       calculateMakingChargeAmount();
       // setAmount(parseFloat(priceDetails.metal_calculation.net_amount));
       setStoneTotalAmount(
@@ -852,10 +865,12 @@ const EditProduct = () => {
     stoneRate,
     stoneGSTPercent,
     product,
+    adminCommissionPerc,
   ]);
 
   return (
     <div className="AddNewProduct">
+      <PriceBreakout open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
       <ToastContainer />
 
       {/* Confirmation Dialog */}
@@ -1174,7 +1189,7 @@ const EditProduct = () => {
                             video instanceof File
                               ? URL.createObjectURL(video)
                               : `${process.env.REACT_APP_API_BASE_URL}/assets/` +
-                                video
+                              video
                           }
                           type="video/mp4"
                         />
@@ -1287,6 +1302,9 @@ const EditProduct = () => {
                   />
                 </div>
               </div>
+              <div style={{ marginRight: "20px" }}>
+                <Button variant="contained" data={productAmountData} color="primary" onClick={() => setShowPriceBreakout(true)}>Price Breakout</Button>
+              </div>
             </div>
           </div>
           <Divider />
@@ -1362,7 +1380,11 @@ const EditProduct = () => {
                 <Select
                   name="subcategory"
                   value={selectedSubcategory}
-                  onChange={(e) => setSelectedSubcategory(e.target.value)}
+                  onChange={(e) => {
+                    console.log(e.target.value);
+                    setSelectedSubcategory((e.target.value));
+                    setAdminCommissionPerc((e.target.value).split("_")[1]);
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
@@ -1374,7 +1396,7 @@ const EditProduct = () => {
                     categoriesData
                       .find((category) => category.id === selectedCategory)
                       ?.sub_categories.map((subcategory) => (
-                        <MenuItem key={subcategory.id} value={subcategory.id}>
+                        <MenuItem key={subcategory.id} value={`${subcategory.id}_${subcategory.admin_comm_perc}`}>
                           {subcategory.name}
                         </MenuItem>
                       ))}
@@ -2067,9 +2089,9 @@ const EditProduct = () => {
                     const total =
                       stoneInternalWeight && e.target.value
                         ? (
-                            parseFloat(stoneInternalWeight) *
-                            parseFloat(e.target.value)
-                          ).toFixed(2)
+                          parseFloat(stoneInternalWeight) *
+                          parseFloat(e.target.value)
+                        ).toFixed(2)
                         : 0;
                     setStoneTotalAmount(total);
                   }}
@@ -2093,7 +2115,7 @@ const EditProduct = () => {
                     const baseAmount =
                       stoneInternalWeight && stoneRate
                         ? parseFloat(stoneInternalWeight) *
-                          parseFloat(stoneRate)
+                        parseFloat(stoneRate)
                         : 0;
                     const gstAmount =
                       baseAmount * (parseFloat(e.target.value) / 100);

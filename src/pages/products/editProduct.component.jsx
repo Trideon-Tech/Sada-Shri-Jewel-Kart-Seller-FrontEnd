@@ -20,7 +20,7 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -44,7 +44,7 @@ const hsnMapping = {
   "GOLD JEWELLERY": "Gold Jewelry - 7113",
   "SILVER ARTICLES": "Silver Articles - 7114",
   "SILVER JEWELLERY": "Silver Jewelry - 7113",
-  "GEMSTONE": "Gemstone Jewelry - 7113",
+  GEMSTONE: "Gemstone Jewelry - 7113",
   "DIAMOND JEWELLERY": "Diamond Jewelry - 7113 ",
   // Add more mappings as needed
 };
@@ -76,7 +76,7 @@ const EditProduct = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   const [desc, setDesc] = useState();
-  const [purity, setPurity] = useState('');
+  const [purity, setPurity] = useState("");
   const [customizationTypes, setCustomizationTypes] = useState([]);
   const [categoriesData, setCategoriesData] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -87,7 +87,7 @@ const EditProduct = () => {
     useState("");
   const [customizationOptions, setCustomizationOptions] = useState([]);
   const [dropdownValues, setDropdownValues] = useState();
-  const [metalType, setMetalType] = useState('');
+  const [metalType, setMetalType] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [grossWeight, setGrossWeight] = useState();
   const [stoneWeight, setStoneWeight] = useState(0);
@@ -106,22 +106,22 @@ const EditProduct = () => {
   const [rate, setRate] = useState(0);
   const [amount, setAmount] = useState(0);
   const [stoneTotalAmount, setStoneTotalAmount] = useState(0);
-  const [stoneType, setStoneType] = useState('');
+  const [stoneType, setStoneType] = useState("");
   const [stoneClass, setStoneClass] = useState();
-  const [stoneCut, setStoneCut] = useState('');
+  const [stoneCut, setStoneCut] = useState("");
   const [stonePieces, setStonePieces] = useState();
   const [stoneCarat, setStoneCarat] = useState();
-  const [stoneClarity, setStoneClarity] = useState('');
+  const [stoneClarity, setStoneClarity] = useState("");
   const [stoneRate, setStoneRate] = useState();
   const [stoneInternalWeight, setStoneInternalWeight] = useState();
-  const [stoneGSTPercent, setStoneGSTPercent] = useState('');
+  const [stoneGSTPercent, setStoneGSTPercent] = useState("");
   const [qualityName, setQualityName] = useState();
   const [size, setSize] = useState();
   const [tags, setTags] = useState();
-  const [hsnCode, setHsnCode] = useState('');
+  const [hsnCode, setHsnCode] = useState("");
   const [inventoryQty, setInventoryQty] = useState(false);
   const [showVideoDeleteDialog, setShowVideoDeleteDialog] = useState(false);
-  const [stoneColor, setStoneColor] = useState('');
+  const [stoneColor, setStoneColor] = useState("");
 
   const [origImages, setOrigImages] = useState([]);
   const [images, setImages] = useState([]);
@@ -145,7 +145,6 @@ const EditProduct = () => {
   const [productName, setProductName] = useState(productNameQuery);
   const [discount, setDiscount] = useState(0);
   const fileInputRef = useRef(null);
-
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -245,10 +244,10 @@ const EditProduct = () => {
       setTags(productData.tags);
 
       const hsn = dropdownValues?.[0]?.customization_fields
-        .find((field) => field.name === 'hsn')
+        .find((field) => field.name === "hsn")
         ?.property_value.find((option) => option.name === productData.hsn);
 
-      setHsnCode('Gold Jewelry - 7113');
+      setHsnCode("Gold Jewelry - 7113");
 
       setInventoryQty(productData.quantity);
 
@@ -276,12 +275,24 @@ const EditProduct = () => {
       }
 
       setWastageWeight(productData.customizations[0]?.metal_info?.wastage_wt);
-      setNetWeightAfterWastage(productData.customizations[0]?.metal_info?.net_wt_after_wastage || 0);
-      setMakingChargeValue(productData.customizations[0]?.metal_info?.making_charge_value);
-      setMakingChargeAmount(productData.customizations[0]?.metal_info?.making_charge_amount);
-      setStoneAmount(productData.customizations[0]?.metal_info?.stone_amount || 0);
-      setHallmarkCharge(productData.customizations[0]?.metal_info?.hallmark_charge || 0);
-      setRodiumCharge(productData.customizations[0]?.metal_info?.rodium_charge || 0);
+      setNetWeightAfterWastage(
+        productData.customizations[0]?.metal_info?.net_wt_after_wastage || 0
+      );
+      setMakingChargeValue(
+        productData.customizations[0]?.metal_info?.making_charge_value
+      );
+      setMakingChargeAmount(
+        productData.customizations[0]?.metal_info?.making_charge_amount
+      );
+      setStoneAmount(
+        productData.customizations[0]?.metal_info?.stone_amount || 0
+      );
+      setHallmarkCharge(
+        productData.customizations[0]?.metal_info?.hallmark_charge || 0
+      );
+      setRodiumCharge(
+        productData.customizations[0]?.metal_info?.rodium_charge || 0
+      );
       setGstPercent(productData.customizations[0]?.metal_info?.gst_perc || 3);
       //stone details
       setStoneType(productData.customizations[0]?.stone_info?.stone_type);
@@ -310,30 +321,31 @@ const EditProduct = () => {
     setSelectedSubcategory("");
 
     // Find the category name from the categoriesData
-    const category = categoriesData.find(cat => cat.id === categoryId)?.name;
+    const category = categoriesData.find((cat) => cat.id === categoryId)?.name;
 
     // Set HSN code, type, and purity based on the category name
     if (category) {
-      setHsnCode(hsnMapping[category] || '');
-      setMetalType(typeMapping[category] || '');
-      setPurity(purityMapping[category] || ''); // Set purity based on category
+      setHsnCode(hsnMapping[category] || "");
+      setMetalType(typeMapping[category] || "");
+      setPurity(purityMapping[category] || ""); // Set purity based on category
     }
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
 
-    // Create URL for the image
-    const reader = new FileReader();
-    reader.onload = () => {
-      setCurrentImage(reader.result);
-      setCurrentImageIndex(images.length); // Set to new image index
-      setCrop({ x: 0, y: 0 });
-      setZoom(1);
-      setCropDialogOpen(true);
-    };
-    reader.readAsDataURL(file);
+    const newImages = files.map((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setCurrentImage(reader.result);
+        setCurrentImageIndex(images.length); // Set to new image index
+      };
+      reader.readAsDataURL(file);
+      return file;
+    });
+
+    setImages((prevImages) => [...prevImages, ...newImages]);
   };
 
   const handleVideoChange = (e) => {
@@ -404,7 +416,6 @@ const EditProduct = () => {
   };
 
   const handleProductSave = async () => {
-
     try {
       // First save the product details
       const formData = {
@@ -438,7 +449,7 @@ const EditProduct = () => {
           stone_amount: stoneAmount || "0",
           hallmark_charge: hallmarkCharge || "0",
           rodium_charge: rodiumCharge || "0",
-          gst_perc: gstPercent || "0"
+          gst_perc: gstPercent || "0",
         },
         stone: {
           stone_type: stoneType || "",
@@ -475,7 +486,6 @@ const EditProduct = () => {
         imageFormData.append("is_primary", index === 0 ? true : false);
         imageFormData.append("file_type", "img");
         imageFormData.append("file", image);
-
 
         uploadPromises.push(
           axios.post(
@@ -614,12 +624,14 @@ const EditProduct = () => {
 
   useEffect(() => {
     if (stoneInternalWeight && stoneRate) {
-      const baseStoneAmount = parseFloat(stoneInternalWeight) * parseFloat(stoneRate);
+      const baseStoneAmount =
+        parseFloat(stoneInternalWeight) * parseFloat(stoneRate);
       let totalStoneAmount = baseStoneAmount;
 
       // Add GST if present
       if (stoneGSTPercent) {
-        totalStoneAmount += (baseStoneAmount * parseFloat(stoneGSTPercent)) / 100;
+        totalStoneAmount +=
+          (baseStoneAmount * parseFloat(stoneGSTPercent)) / 100;
       }
 
       setStoneTotalAmount(totalStoneAmount.toFixed(2));
@@ -635,15 +647,11 @@ const EditProduct = () => {
     if (metalType === "gold") {
       selectedOption = dropdownValues?.[0]?.customization_fields
         .find((field) => field.name === "gold_quality")
-        ?.property_value.find(
-          (opt) => opt.name === e.target.value
-        )?.name;
+        ?.property_value.find((opt) => opt.name === e.target.value)?.name;
     } else if (metalType === "silver") {
       selectedOption = dropdownValues?.[1]?.customization_fields
         .find((field) => field.name === "silver_quality")
-        ?.property_value.find(
-          (opt) => opt.name === e.target.value
-        )?.name;
+        ?.property_value.find((opt) => opt.name === e.target.value)?.name;
     }
 
     setQualityName(selectedOption);
@@ -657,7 +665,7 @@ const EditProduct = () => {
   const handleMetalTypeChange = (e) => {
     setMetalType(e.target.value);
     setMakingChargeType(9);
-    setPurity(''); // Reset purity when metal type changes
+    setPurity(""); // Reset purity when metal type changes
     setRate(0); // Reset rate when metal type changes
   };
 
@@ -670,14 +678,18 @@ const EditProduct = () => {
 
     if (makingChargeType === 6) {
       setMakingChargeAmount(
-        (parseFloat(makingChargeValue) * parseFloat(netWeightAfterWastage || 0)).toFixed(2)
+        (
+          parseFloat(makingChargeValue) * parseFloat(netWeightAfterWastage || 0)
+        ).toFixed(2)
       );
     } else if (makingChargeType === 7 || makingChargeType === 8) {
       setMakingChargeAmount(parseFloat(makingChargeValue || 0).toFixed(2));
     } else if (makingChargeType === 9) {
       setMakingChargeAmount(
         parseFloat(
-          makingChargeValue * (rate / 100) * (netWeightAfterWastage || netWeight || 0)
+          makingChargeValue *
+            (rate / 100) *
+            (netWeightAfterWastage || netWeight || 0)
         ).toFixed(2)
       );
     }
@@ -726,8 +738,10 @@ const EditProduct = () => {
   };
 
   const calculateTotalPrice = (metalInfo, stoneInfo) => {
-    const metal = typeof metalInfo === 'string' ? JSON.parse(metalInfo) : metalInfo;
-    const stone = typeof stoneInfo === 'string' ? JSON.parse(stoneInfo) : stoneInfo;
+    const metal =
+      typeof metalInfo === "string" ? JSON.parse(metalInfo) : metalInfo;
+    const stone =
+      typeof stoneInfo === "string" ? JSON.parse(stoneInfo) : stoneInfo;
 
     const metalRate = rates[metal.quality] || 0;
 
@@ -744,7 +758,8 @@ const EditProduct = () => {
       metalBaseAmount = parseFloat(metal.making_charge_amount);
     } else {
       metalBaseAmount = netWeightAfterWastage * metalRate;
-      metalBaseAmount += parseFloat(metal.making_charge_amount) +
+      metalBaseAmount +=
+        parseFloat(metal.making_charge_amount) +
         parseFloat(metal.stone_amount || 0) +
         parseFloat(metal.hallmark_charge || 0) +
         parseFloat(metal.rodium_charge || 0);
@@ -756,7 +771,8 @@ const EditProduct = () => {
     const metalNetAmount = metalBaseAmount + metalGst;
 
     // Stone calculations (already correct)
-    const stoneWeight = parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
+    const stoneWeight =
+      parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
 
     const stoneBaseAmount = parseFloat(stone.stone_rate) * stoneWeight;
 
@@ -775,14 +791,14 @@ const EditProduct = () => {
         net_weight_after_wastage: netWeightAfterWastage,
         base_amount: metalBaseAmount,
         gst_amount: metalGst,
-        net_amount: metalNetAmount
+        net_amount: metalNetAmount,
       },
       stone_calculation: {
         stone_weight: stoneWeight,
         base_amount: stoneBaseAmount,
         gst_amount: stoneGst,
-        net_amount: stoneNetAmount
-      }
+        net_amount: stoneNetAmount,
+      },
     };
   };
 
@@ -811,7 +827,9 @@ const EditProduct = () => {
       const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
       calculateMakingChargeAmount();
       // setAmount(parseFloat(priceDetails.metal_calculation.net_amount));
-      setStoneTotalAmount(parseFloat(priceDetails.stone_calculation.net_amount));
+      setStoneTotalAmount(
+        parseFloat(priceDetails.stone_calculation.net_amount)
+      );
     }
   }, [
     grossWeight,
@@ -1056,6 +1074,7 @@ const EditProduct = () => {
                     id="imageInput"
                     onChange={handleImageChange}
                     style={{ display: "none" }}
+                    multiple
                   />
                   <label htmlFor="imageInput">
                     <Button
@@ -1063,7 +1082,7 @@ const EditProduct = () => {
                       className="selectButton"
                       component="span"
                     >
-                      <PhotoCamera /> Select Image
+                      <PhotoCamera /> Select Images
                     </Button>
                   </label>
                   <div className="previewContainer">
@@ -1150,7 +1169,7 @@ const EditProduct = () => {
                             video instanceof File
                               ? URL.createObjectURL(video)
                               : `${process.env.REACT_APP_API_BASE_URL}/assets/` +
-                              video
+                                video
                           }
                           type="video/mp4"
                         />
@@ -1291,14 +1310,21 @@ const EditProduct = () => {
             <Grid item xs={1.5}>
               <div className="label">Product Name</div>
               <FormControl fullWidth>
-                <TextField name="Name" value={productName} fullWidth onChange={(e) => setProductName(
-                  e.target.value
-                    .split(" ")
-                    .map(
-                      (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                <TextField
+                  name="Name"
+                  value={productName}
+                  fullWidth
+                  onChange={(e) =>
+                    setProductName(
+                      e.target.value
+                        .split(" ")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")
                     )
-                    .join(" ")
-                )} />
+                  }
+                />
               </FormControl>
             </Grid>
             <Grid item xs={1}>
@@ -1490,7 +1516,7 @@ const EditProduct = () => {
                           <MenuItem key={option.name} value={option.name}>
                             {option.display_name}
                           </MenuItem>
-                        )
+                        );
                       })}
                 </Select>
               </FormControl>
@@ -2037,9 +2063,9 @@ const EditProduct = () => {
                     const total =
                       stoneInternalWeight && e.target.value
                         ? (
-                          parseFloat(stoneInternalWeight) *
-                          parseFloat(e.target.value)
-                        ).toFixed(2)
+                            parseFloat(stoneInternalWeight) *
+                            parseFloat(e.target.value)
+                          ).toFixed(2)
                         : 0;
                     setStoneTotalAmount(total);
                   }}
@@ -2063,7 +2089,7 @@ const EditProduct = () => {
                     const baseAmount =
                       stoneInternalWeight && stoneRate
                         ? parseFloat(stoneInternalWeight) *
-                        parseFloat(stoneRate)
+                          parseFloat(stoneRate)
                         : 0;
                     const gstAmount =
                       baseAmount * (parseFloat(e.target.value) / 100);

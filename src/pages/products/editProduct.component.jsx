@@ -328,6 +328,11 @@ const EditProduct = () => {
       setHsnCode(hsnMapping[category] || "");
       setMetalType(typeMapping[category] || "");
       setPurity(purityMapping[category] || ""); // Set purity based on category
+      if(purityMapping[category] == "silver22"){
+        setRate(rates["silver"] || 0);
+      }else{
+        setRate(rates[purityMapping[category]] || 0);
+      }
     }
   };
 
@@ -664,7 +669,7 @@ const EditProduct = () => {
 
   const handleMetalTypeChange = (e) => {
     setMetalType(e.target.value);
-    setMakingChargeType(9);
+    setMakingChargeType(""); // Reset making charge type when metal type changes
     setPurity(""); // Reset purity when metal type changes
     setRate(0); // Reset rate when metal type changes
   };
@@ -1714,14 +1719,13 @@ const EditProduct = () => {
                     }
                   }}
                 >
-                  {metalType === "gold" &&
-                    dropdownValues?.[0]?.customization_fields
-                      .find((field) => field.name === "making_charge_type")
-                      ?.property_value.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option.display_name}
-                        </MenuItem>
-                      ))}
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "making_charge_type")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
                 </Select>
               </FormControl>
             </Grid>

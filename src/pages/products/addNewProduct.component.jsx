@@ -27,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./addNewProduct.styles.scss";
+import PriceBreakout from "./priceBreakout.component";
 
 const theme = createTheme({
   palette: {
@@ -124,6 +125,9 @@ const AddNewProduct = () => {
 
   const [showDeleteVideoDialog, setShowVideoDeleteDialog] = useState(false);
 
+  const [showPriceBreakout, setShowPriceBreakout] = useState(false);
+  const [productAmountData, setProductAmountData] = useState({});
+
   const calculateTotalPrice = (metalInfo, stoneInfo) => {
     const metal =
       typeof metalInfo === "string" ? JSON.parse(metalInfo) : metalInfo;
@@ -197,7 +201,7 @@ const AddNewProduct = () => {
     const totalPrice = (metalNetAmount || 0) + (stoneNetAmount || 0);
     console.log("totalPrice", totalPrice);
 
-    return {
+    const priceDetails = {
       total_price: totalPrice.toFixed(2),
       metal_calculation: {
         net_weight: netWeight,
@@ -206,14 +210,26 @@ const AddNewProduct = () => {
         base_amount: metalBaseAmount,
         gst_amount: metalGst,
         net_amount: metalNetAmount,
+        mc: makingChargeAmount,
+        total_amount: metalNetAmount + stoneNetAmount,
+        gst_perc: gstPercent
       },
       stone_calculation: {
         stone_weight: stoneWeight,
         base_amount: stoneBaseAmount,
         gst_amount: stoneGst,
         net_amount: stoneNetAmount,
+        gst_perc: stoneGSTPercent,
+        mc: makingChargeAmount,
+        total_amount: stoneNetAmount + makingChargeAmount,
+        wastage_weight: wastageWeight,
+        wastage_prec: wastagePercent,
+        net_weight_after_wastage: netWeightAfterWastage,
+        net_weight: netWeight
       },
     };
+    setProductAmountData(priceDetails);
+    return priceDetails;
   };
 
   const handleMakingChargeValueChange = (e) => {
@@ -688,6 +704,7 @@ const AddNewProduct = () => {
 
   return (
     <div className="AddNewProduct">
+      <PriceBreakout open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
       <ToastContainer />
 
       {/* Confirmation Dialog */}
@@ -1117,6 +1134,9 @@ const AddNewProduct = () => {
                     }}
                   />
                 </div>
+              </div>
+              <div style={{ marginRight: "20px" }}>
+                <Button variant="contained" color="primary" onClick={() => setShowPriceBreakout(true)}>Price Breakout</Button>
               </div>
             </div>
           </div>

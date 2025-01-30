@@ -149,6 +149,7 @@ const EditProduct = () => {
   const [showPriceBreakout, setShowPriceBreakout] = useState(false);
   const [productAmountData, setProductAmountData] = useState(null);
   const [adminCommissionPerc, setAdminCommissionPerc] = useState(0);
+  const [settlementAmount, setSettlementAmount] = useState(0);
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -683,11 +684,6 @@ const EditProduct = () => {
   };
 
   const calculateMakingChargeAmount = () => {
-    console.log("Calculating Making Charge Amount");
-    console.log("Making Charge Type:", makingChargeType);
-    console.log("Net Weight After Wastage:", netWeightAfterWastage);
-    console.log("Making Charge Value:", makingChargeValue);
-    console.log("Rate:", rate);
 
     if (makingChargeType === 6) {
       setMakingChargeAmount(
@@ -866,11 +862,17 @@ const EditProduct = () => {
     stoneGSTPercent,
     product,
     adminCommissionPerc,
+    settlementAmount,
   ]);
+
+  const handleSettlementAmountChange = (value) => {
+    console.log("Settlement Amount:", value);
+    setSettlementAmount(value);
+  };
 
   return (
     <div className="AddNewProduct">
-      <PriceBreakout open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
+      <PriceBreakout handleSettlementAmountChange={handleSettlementAmountChange} open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
       <ToastContainer />
 
       {/* Confirmation Dialog */}
@@ -1303,7 +1305,22 @@ const EditProduct = () => {
                 </div>
               </div>
               <div style={{ marginRight: "20px" }}>
-                <Button variant="contained" data={productAmountData} color="primary" onClick={() => setShowPriceBreakout(true)}>Price Breakout</Button>
+                <div>Settlement Amount</div>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {parseFloat(settlementAmount).toFixed(2)}
+                </div>
+                <Typography
+                  style={{
+                    fontFamily: '"Roboto", sans-serif',
+                    fontSize: "0.9rem",
+                    color: "grey",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                  onClick={() => setShowPriceBreakout(true)}
+                >
+                  Price Breakout
+                </Typography>
               </div>
             </div>
           </div>

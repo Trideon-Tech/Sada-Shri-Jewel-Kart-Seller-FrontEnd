@@ -127,6 +127,11 @@ const AddNewProduct = () => {
 
   const [showPriceBreakout, setShowPriceBreakout] = useState(false);
   const [productAmountData, setProductAmountData] = useState({});
+  const [settlementAmount, setSettlementAmount] = useState(0);
+
+  const handleSettlementAmountChange = (value) => {
+    setSettlementAmount(value);
+  };
 
   const calculateTotalPrice = (metalInfo, stoneInfo) => {
     const metal =
@@ -172,13 +177,13 @@ const AddNewProduct = () => {
         parseFloat(
           isNaN(
             metal.making_charge_value *
-              (rate / 100) *
-              (netWeightAfterWastage || netWeight || 0)
+            (rate / 100) *
+            (netWeightAfterWastage || netWeight || 0)
           )
             ? 0
             : metal.making_charge_value *
-                (rate / 100) *
-                (netWeightAfterWastage || netWeight || 0)
+            (rate / 100) *
+            (netWeightAfterWastage || netWeight || 0)
         ).toFixed(2)
       );
     }
@@ -704,7 +709,7 @@ const AddNewProduct = () => {
 
   return (
     <div className="AddNewProduct">
-      <PriceBreakout open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
+      <PriceBreakout handleSettlementAmountChange={handleSettlementAmountChange} open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
       <ToastContainer />
 
       {/* Confirmation Dialog */}
@@ -1136,7 +1141,22 @@ const AddNewProduct = () => {
                 </div>
               </div>
               <div style={{ marginRight: "20px" }}>
-                <Button variant="contained" color="primary" onClick={() => setShowPriceBreakout(true)}>Price Breakout</Button>
+                <div>Settlement Amount</div>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {parseFloat(settlementAmount).toFixed(2)}
+                </div>
+                <Typography
+                  style={{
+                    fontFamily: '"Roboto", sans-serif',
+                    fontSize: "0.9rem",
+                    color: "grey",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                  onClick={() => setShowPriceBreakout(true)}
+                >
+                  Price Breakout
+                </Typography>
               </div>
             </div>
           </div>
@@ -1962,9 +1982,9 @@ const AddNewProduct = () => {
                     const total =
                       stoneInternalWeight && e.target.value
                         ? (
-                            parseFloat(stoneInternalWeight) *
-                            parseFloat(e.target.value)
-                          ).toFixed(2)
+                          parseFloat(stoneInternalWeight) *
+                          parseFloat(e.target.value)
+                        ).toFixed(2)
                         : 0;
                     setStoneTotalAmount(total);
                   }}
@@ -1988,7 +2008,7 @@ const AddNewProduct = () => {
                     const baseAmount =
                       stoneInternalWeight && stoneRate
                         ? parseFloat(stoneInternalWeight) *
-                          parseFloat(stoneRate)
+                        parseFloat(stoneRate)
                         : 0;
                     const gstAmount =
                       baseAmount * (parseFloat(e.target.value) / 100);

@@ -7,40 +7,71 @@ import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import CloseIcon from "@mui/icons-material/Close";
 
-const PriceBreakout = ({ open, onClose, data }) => {
+const PriceBreakout = ({ open, onClose, data, handleSettlementAmountChange }) => {
     const [priceDetails, setPriceDetails] = useState(null);
 
+    // Calculate whenever data changes, regardless of dialog state
+    useEffect(() => {
+        if (data) {
+            const result = calculatePaymentDetails(data);
+            setPriceDetails(result);
+            
+            if (handleSettlementAmountChange) {
+                handleSettlementAmountChange(result.totalAmountAfterDeduction);
+            }
+        }
+    }, [data, handleSettlementAmountChange]); // Removed 'open' from dependencies
+
     const calculatePaymentDetails = (data) => {
-        // Use the provided data for calculations
-        const metalBaseAmount = parseFloat((parseFloat(data.metal_calculation.base_amount, 2) - parseFloat(data.metal_calculation.mc, 2)).toFixed(2));
-        const stoneBaseAmount = parseFloat(data.stone_calculation.base_amount, 2)
-        // Get making charge amount
-        const metalMakingChargeAmount = parseFloat(data.metal_calculation.mc, 2);
-        const metalTotalAmount = parseFloat(metalBaseAmount, 2) + parseFloat(metalMakingChargeAmount, 2);
-        // Calculate GST for metal
-        const metalGst = parseFloat((metalTotalAmount * (parseFloat(data.metal_calculation.gst_perc) / 100)).toFixed(2));
-        const metalNetAmount = parseFloat((metalTotalAmount + metalGst).toFixed(2));
+        const metalBaseAmount = isNaN(parseFloat((parseFloat(data.metal_calculation?.base_amount, 2) - parseFloat(data.metal_calculation?.mc, 2)).toFixed(2))) ? 0 : parseFloat((parseFloat(data.metal_calculation?.base_amount, 2) - parseFloat(data.metal_calculation?.mc, 2)).toFixed(2));
+        console.log('metalBaseAmount:', metalBaseAmount);
+        
+        const stoneBaseAmount = isNaN(parseFloat(data.stone_calculation?.base_amount, 2)) ? 0 : parseFloat(data.stone_calculation?.base_amount, 2);
+        console.log('stoneBaseAmount:', stoneBaseAmount);
+        
+        const metalMakingChargeAmount = isNaN(parseFloat(data.metal_calculation?.mc, 2)) ? 0 : parseFloat(data.metal_calculation?.mc, 2);
+        console.log('metalMakingChargeAmount:', metalMakingChargeAmount);
+        
+        const metalTotalAmount = isNaN(parseFloat(metalBaseAmount, 2) + parseFloat(metalMakingChargeAmount, 2)) ? 0 : parseFloat(metalBaseAmount, 2) + parseFloat(metalMakingChargeAmount, 2);
+        console.log('metalTotalAmount:', metalTotalAmount);
+        
+        const metalGst = isNaN(parseFloat((metalTotalAmount * (parseFloat(data.metal_calculation?.gst_perc) / 100)).toFixed(2))) ? 0 : parseFloat((metalTotalAmount * (parseFloat(data.metal_calculation?.gst_perc) / 100)).toFixed(2));
+        console.log('metalGst:', metalGst);
+        
+        const metalNetAmount = isNaN(parseFloat((metalTotalAmount + metalGst).toFixed(2))) ? 0 : parseFloat((metalTotalAmount + metalGst).toFixed(2));
+        console.log('metalNetAmount:', metalNetAmount);
 
-        // Calculate GST for stone
-        const stoneGst = parseFloat((stoneBaseAmount * (parseFloat(data.stone_calculation.gst_perc) / 100)).toFixed(2));
-        const stoneNetAmount = parseFloat((stoneBaseAmount + stoneGst).toFixed(2));
+        const stoneGst = isNaN(parseFloat((stoneBaseAmount * (parseFloat(data.stone_calculation?.gst_perc) / 100)).toFixed(2))) ? 0 : parseFloat((stoneBaseAmount * (parseFloat(data.stone_calculation?.gst_perc) / 100)).toFixed(2));
+        console.log('stoneGst:', stoneGst);
+        
+        const stoneNetAmount = isNaN(parseFloat((stoneBaseAmount + stoneGst).toFixed(2))) ? 0 : parseFloat((stoneBaseAmount + stoneGst).toFixed(2));
+        console.log('stoneNetAmount:', stoneNetAmount);
 
-        const adminCommission = data.admin_commission_perc;
+        const adminCommission = isNaN(parseFloat(data.admin_commission_perc)) ? 0 : parseFloat(data.admin_commission_perc);
+        console.log('adminCommission:', adminCommission);
 
-        // Calculate subtotal from metal and stone base amounts
-        const subTotal = parseFloat((metalNetAmount + stoneNetAmount).toFixed(2));
+        const subTotal = isNaN(parseFloat((metalNetAmount + stoneNetAmount).toFixed(2))) ? 0 : parseFloat((metalNetAmount + stoneNetAmount).toFixed(2));
+        console.log('subTotal:', subTotal);
 
         let totalAmount = subTotal;
+        console.log('totalAmount:', totalAmount);
 
-        // Assuming 5% tax
         const taxRate = 5;
-        const taxAmount = parseFloat((totalAmount * 0.05).toFixed(2));
-        const tdsAmount = parseFloat((totalAmount * 0.01).toFixed(2));
-        const commission = parseFloat((totalAmount * adminCommission * 0.01).toFixed(2));
+        const taxAmount = isNaN(parseFloat((totalAmount * 0.05).toFixed(2))) ? 0 : parseFloat((totalAmount * 0.05).toFixed(2));
+        console.log('taxAmount:', taxAmount);
+        
+        const tdsAmount = isNaN(parseFloat((totalAmount * 0.01).toFixed(2))) ? 0 : parseFloat((totalAmount * 0.01).toFixed(2));
+        console.log('tdsAmount:', tdsAmount);
+        
+        const commission = isNaN(parseFloat((totalAmount * adminCommission * 0.01).toFixed(2))) ? 0 : parseFloat((totalAmount * adminCommission * 0.01).toFixed(2));
+        console.log('commission:', commission);
 
-        const tcs = parseFloat((totalAmount - commission - tdsAmount) * 0.01).toFixed(2);
-        const totalAmountAfterDeduction = parseFloat((totalAmount - commission - tdsAmount - tcs - taxAmount).toFixed(2));
-
+        const tcs = isNaN(parseFloat((totalAmount - commission - tdsAmount) * 0.01).toFixed(2)) ? 0 : parseFloat((totalAmount - commission - tdsAmount) * 0.01).toFixed(2);
+        console.log('tcs:', tcs);
+        
+        const totalAmountAfterDeduction = isNaN(parseFloat((totalAmount - commission - tdsAmount - tcs - taxAmount).toFixed(2))) ? 0 : parseFloat((totalAmount - commission - tdsAmount - tcs - taxAmount).toFixed(2));
+        console.log('totalAmountAfterDeduction:', totalAmountAfterDeduction);
+        
         return {
             taxRate: taxRate,
             taxAmount: taxAmount,
@@ -54,28 +85,20 @@ const PriceBreakout = ({ open, onClose, data }) => {
             totalAmountAfterDeduction: totalAmountAfterDeduction,
             metal_calculation: {
                 base_amount: metalBaseAmount,
-                gst_perc: data.metal_calculation.gst_perc,
-                making_charge_amount: data.metal_calculation.mc,
+                gst_perc: data.metal_calculation?.gst_perc,
+                making_charge_amount: data.metal_calculation?.mc,
                 net_amount: metalNetAmount,
                 gst_amount: metalGst,
             },
             stone_calculation: {
                 base_amount: stoneBaseAmount,
-                gst_perc: data.stone_calculation.gst_perc,
-                making_charge_amount: data.stone_calculation.mc,
+                gst_perc: data.stone_calculation?.gst_perc,
+                making_charge_amount: data.stone_calculation?.mc,
                 net_amount: stoneNetAmount,
                 gst_amount: stoneGst,
             }
         };
     };
-
-    useEffect(() => {
-        if (open) {
-            const result = calculatePaymentDetails(data);
-            console.log('result', result);
-            setPriceDetails(result);
-        }
-    }, [open, data]);
 
     return (
         <Dialog open={open} onClose={onClose} sx={{ width: '100%', overflow: 'hidden' }} maxWidth='md' fullWidth>

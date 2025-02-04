@@ -349,7 +349,8 @@ const EditProduct = () => {
   setIsLoading(true);
   try {
     const response = await axios.post(
-      "http://localhost/Sada-Shri-Jewel-Kart-Backend/backend/uploads/upload.php",
+
+      "https://api.sadashrijewelkart.com/backend/uploads/upload.php",
       formData,
       { headers: { "Content-Type": "multipart/form-data" } }
     );

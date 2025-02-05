@@ -343,14 +343,12 @@ const EditProduct = () => {
 
   const formData = new FormData();
   formData.append("image", selectedImage);
-
   
-
   setIsLoading(true);
   try {
     const response = await axios.post(
-
-      "https://api.sadashrijewelkart.com/backend/uploads/upload.php",
+      "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/uploads/upload.php",
+    
       formData,
       { headers: { "Content-Type": "multipart/form-data" } }
     );
@@ -385,6 +383,7 @@ productName = productName.replace(/^"(.*)"$/, "$1");
     setIsLoading(false);
   }
 };
+
 
 const handleCloseModal = () => {
   setOpenDescriptionModal(false); // Close modal

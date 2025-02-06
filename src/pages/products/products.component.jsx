@@ -26,6 +26,7 @@ import { Clear, Close, Done, Edit } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { generalToastStyle } from "../../utils/toast.styles";
+import AddBulkProduct from "./addBulkProduct.component";
 import "./products.styles.scss";
 
 const theme = createTheme({
@@ -187,6 +188,7 @@ const Products = () => {
           <Button className="button" onClick={handleAddNewProduct}>
             Add New Product +
           </Button>
+          <AddBulkProduct />
         </div>
       </div>
       <Divider />

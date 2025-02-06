@@ -490,7 +490,7 @@ const AddNewProduct = () => {
            "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/uploads/upload.php",
            
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
   
       console.log("Response Data:", response.data); // Debugging

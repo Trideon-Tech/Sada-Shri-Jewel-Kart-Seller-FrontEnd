@@ -44,7 +44,7 @@ function AddBulkProduct() {
             const values = [];
             let currentValue = '';
             let insideQuotes = false;
-            
+
             for (let char of lines[i]) {
                 if (char === '"') {
                     insideQuotes = !insideQuotes;
@@ -58,14 +58,14 @@ function AddBulkProduct() {
             values.push(currentValue.trim()); // Push the last value
 
             // Remove quotes from the beginning and end of values
-            const cleanedValues = values.map(value => 
+            const cleanedValues = values.map(value =>
                 value.replace(/^"(.*)"$/, '$1').trim()
             );
-            
-            const tagIndex = headers.findIndex(header => 
+
+            const tagIndex = headers.findIndex(header =>
                 header.toLowerCase() === 'tag' || header.toLowerCase() === 'tags'
             );
-            
+
             const tags = cleanedValues[tagIndex];
             if (!tags) {
                 throw new Error(`Row ${i + 1}: Tags are required`);
@@ -175,9 +175,9 @@ function AddBulkProduct() {
 
     return (
         <>
-            <Modal 
-                open={ImportCsvModalOpen} 
-                onClose={handleClose} 
+            <Modal
+                open={ImportCsvModalOpen}
+                onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -186,27 +186,72 @@ function AddBulkProduct() {
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    width: 400,
+                    width: 600,
+                    height: 250,
                     bgcolor: 'background.paper',
                     boxShadow: 24,
                     p: 4,
                     borderRadius: 2,
                 }}>
-                    <Typography variant="h6" component="h2" gutterBottom>
-                        Import Products
-                    </Typography>
-                    <TextField
-                        variant="outlined"
+                    <div className="flex justify-between items-center">
+                        <Typography variant="h6" component="h2" className="pb-6">
+                            Import Products
+                        </Typography>
+                        <Button
+                            variant="text"
+                            onClick={() => {
+                                const link = document.createElement('a');
+                                link.href = '/templates/ssjk_bulk_import_template.csv'; // You'll need to place your CSV file in the public/templates folder
+                                link.download = 'ssjk_bulk_import_template.csv';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            }}
+                            sx={{
+                                color: '#a36e29',
+                                mb: 2,
+                                '&:hover': {
+                                    backgroundColor: 'rgba(163, 110, 41, 0.04)'
+                                }
+                            }}
+                        >
+                            Download Template
+                        </Button>
+                    </div>
+                    <input
                         type="file"
-                        fullWidth
                         accept=".csv"
                         onChange={handleFileChange}
+                        style={{ display: 'none' }}
+                        id="csv-file-input"
                     />
-                    <Button 
-                        variant="contained" 
+                    <label htmlFor="csv-file-input">
+                        <Button
+                            variant="outlined"
+                            component="span"
+                            fullWidth
+                            sx={{
+                                borderColor: '#a36e29',
+                                color: '#a36e29',
+                                '&:hover': {
+                                    borderColor: '#8b5d23',
+                                    backgroundColor: 'rgba(163, 110, 41, 0.04)'
+                                }
+                            }}
+                        >
+                            Choose CSV File
+                        </Button>
+                    </label>
+                    {file && (
+                        <Typography sx={{ mt: 2, textAlign: 'center' }}>
+                            Selected file: {file.name}
+                        </Typography>
+                    )}
+                    <Button
+                        variant="contained"
                         onClick={handleUpload}
-                        sx={{ 
-                            mt: 2,
+                        sx={{
+                            mt: 4,
                             backgroundColor: '#a36e29',
                             '&:hover': {
                                 backgroundColor: '#8b5d23',
@@ -218,8 +263,8 @@ function AddBulkProduct() {
                     </Button>
                 </Box>
             </Modal>
-            <Button 
-                className="button" 
+            <Button
+                className="button"
                 onClick={handleImport}
                 sx={{
                     backgroundColor: '#a36e29',

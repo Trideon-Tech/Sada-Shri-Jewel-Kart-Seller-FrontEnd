@@ -178,7 +178,7 @@ const Products = () => {
               ),
             }}
             sx={{
-              marginRight: "16px",
+              marginRight: "2vw",
               width: "300px",
               backgroundColor: "#fff",
               boxShadow: "0 2px 4px rgba(0,0,0,0.1)",

@@ -127,8 +127,8 @@ const AddNewProduct = () => {
   const [showDeleteVideoDialog, setShowVideoDeleteDialog] = useState(false);
 
 
-   const [selectedImage, setSelectedImage] = useState(null);
-   const [imagePreviews, setImagePreviews] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreviews, setImagePreviews] = useState([]);
   // const [productName, setProductName] = useState("");
   const [imageDescriptions, setImageDescriptions] = useState([]);
   const [selectedDescription, setSelectedDescription] = useState("");
@@ -442,7 +442,7 @@ const AddNewProduct = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
- 
+
 
     // Create URL for the image
     const reader = new FileReader();
@@ -455,7 +455,7 @@ const AddNewProduct = () => {
     };
     reader.readAsDataURL(file);
 
-    
+
     if (file) {
       setSelectedImage(file);
       // setImagePreview(URL.createObjectURL(file));
@@ -463,7 +463,7 @@ const AddNewProduct = () => {
   };
 
   const handleGenerateSubmit = async (e) => {
-      e.preventDefault();
+    e.preventDefault();
     if (!selectedImage) {
 
       return;
@@ -482,29 +482,29 @@ const AddNewProduct = () => {
     const formData = new FormData();
     formData.append("image", selectedImage);
 
-    
- 
+
+
     setIsLoading(true);
     try {
       const response = await axios.post(
-           "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/uploads/upload.php",
-           
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/uploads/upload.php",
+
         formData,
         { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
-  
+
       console.log("Response Data:", response.data); // Debugging
-  
+
       // Ensure response contains expected fields
       // const productName = response.data?.product_name ?? "";
       let productName = response.data?.product_name ?? "";
 
-// Remove surrounding quotes if they exist
-productName = productName.replace(/^"(.*)"$/, "$1");
+      // Remove surrounding quotes if they exist
+      productName = productName.replace(/^"(.*)"$/, "$1");
       // alert(productName);
       console.log(productName);
       const descriptions = response.data?.descriptions ?? [];
-  
+
       if (response.data.error) {
         alert(response.data.error);
         setProductName(""); // Reset in case of errors
@@ -1162,37 +1162,37 @@ productName = productName.replace(/^"(.*)"$/, "$1");
                   </label>
 
 
-<div className="previewContainer">
-  {images.map((image, index) => (
-    <div key={index} className="imagePreview" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <img
-        src={URL.createObjectURL(image)}
-        alt={`Preview ${index + 1}`}
-        style={{ marginBottom: '10px' }}
-      />
-      <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-        <IconButton
-          className="deleteButton"
-          onClick={() => {
-            setDeleteImageIndex(index);
-            setShowDeleteImageDialog(true);
-          }}
-        >
-          <Delete />
-        </IconButton>
-        <Button
-          variant="contained"
-          onClick={() => startCropImage(index)}
-          size="small"
-        >
-          Crop
-        </Button>
-      </div>
-    </div>
-  ))}
+                  <div className="previewContainer">
+                    {images.map((image, index) => (
+                      <div key={index} className="imagePreview" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <img
+                          src={URL.createObjectURL(image)}
+                          alt={`Preview ${index + 1}`}
+                          style={{ marginBottom: '10px' }}
+                        />
+                        <div style={{ display: 'flex', justifyContent: 'start'}}>
+                          <IconButton
+                            className="deleteButton"
+                            onClick={() => {
+                              setDeleteImageIndex(index);
+                              setShowDeleteImageDialog(true);
+                            }}
+                          >
+                            <Delete />
+                          </IconButton>
+                          <Button
+                            variant="contained"
+                            onClick={() => startCropImage(index)}
+                            size="small"
+                          >
+                            Crop
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
 
-  {/* Single Generate Button for all images */}
-  {/* {images.length > 0 && (
+                    {/* Single Generate Button for all images */}
+                    {/* {images.length > 0 && (
     <div style={{ marginTop: '30%' }}>
       <Button
         variant="contained"
@@ -1206,7 +1206,7 @@ productName = productName.replace(/^"(.*)"$/, "$1");
       {isLoading && <p className="text-center text-primary">Loading, please wait...</p>}
     </div>
   )} */}
-</div>
+                  </div>
 
 
                 </div>
@@ -1311,24 +1311,24 @@ productName = productName.replace(/^"(.*)"$/, "$1");
               alignItems: "center",
             }}
           >
-            <div className="heading">Product Details</div>
-            <div>
-  {images.length > 0 && (
-    <div style={{ marginLeft: "-307%" ,marginTop: "-19px" }}>
-      <IconButton 
-        color="primary" 
-        onClick={handleGenerateSubmit} 
-        disabled={isLoading}
-      >
-        {/* {isLoading ? <CircularProgress size={20} /> : <AutoFixHighIcon />} */}
-        { <AutoFixHighIcon />}
-      </IconButton>
-      {/* {isLoading && <p className="text-center text-primary">Loading, please wait...</p>} */}
-    </div>
-    
-  )}
-</div>
-{isLoading && <p className="text-center text-primary">Loading, please wait...</p>}
+            <div className="heading" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Product Details
+              {images.length > 0 && (
+                <IconButton
+                  color="primary"
+                  onClick={handleGenerateSubmit}
+                  disabled={isLoading}
+                  size="small"
+                  style={{ padding: 0 }}
+                >
+                  {isLoading ? (
+                    <CircularProgress size={20} color="primary" />
+                  ) : (
+                    <AutoFixHighIcon />
+                  )}
+                </IconButton>
+              )}
+            </div>
             <div
               style={{
                 display: "flex",
@@ -1336,7 +1336,7 @@ productName = productName.replace(/^"(.*)"$/, "$1");
                 alignItems: "center",
               }}
             >
-           
+
 
               <div style={{ marginRight: "20px" }}>
                 <div>Metal Rate</div>
@@ -1552,7 +1552,7 @@ productName = productName.replace(/^"(.*)"$/, "$1");
                 />
               </FormControl>
             </Grid>
-{/* 
+            {/* 
             <Grid item xs={4.5}>
               <div className="label">Description</div>
               <TextField
@@ -1566,20 +1566,20 @@ productName = productName.replace(/^"(.*)"$/, "$1");
                 }}
               />
             </Grid> */}
-<Grid item xs={4.5}>
-  <div className="label">Description</div>
-  <TextField
-    multiline
-    rows={1}
-    fullWidth
-    placeholder="Product Description"
-    value={finalDescription.replace(/^\d+\.\s*/, "")} 
-    onChange={(e) => {
-      setFinalDescription(e.target.value); 
-    }}
-  
-  />
-</Grid>
+            <Grid item xs={4.5}>
+              <div className="label">Description</div>
+              <TextField
+                multiline
+                rows={1}
+                fullWidth
+                placeholder="Product Description"
+                value={finalDescription.replace(/^\d+\.\s*/, "")}
+                onChange={(e) => {
+                  setFinalDescription(e.target.value);
+                }}
+
+              />
+            </Grid>
 
 
             <Grid item xs={12}>
@@ -1601,7 +1601,7 @@ productName = productName.replace(/^"(.*)"$/, "$1");
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
-                      document.querySelector('select[name="purity"]')?.focus();
+                      document.querySelector('input[name="purity"]')?.focus();
                     }
                   }}
                 >
@@ -2031,383 +2031,154 @@ productName = productName.replace(/^"(.*)"$/, "$1");
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
-              <Divider />
-            </Grid>
-            <Grid item xs={12}>
-              <div className="label">Stone Details</div>
-            </Grid>
-            <Grid item xs={1.33}>
-              <div className="label">Type</div>
-              <FormControl fullWidth>
-                <Select
-                  name="stoneType"
-                  value={stoneType}
-                  onChange={(e) => setStoneType(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      document
-                        .querySelector('input[name="stoneClass"]')
-                        ?.focus();
-                    }
-                  }}
-                >
-                  {dropdownValues?.[0]?.customization_fields
-                    .find((field) => field.name === "stone_type")
-                    ?.property_value.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
-                        {option.display_name}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={1.33}>
-              <div className="label">Color</div>
-              <FormControl fullWidth>
-                <Select
-                  name="stoneColor"
-                  value={stoneColor}
-                  onChange={(e) => setStoneColor(e.target.value)}
-                >
-                  {dropdownValues?.[0]?.customization_fields
-                    .find((field) => field.name === "color")
-                    ?.property_value.map((option) => (
-                      <MenuItem key={option.id} value={option.name}>
-                        {option.display_name}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={1.33}>
-              <div className="label">Clarity</div>
-              <FormControl fullWidth>
-                <Select
-                  name="stoneClarity"
-                  value={stoneClarity}
-                  onChange={(e) => setStoneClarity(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      document.querySelector('input[name="stoneCut"]')?.focus();
-                    }
-                  }}
-                >
-                  {dropdownValues?.[0]?.customization_fields
-                    .find((field) => field.name === "clarity")
-                    ?.property_value.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
-                        {option.display_name}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={1.33}>
-              <div className="label">Cut</div>
-              <FormControl fullWidth>
-                <Select
-                  name="stoneCut"
-                  value={stoneCut}
-                  onChange={(e) => setStoneCut(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      document
-                        .querySelector('input[name="stonePieces"]')
-                        ?.focus();
-                    }
-                  }}
-                >
-                  {dropdownValues?.[0]?.customization_fields
-                    .find((field) => field.name === "cut")
-                    ?.property_value.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
-                        {option.display_name}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={1.33}>
-              <div className="label">Pieces</div>
-              <FormControl fullWidth>
-                <TextField
-                  name="stonePieces"
-                  type="number"
-                  value={stonePieces}
-                  onChange={(e) => {
-                    setStonePieces(e.target.value);
-                    const weight =
-                      e.target.value && stoneCarat
-                        ? (stoneCarat * 0.2 * e.target.value).toFixed(2)
-                        : "";
-                    setStoneInternalWeight(weight);
-                  }}
-                  fullWidth
-                  placeholder="Enter number of pieces"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      document
-                        .querySelector('input[name="stoneCarat"]')
-                        ?.focus();
-                    }
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={1.33}>
-              <div className="label">Carat</div>
-              <FormControl fullWidth>
-                <TextField
-                  name="stoneCarat"
-                  type="number"
-                  value={stoneCarat}
-                  onChange={(e) => {
-                    setStoneCarat(e.target.value);
-                    const weight =
-                      e.target.value && stonePieces
-                        ? (e.target.value * 0.2 * stonePieces).toFixed(2)
-                        : "";
-                    setStoneInternalWeight(weight);
-                  }}
-                  fullWidth
-                  placeholder="Enter carat"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      document
-                        .querySelector('input[name="stoneInternalWeight"]')
-                        ?.focus();
-                    }
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={1.33}>
-              <div className="label">Weight (gm)</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={stoneInternalWeight}
-                  disabled
-                  fullWidth
-                  placeholder="Auto-calculated weight"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">gm</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={1.33}>
-              <div className="label">Rate</div>
-              <FormControl fullWidth>
-                <TextField
-                  type="number"
-                  value={stoneRate}
-                  onChange={(e) => {
-                    setStoneRate(e.target.value);
-                    const total =
-                      stoneInternalWeight && e.target.value
-                        ? (
-                          parseFloat(stoneInternalWeight) *
-                          parseFloat(e.target.value)
-                        ).toFixed(2)
-                        : 0;
-                    setStoneTotalAmount(total);
-                  }}
-                  fullWidth
-                  placeholder="Enter rate"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">₹</InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={1.33}>
-              <div className="label">GST Percentage</div>
-              <FormControl fullWidth>
-                <Select
-                  value={stoneGSTPercent}
-                  onChange={(e) => {
-                    setStoneGSTPercent(e.target.value);
-                    const baseAmount =
-                      stoneInternalWeight && stoneRate
-                        ? parseFloat(stoneInternalWeight) *
-                        parseFloat(stoneRate)
-                        : 0;
-                    const gstAmount =
-                      baseAmount * (parseFloat(e.target.value) / 100);
-                    const total = (baseAmount + gstAmount).toFixed(2);
-                    setStoneTotalAmount(total);
-                  }}
-                  fullWidth
-                >
-                  {dropdownValues?.[0]?.customization_fields
-                    .find((field) => field.name === "gst")
-                    ?.property_value.map((option) => (
-                      <MenuItem key={option.name} value={option.name}>
-                        {option.display_name}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-            </Grid>
           </Grid>
         </Paper>
       </ThemeProvider>
 
 
       <Dialog
-  open={openDescriptionModal}
-  onClose={handleCloseModal}
-  fullWidth
-  maxWidth="sm"
-  sx={{
-    "& .MuiDialog-paper": {
-      boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-      borderRadius: "10px",
-    },
-  }}
->
-  <DialogTitle
-    sx={{
-      color: "#a36e29",
-      padding: "12px 24px",
-      fontWeight: "bold",
-      fontSize: "25px",
-      borderTopLeftRadius: "10px",
-      borderTopRightRadius: "10px",
-    }}
-  >
-    Select a description
-  </DialogTitle>
-  <DialogContent
-    sx={{
-      padding: "16px",
-      paddingTop: "10px",
-      borderRadius: "8px",
-      backgroundColor: "#f9f9f9",
-      fontSize: "14px",
-      lineHeight: "1.8", // Improved readability
-      fontWeight: "700",
-      textAlign: "justify",
-    }}
-  >
-    {imageDescriptions.length > 0 ? (
-      <>
-        {/* Display Product Name */}
-        <h3
-          style={{
-            fontWeight: "bold",
-            fontSize: "18px",
+        open={openDescriptionModal}
+        onClose={handleCloseModal}
+        fullWidth
+        maxWidth="sm"
+        sx={{
+          "& .MuiDialog-paper": {
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            borderRadius: "10px",
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
             color: "#a36e29",
-            margin: "20px",
+            padding: "12px 24px",
+            fontWeight: "bold",
+            fontSize: "25px",
+            borderTopLeftRadius: "10px",
+            borderTopRightRadius: "10px",
           }}
         >
-          Product Name: {productName || "N/A"}
-        </h3>
-
-        {/* Render Descriptions */}
-        {imageDescriptions.map((desc, index) => {
-          const trimmedDesc =
-            desc.length > 250 ? desc.substring(0, 250) + "..." : desc;
-
-          return (
-            <div
-              key={index}
-              className="form-check mb-2 mt-4"
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-              }}
-            >
-              <input
-                className="form-check-input"
-                type="radio"
-                name="description"
-                value={trimmedDesc}
-                id={`description-${index}`}
-                checked={selectedDescription === trimmedDesc}
-                onChange={() => setSelectedDescription(trimmedDesc)}
-                style={{
-                  marginTop: "6px",
-                }}
-              />
-              <label
-                className="form-check-label"
-                htmlFor={`description-${index}`}
+          Select a description
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            padding: "16px",
+            paddingTop: "10px",
+            borderRadius: "8px",
+            backgroundColor: "#f9f9f9",
+            fontSize: "14px",
+            lineHeight: "1.8", // Improved readability
+            fontWeight: "700",
+            textAlign: "justify",
+          }}
+        >
+          {imageDescriptions.length > 0 ? (
+            <>
+              {/* Display Product Name */}
+              <h3
                 style={{
                   fontWeight: "bold",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                  marginLeft: "49px",
-                  textAlign: "justify",
-                  lineHeight: "1.8",
-                  textIndent: "-2em", // Adds an indent to the first line
-                  display: "block", // Ensures multiline text alignment
+                  fontSize: "18px",
+                  color: "#a36e29",
+                  margin: "20px",
                 }}
               >
-                {trimmedDesc}
-              </label>
-            </div>
-          );
-        })}
-      </>
-    ) : (
-      <p>No descriptions available.</p>
-    )}
-  </DialogContent>
-  <DialogActions>
-    <Button
-      onClick={handleCloseModal}
-      color="primary"
-      variant="contained"
-      sx={{
-        backgroundColor: "#a36e29",
-        "&:hover": {
-          backgroundColor: "#a36e29",
-        },
-        padding: "8px 16px",
-        borderRadius: "5px",
-        fontWeight: "bold",
-      }}
-    >
-      Cancel
-    </Button>
-    <Button
-      onClick={() => {
-        setFinalDescription(selectedDescription); // Update final description
-        handleCloseModal(); // Close the modal
-      }}
-      color="primary"
-      variant="contained"
-      sx={{
-        backgroundColor: "#a36e29",
-        "&:hover": {
-          backgroundColor: "#a36e29",
-        },
-        padding: "8px 16px",
-        borderRadius: "5px",
-        fontWeight: "bold",
-      }}
-    >
-      Submit
-    </Button>
-  </DialogActions>
-</Dialog>
+                Product Name: {productName || "N/A"}
+              </h3>
+
+              {/* Render Descriptions */}
+              {imageDescriptions.map((desc, index) => {
+                const trimmedDesc =
+                  desc.length > 250 ? desc.substring(0, 250) + "..." : desc;
+
+                return (
+                  <div
+                    key={index}
+                    className="form-check mb-2 mt-4"
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="description"
+                      value={trimmedDesc}
+                      id={`description-${index}`}
+                      checked={selectedDescription === trimmedDesc}
+                      onChange={() => setSelectedDescription(trimmedDesc)}
+                      style={{
+                        marginTop: "6px",
+                      }}
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor={`description-${index}`}
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "16px",
+                        cursor: "pointer",
+                        marginLeft: "49px",
+                        textAlign: "justify",
+                        lineHeight: "1.8",
+                        textIndent: "-2em", // Adds an indent to the first line
+                        display: "block", // Ensures multiline text alignment
+                      }}
+                    >
+                      {trimmedDesc}
+                    </label>
+                  </div>
+                );
+              })}
+            </>
+          ) : (
+            <p>No descriptions available.</p>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleCloseModal}
+            color="primary"
+            variant="contained"
+            sx={{
+              backgroundColor: "#a36e29",
+              "&:hover": {
+                backgroundColor: "#a36e29",
+              },
+              padding: "8px 16px",
+              borderRadius: "5px",
+              fontWeight: "bold",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              setFinalDescription(selectedDescription); // Update final description
+              handleCloseModal(); // Close the modal
+            }}
+            color="primary"
+            variant="contained"
+            sx={{
+              backgroundColor: "#a36e29",
+              "&:hover": {
+                backgroundColor: "#a36e29",
+              },
+              padding: "8px 16px",
+              borderRadius: "5px",
+              fontWeight: "bold",
+            }}
+          >
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
 
 
     </div>
 
-    
+
   );
 };
 

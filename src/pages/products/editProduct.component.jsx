@@ -129,13 +129,13 @@ const EditProduct = () => {
   const fileInputRef = useRef(null);
 
   const [selectedImage, setSelectedImage] = useState(null);
-    // const [imagePreview, setImagePreview] = useState(null);
-    // const [productName, setProductName] = useState("");
-    const [imageDescriptions, setImageDescriptions] = useState([]);
-    const [selectedDescription, setSelectedDescription] = useState("");
-    const [finalDescription, setFinalDescription] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [openDescriptionModal, setOpenDescriptionModal] = useState(false); // Modal open state
+  // const [imagePreview, setImagePreview] = useState(null);
+  // const [productName, setProductName] = useState("");
+  const [imageDescriptions, setImageDescriptions] = useState([]);
+  const [selectedDescription, setSelectedDescription] = useState("");
+  const [finalDescription, setFinalDescription] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [openDescriptionModal, setOpenDescriptionModal] = useState(false); // Modal open state
 
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
@@ -248,7 +248,7 @@ const EditProduct = () => {
       console.log("Cleaned Description:", cleanedDesc); // Debugging log
       setDesc(cleanedDesc);
       setFinalDescription(cleanedDesc); // Ensure input field updates correctly
-  
+
 
       // metal details
       setGrossWeight(productData.customizations[0]?.metal_info?.gross_wt);
@@ -326,68 +326,68 @@ const EditProduct = () => {
 
   const handleGenerateSubmit = async (e) => {
     e.preventDefault();
-  if (!selectedImage) {
+    if (!selectedImage) {
 
-    return;
-  }
-
-  // const imageInput = document.getElementById("imageInput"); // Assuming an input element with ID 'imageInput'
-
-
-  // const selectedImage = imageInput.files[0]; // Get the selected file
-
-  // alert("Selected Image: " + selectedImage.name);
-
-  // Log the entire file object to the console
-  console.log("Selected Image Object:", selectedImage);
-
-  const formData = new FormData();
-  formData.append("image", selectedImage);
-  
-  setIsLoading(true);
-  try {
-    const response = await axios.post(
-      "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/uploads/upload.php",
-    
-      formData,
-      { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${localStorage.getItem("token")}` } }
-    );
-
-    console.log("Response Data:", response.data); // Debugging
-
-    // Ensure response contains expected fields
-    // const productName = response.data?.product_name ?? "";
-    let productName = response.data?.product_name ?? "";
-
-// Remove surrounding quotes if they exist
-productName = productName.replace(/^"(.*)"$/, "$1");
-    // alert(productName);
-    console.log(productName);
-    const descriptions = response.data?.descriptions ?? [];
-    // alert(descriptions);
-
-    if (response.data.error) {
-      // alert(response.data.error);
-      setProductName(""); // Reset in case of errors
-      setImageDescriptions([]); // Reset in case of errors
-    } else {
-      setProductName(productName);
-      setImageDescriptions(descriptions);
-      setSelectedDescription(descriptions.length > 0 ? descriptions[0] : "");
-      setOpenDescriptionModal(true); // Open modal with descriptions
+      return;
     }
-  } catch (error) {
-    console.error("Error uploading file:", error);
-    alert("An error occurred while uploading. Please try again.");
-  } finally {
-    setIsLoading(false);
-  }
-};
+
+    // const imageInput = document.getElementById("imageInput"); // Assuming an input element with ID 'imageInput'
 
 
-const handleCloseModal = () => {
-  setOpenDescriptionModal(false); // Close modal
-};
+    // const selectedImage = imageInput.files[0]; // Get the selected file
+
+    // alert("Selected Image: " + selectedImage.name);
+
+    // Log the entire file object to the console
+    console.log("Selected Image Object:", selectedImage);
+
+    const formData = new FormData();
+    formData.append("image", selectedImage);
+
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/uploads/upload.php",
+
+        formData,
+        { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+
+      console.log("Response Data:", response.data); // Debugging
+
+      // Ensure response contains expected fields
+      // const productName = response.data?.product_name ?? "";
+      let productName = response.data?.product_name ?? "";
+
+      // Remove surrounding quotes if they exist
+      productName = productName.replace(/^"(.*)"$/, "$1");
+      // alert(productName);
+      console.log(productName);
+      const descriptions = response.data?.descriptions ?? [];
+      // alert(descriptions);
+
+      if (response.data.error) {
+        // alert(response.data.error);
+        setProductName(""); // Reset in case of errors
+        setImageDescriptions([]); // Reset in case of errors
+      } else {
+        setProductName(productName);
+        setImageDescriptions(descriptions);
+        setSelectedDescription(descriptions.length > 0 ? descriptions[0] : "");
+        setOpenDescriptionModal(true); // Open modal with descriptions
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("An error occurred while uploading. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  const handleCloseModal = () => {
+    setOpenDescriptionModal(false); // Close modal
+  };
 
   const handleVideoChange = (e) => {
     const file = e.target.files[0];
@@ -1074,60 +1074,60 @@ const handleCloseModal = () => {
                       <PhotoCamera /> Select Image
                     </Button>
                   </label>
-                <div className="previewContainer">
-  {/* Display original images if they exist */}
-  {origImages &&
-    origImages !== "Product Infographics doesn't exist." &&
-    origImages.map((image, index) => (
-      <div key={index} className="imagePreview" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <img
-          src={`https://api.sadashrijewelkart.com/assets/${image.file}`}
-          alt={`Preview ${index + 1}`}
-        />
-        <IconButton
-          className="deleteButton"
-          onClick={() => {
-            setDeleteImageType(1);
-            setDeleteImageIndex(index);
-            setShowDeleteImageDialog(true);
-          }}
-        >
-          <Delete />
-        </IconButton>
-      </div>
-    ))}
+                  <div className="previewContainer">
+                    {/* Display original images if they exist */}
+                    {origImages &&
+                      origImages !== "Product Infographics doesn't exist." &&
+                      origImages.map((image, index) => (
+                        <div key={index} className="imagePreview" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <img
+                            src={`https://api.sadashrijewelkart.com/assets/${image.file}`}
+                            alt={`Preview ${index + 1}`}
+                          />
+                          <IconButton
+                            className="deleteButton"
+                            onClick={() => {
+                              setDeleteImageType(1);
+                              setDeleteImageIndex(index);
+                              setShowDeleteImageDialog(true);
+                            }}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </div>
+                      ))}
 
-  {/* Display newly uploaded images */}
-  {images.map((image, index) => (
-    <div key={index} className="imagePreview" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <img
-        src={image ? URL.createObjectURL(image) : ""}
-        alt={`Preview ${index + 1}`}
-        style={{ marginBottom: '10px' }}
-      />
-      <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-        <IconButton
-          className="deleteButton"
-          onClick={() => {
-            setDeleteImageIndex(index);
-            setShowDeleteImageDialog(true);
-          }}
-        >
-          <Delete />
-        </IconButton>
-        <Button
-          variant="contained"
-          onClick={() => startCropImage(index)}
-          size="small"
-        >
-          Crop
-        </Button>
-      </div>
-    </div>
-  ))}
+                    {/* Display newly uploaded images */}
+                    {images.map((image, index) => (
+                      <div key={index} className="imagePreview" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <img
+                          src={image ? URL.createObjectURL(image) : ""}
+                          alt={`Preview ${index + 1}`}
+                          style={{ marginBottom: '10px' }}
+                        />
+                        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                          <IconButton
+                            className="deleteButton"
+                            onClick={() => {
+                              setDeleteImageIndex(index);
+                              setShowDeleteImageDialog(true);
+                            }}
+                          >
+                            <Delete />
+                          </IconButton>
+                          <Button
+                            variant="contained"
+                            onClick={() => startCropImage(index)}
+                            size="small"
+                          >
+                            Crop
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
 
-  {/* Single Generate Button for all images */}
-  {/* {images.length > 0 && (
+                    {/* Single Generate Button for all images */}
+                    {/* {images.length > 0 && (
     <div style={{ marginTop: '30%', textAlign: 'center' }}>
       <Button
         variant="contained"
@@ -1141,7 +1141,7 @@ const handleCloseModal = () => {
       {isLoading && <p className="text-center text-primary">Loading, please wait...</p>}
     </div>
   )} */}
-</div>
+                  </div>
 
                 </div>
               </Grid>
@@ -1242,24 +1242,19 @@ const handleCloseModal = () => {
               alignItems: "center",
             }}
           >
-            <div className="heading">Product Details</div>
-            <div>
-           
-  {images.length > 0 && (
-    <div style={{ marginLeft: "-307%" ,marginTop: "-19px" }}>
-      <IconButton 
-        color="primary" 
-        onClick={handleGenerateSubmit} 
-        disabled={isLoading}
-      >
-        {/* {isLoading ? <CircularProgress size={24} /> : <AutoFixHighIcon />} */}
-        { <AutoFixHighIcon />}
-      </IconButton>
-      {/* {isLoading && <p className="text-center text-primary">Loading, please wait...</p>} */}
-    </div>
-  )}
-</div>
-{isLoading && <p className="text-center text-primary">Loading, please wait...</p>}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="heading">Product Details</div>
+              {images.length > 0 && (
+                <IconButton
+                  color="primary"
+                  onClick={handleGenerateSubmit}
+                  disabled={isLoading}
+                  size="small"
+                >
+                  {isLoading ? <CircularProgress size={20} /> : <AutoFixHighIcon />}
+                </IconButton>
+              )}
+            </div>
 
             <div
               style={{
@@ -1457,24 +1452,24 @@ const handleCloseModal = () => {
                 />
               </FormControl>
             </Grid>
- 
+
             <Grid item xs={4.5}>
-  <div className="label">Description</div>
-  <TextField
+              <div className="label">Description</div>
+              <TextField
 
-    multiline
-    rows={1}
-    fullWidth
-    placeholder="Product Description"
-    value={finalDescription} 
-    onChange={(e) => {
-      let inputValue = e.target.value.replace(/^\d+\.\s*/, ""); // Remove leading number
-      setFinalDescription(inputValue); // Update state with clean value
-    }}
-    
-  />
+                multiline
+                rows={1}
+                fullWidth
+                placeholder="Product Description"
+                value={finalDescription}
+                onChange={(e) => {
+                  let inputValue = e.target.value.replace(/^\d+\.\s*/, ""); // Remove leading number
+                  setFinalDescription(inputValue); // Update state with clean value
+                }}
 
-</Grid>
+              />
+
+            </Grid>
 
 
 
@@ -2160,144 +2155,144 @@ const handleCloseModal = () => {
         </Paper>
       </ThemeProvider>
       <Dialog
-  open={openDescriptionModal}
-  onClose={handleCloseModal}
-  fullWidth
-  maxWidth="sm"
-  sx={{
-    "& .MuiDialog-paper": {
-      boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-      borderRadius: "10px",
-    },
-  }}
->
-  <DialogTitle
-    sx={{
-      color: "#a36e29",
-      padding: "12px 24px",
-      fontWeight: "bold",
-      fontSize: "25px",
-      borderTopLeftRadius: "10px",
-      borderTopRightRadius: "10px",
-    }}
-  >
-    Select a description
-  </DialogTitle>
-  <DialogContent
-    sx={{
-      padding: "16px",
-      paddingTop: "10px",
-      borderRadius: "8px",
-      backgroundColor: "#f9f9f9",
-      fontSize: "14px",
-      lineHeight: "1.5",
-      fontWeight: "700",
-      textAlign: "justify",
-    }}
-  >
-    {imageDescriptions.length > 0 ? (
-      <>
-        {/* Display Product Name */}
-        <h3
-          style={{
-            fontWeight: "bold",
-            fontSize: "18px",
+        open={openDescriptionModal}
+        onClose={handleCloseModal}
+        fullWidth
+        maxWidth="sm"
+        sx={{
+          "& .MuiDialog-paper": {
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            borderRadius: "10px",
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
             color: "#a36e29",
-            margin: "20px",
+            padding: "12px 24px",
+            fontWeight: "bold",
+            fontSize: "25px",
+            borderTopLeftRadius: "10px",
+            borderTopRightRadius: "10px",
           }}
         >
-          Product Name: {productName || "N/A"}
-        </h3>
-
-        {/* Render Descriptions */}
-        {imageDescriptions.map((desc, index) => {
-          const trimmedDesc =
-            desc.length > 250 ? desc.substring(0, 250) + "..." : desc;
-
-          return (
-            <div
-              key={index}
-              className="form-check mb-2 mt-4"
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                gap: "10px", // Spacing between radio button and text
-              }}
-            >
-              <input
-                className="form-check-input"
-                type="radio"
-                name="description"
-                value={trimmedDesc}
-                id={`description-${index}`}
-                checked={selectedDescription === trimmedDesc}
-                onChange={() => setSelectedDescription(trimmedDesc)}
-                style={{
-                  marginTop: "6px", // Aligns the radio button properly
-                }}
-              />
-              <label
-                className="form-check-label"
-                htmlFor={`description-${index}`}
+          Select a description
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            padding: "16px",
+            paddingTop: "10px",
+            borderRadius: "8px",
+            backgroundColor: "#f9f9f9",
+            fontSize: "14px",
+            lineHeight: "1.5",
+            fontWeight: "700",
+            textAlign: "justify",
+          }}
+        >
+          {imageDescriptions.length > 0 ? (
+            <>
+              {/* Display Product Name */}
+              <h3
                 style={{
                   fontWeight: "bold",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                  marginLeft: "49px",
-                  textAlign: "justify",
-                  lineHeight: "1.8",
-                  textIndent: "-2em", // Adds an indent to the first line
-                  display: "block", // Ensures multiline text alignment
+                  fontSize: "18px",
+                  color: "#a36e29",
+                  margin: "20px",
                 }}
               >
-                {trimmedDesc}
-              </label>
-            </div>
-          );
-        })}
-      </>
-    ) : (
-      <p>No descriptions available.</p>
-    )}
-  </DialogContent>
-  <DialogActions>
-    <Button
-      onClick={handleCloseModal}
-      color="primary"
-      variant="contained"
-      sx={{
-        backgroundColor: "#a36e29",
-        "&:hover": {
-          backgroundColor: "#a36e29",
-        },
-        padding: "8px 16px",
-        borderRadius: "5px",
-        fontWeight: "bold",
-      }}
-    >
-      Cancel
-    </Button>
-    <Button
-      onClick={() => {
-        setFinalDescription(selectedDescription); // Update final description
-        handleCloseModal(); // Close the modal
-      }}
-      color="primary"
-      variant="contained"
-      sx={{
-        backgroundColor: "#a36e29",
-        "&:hover": {
-          backgroundColor: "#a36e29",
-        },
-        padding: "8px 16px",
-        borderRadius: "5px",
-        fontWeight: "bold",
-      }}
-    >
-      Submit
-    </Button>
-  </DialogActions>
-</Dialog>
+                Product Name: {productName || "N/A"}
+              </h3>
+
+              {/* Render Descriptions */}
+              {imageDescriptions.map((desc, index) => {
+                const trimmedDesc =
+                  desc.length > 250 ? desc.substring(0, 250) + "..." : desc;
+
+                return (
+                  <div
+                    key={index}
+                    className="form-check mb-2 mt-4"
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: "10px", // Spacing between radio button and text
+                    }}
+                  >
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="description"
+                      value={trimmedDesc}
+                      id={`description-${index}`}
+                      checked={selectedDescription === trimmedDesc}
+                      onChange={() => setSelectedDescription(trimmedDesc)}
+                      style={{
+                        marginTop: "6px", // Aligns the radio button properly
+                      }}
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor={`description-${index}`}
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "16px",
+                        cursor: "pointer",
+                        marginLeft: "49px",
+                        textAlign: "justify",
+                        lineHeight: "1.8",
+                        textIndent: "-2em", // Adds an indent to the first line
+                        display: "block", // Ensures multiline text alignment
+                      }}
+                    >
+                      {trimmedDesc}
+                    </label>
+                  </div>
+                );
+              })}
+            </>
+          ) : (
+            <p>No descriptions available.</p>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleCloseModal}
+            color="primary"
+            variant="contained"
+            sx={{
+              backgroundColor: "#a36e29",
+              "&:hover": {
+                backgroundColor: "#a36e29",
+              },
+              padding: "8px 16px",
+              borderRadius: "5px",
+              fontWeight: "bold",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              setFinalDescription(selectedDescription); // Update final description
+              handleCloseModal(); // Close the modal
+            }}
+            color="primary"
+            variant="contained"
+            sx={{
+              backgroundColor: "#a36e29",
+              "&:hover": {
+                backgroundColor: "#a36e29",
+              },
+              padding: "8px 16px",
+              borderRadius: "5px",
+              fontWeight: "bold",
+            }}
+          >
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
 
 
     </div>

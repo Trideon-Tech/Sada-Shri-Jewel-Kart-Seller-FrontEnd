@@ -1,9 +1,18 @@
 import { Button, Modal, Box, Typography, TextField } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import { generalToastStyle } from "../../utils/toast.styles";
+import { useNavigate } from "react-router-dom";
 
 function AddBulkProduct() {
+    const navigate = useNavigate();
+    const MakingChargeTypeMapping = {
+        "6": "Making Charge / Gram",
+        "7": "Making Charge / Piece",
+        "8": "Piece Cost",
+        "9": "Making Charge %",
+    }
     const [ImportCsvModalOpen, setImportCsvModalOpen] = useState(false);
     const [file, setFile] = useState(null);
 
@@ -31,60 +40,83 @@ function AddBulkProduct() {
         for (let i = 1; i < lines.length; i++) {
             if (!lines[i].trim()) continue;
 
-            const values = lines[i].split(',').map(value => value.trim());
+            // New CSV parsing logic that handles quoted fields
+            const values = [];
+            let currentValue = '';
+            let insideQuotes = false;
+            
+            for (let char of lines[i]) {
+                if (char === '"') {
+                    insideQuotes = !insideQuotes;
+                } else if (char === ',' && !insideQuotes) {
+                    values.push(currentValue.trim());
+                    currentValue = '';
+                } else {
+                    currentValue += char;
+                }
+            }
+            values.push(currentValue.trim()); // Push the last value
+
+            // Remove quotes from the beginning and end of values
+            const cleanedValues = values.map(value => 
+                value.replace(/^"(.*)"$/, '$1').trim()
+            );
             
             const tagIndex = headers.findIndex(header => 
                 header.toLowerCase() === 'tag' || header.toLowerCase() === 'tags'
             );
             
-            const tags = values[tagIndex];
+            const tags = cleanedValues[tagIndex];
             if (!tags) {
                 throw new Error(`Row ${i + 1}: Tags are required`);
             }
 
             // Transform the data to match the required API format
             const item = {
-                name: values[headers.findIndex(h => h === 'Product Name')] || '',
-                desc: values[headers.findIndex(h => h === 'Description')] || '',
-                category: values[headers.findIndex(h => h === 'Category')] || '',
-                sub_category: values[headers.findIndex(h => h === 'Sub-Cat.')] || '',
-                size: values[headers.findIndex(h => h === 'Size')] || '',
-                hsn: values[headers.findIndex(h => h === 'HSN')] || '', // Default HSN code
+                name: cleanedValues[headers.findIndex(h => h === 'Product Name')] || '',
+                desc: cleanedValues[headers.findIndex(h => h === 'Description')] || '',
+                category: cleanedValues[headers.findIndex(h => h === 'Category')] || '',
+                sub_category: cleanedValues[headers.findIndex(h => h === 'Sub-Cat.')] || '',
+                size: cleanedValues[headers.findIndex(h => h === 'Size')] || '',
+                hsn: cleanedValues[headers.findIndex(h => h === 'HSN')] || '',
                 tags: tags,
-                quantity: parseInt(values[headers.findIndex(h => h === 'Quantity')]) || 0,
-                price: 0, // Will be calculated based on metal and stone details
-                weight: parseFloat(values[headers.findIndex(h => h === 'Metal Gross Weight')]) || 0,
-                height: 0, // Not in CSV, defaulting to 0
-                width: 0, // Not in CSV, defaulting to 0
-                purity: parseFloat(values[headers.findIndex(h => h === 'Metal Purity')]) || 0,
-                discount_perc: parseFloat(values[headers.findIndex(h => h === 'Discount %')]) || 0,
-                customization_option: "", // Default value
+                quantity: parseInt(cleanedValues[headers.findIndex(h => h === 'Quantity')]) || 1,
+                discount_perc: parseFloat(cleanedValues[headers.findIndex(h => h === 'Discount %')]) || "0",
+                customization_option: [
+                    cleanedValues[headers.findIndex(h => h === 'Quantity')] || '',
+                    MakingChargeTypeMapping[cleanedValues[headers.findIndex(h => h === 'MC Type')]] || '',
+                    cleanedValues[headers.findIndex(h => h === 'Stone Type')] || ''
+                ].filter(val => val !== '').join(','),
 
                 metal: {
-                    type: values[headers.findIndex(h => h === 'Metal Type')]?.toLowerCase() || '',
-                    quality: values[headers.findIndex(h => h === 'Metal Purity')] || '',
-                    gross_wt: parseFloat(values[headers.findIndex(h => h === 'Metal Gross Weight')]) || 0,
-                    stone_wt: parseFloat(values[headers.findIndex(h => h === 'Stone Weight')]) || 0,
-                    net_wt: parseFloat(values[headers.findIndex(h => h === 'Net Weight')]) || 0,
-                    wastage_prec: parseFloat(values[headers.findIndex(h => h === 'Wastage %')]) || 0,
-                    wastage_wt: parseFloat(values[headers.findIndex(h => h === 'Wastage Weight')]) || 0,
-                    net_wt_after_wastage: parseFloat(values[headers.findIndex(h => h === 'Net New Wt.')]) || 0,
-                    making_charge_type: values[headers.findIndex(h => h === 'MC Type')] || '',
-                    making_charge_value: parseFloat(values[headers.findIndex(h => h === 'MC')]) || 0,
-                    making_charge_amount: parseFloat(values[headers.findIndex(h => h === 'Mc Amt.')]) || 0,
-                    stone_amount: parseFloat(values[headers.findIndex(h => h === 'Stone Amt.')]) || 0,
-                    hallmark_charge: parseFloat(values[headers.findIndex(h => h === 'Hallmark Amt.')]) || 0,
-                    rodium_charge: parseFloat(values[headers.findIndex(h => h === 'Rodium/Cert. Cg.')]) || 0,
-                    gst_perc: parseFloat(values[headers.findIndex(h => h === 'Metal GST')]) || 0,
+                    metal: cleanedValues[headers.findIndex(h => h === 'Metal Type')]?.toLowerCase() || '',
+                    quality: cleanedValues[headers.findIndex(h => h === 'Metal Purity')] || '',
+                    quantity: cleanedValues[headers.findIndex(h => h === 'Quantity')] || "0",
+                    gross_wt: parseFloat(cleanedValues[headers.findIndex(h => h === 'Metal Gross Weight')]) || "0",
+                    stone_wt: parseFloat(cleanedValues[headers.findIndex(h => h === 'Stone Weight')]) || "0",
+                    net_wt: parseFloat(cleanedValues[headers.findIndex(h => h === 'Net Weight')]) || "0",
+                    wastage_prec: parseFloat(cleanedValues[headers.findIndex(h => h === 'Wastage %')]) || "0",
+                    wastage_wt: parseFloat(cleanedValues[headers.findIndex(h => h === 'Wastage Weight')]) || "0",
+                    net_wt_after_wastage: parseFloat(cleanedValues[headers.findIndex(h => h === 'Net New Wt.')]) || "0",
+                    making_charge_type: cleanedValues[headers.findIndex(h => h === 'MC Type')] || "0",
+                    making_charge_value: parseFloat(cleanedValues[headers.findIndex(h => h === 'MC %')]) || "0",
+                    making_charge_amount: parseFloat(cleanedValues[headers.findIndex(h => h === 'Mc Amt.')]) || "0",
+                    stone_amount: parseFloat(cleanedValues[headers.findIndex(h => h === 'Stone Amt.')]) || "0",
+                    hallmark_charge: parseFloat(cleanedValues[headers.findIndex(h => h === 'Hallmark Amt.')]) || "0",
+                    rodium_charge: parseFloat(cleanedValues[headers.findIndex(h => h === 'Rodium/Cert. Cg.')]) || "0",
+                    gst_perc: parseFloat(cleanedValues[headers.findIndex(h => h === 'Metal GST')]) || "0",
                 },
 
                 stone: {
-                    type: values[headers.findIndex(h => h === 'Stone Type')] || '',
-                    color: values[headers.findIndex(h => h === 'Color')] || '',
-                    clarity: values[headers.findIndex(h => h === 'Clarity')] || '',
-                    cut: values[headers.findIndex(h => h === 'Cut')] || '',
-                    pieces: parseInt(values[headers.findIndex(h => h === 'Pieces')]) || 0,
-                    carat: parseFloat(values[headers.findIndex(h => h === 'Carat')]) || 0,
+                    stone_type: cleanedValues[headers.findIndex(h => h === 'Stone Type')] || '',
+                    color: cleanedValues[headers.findIndex(h => h === 'Color')] || '',
+                    clarity: cleanedValues[headers.findIndex(h => h === 'Clarity')] || '',
+                    cut: cleanedValues[headers.findIndex(h => h === 'Cut')] || "0",
+                    pieces: parseInt(cleanedValues[headers.findIndex(h => h === 'Pieces')]) || "0",
+                    carat: parseFloat(cleanedValues[headers.findIndex(h => h === 'Carat')]) || "0",
+                    stone_wt: parseFloat(cleanedValues[headers.findIndex(h => h === 'Stone Weight')]) || "0",
+                    stone_rate: parseFloat(cleanedValues[headers.findIndex(h => h === 'Stone Rate')]) || "0",
+                    gst_perc: parseFloat(cleanedValues[headers.findIndex(h => h === 'Stone GST')]) || "0",
                 }
             };
             items.push(item);
@@ -118,9 +150,10 @@ function AddBulkProduct() {
                         }
                     );
 
-                    if (response.data.status === "success") {
-                        toast.success("Products uploaded successfully!");
+                    if (response.data.success === 1) {
+                        toast("Products uploaded successfully!", generalToastStyle);
                         handleClose();
+                        navigate("/products");
                     } else {
                         toast.error(response.data.message || "Failed to upload products");
                     }

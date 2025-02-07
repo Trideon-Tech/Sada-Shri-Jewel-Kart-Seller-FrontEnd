@@ -26,6 +26,7 @@ import { Clear, Close, Done, Edit } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { generalToastStyle } from "../../utils/toast.styles";
+import AddBulkProduct from "./addBulkProduct.component";
 import "./products.styles.scss";
 
 const theme = createTheme({
@@ -58,7 +59,7 @@ const Products = () => {
   const getProductList = () => {
     axios
       .get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php?type=item",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/all.php?type=item`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -86,7 +87,7 @@ const Products = () => {
   const handleDeleteProduct = (productId) => {
     axios
       .delete(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/all.php`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -177,7 +178,7 @@ const Products = () => {
               ),
             }}
             sx={{
-              marginRight: "16px",
+              marginRight: "2vw",
               width: "300px",
               backgroundColor: "#fff",
               boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
@@ -187,6 +188,7 @@ const Products = () => {
           <Button className="button" onClick={handleAddNewProduct}>
             Add New Product +
           </Button>
+          <AddBulkProduct />
         </div>
       </div>
       <Divider />
@@ -244,7 +246,7 @@ const Products = () => {
                               alt="org"
                               src={
                                 row.images
-                                  ? `https://api.sadashrijewelkart.com/assets/${row.images[0]["file"]}`
+                                  ? `${process.env.REACT_APP_API_BASE_URL}/assets/${row.images[0]["file"]}`
                                   : process.env.PUBLIC_URL + "/assets/fav.png"
                               }
                             />
@@ -284,7 +286,7 @@ const Products = () => {
                                   onClick={async () => {
                                     try {
                                       await axios.put(
-                                        "https://api.sadashrijewelkart.com/v1.0.0/seller/inventory/inventory.php",
+                                        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/inventory/inventory.php`,
                                         JSON.stringify({
                                           product_id: row.id,
                                           quantity: editQuantity,

@@ -64,7 +64,7 @@ const PaymentsComponent = ({ row }) => {
       const token = localStorage.getItem("token");
       if (!token) return;
       const { data } = await axios.get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=payment_list`,
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/orders/all.php?type=payment_list`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -74,7 +74,7 @@ const PaymentsComponent = ({ row }) => {
       );
 
       const { data: settlementList } = await axios.get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=settlement_list`,
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/orders/all.php?type=settlement_list`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

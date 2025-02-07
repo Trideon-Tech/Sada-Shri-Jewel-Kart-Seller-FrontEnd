@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./addNewProduct.styles.scss";
+import PriceBreakout from "./priceBreakout.component";
 
 const theme = createTheme({
   palette: {
@@ -45,7 +46,7 @@ const hsnMapping = {
   "GOLD JEWELLERY": "Gold Jewelry - 7113",
   "SILVER ARTICLES": "Silver Articles - 7114",
   "SILVER JEWELLERY": "Silver Jewelry - 7113",
-  "GEMSTONE": "Gemstone Jewelry - 7113",
+  GEMSTONE: "Gemstone Jewelry - 7113",
   "DIAMOND JEWELLERY": "Diamond Jewelry - 7113 ",
   // Add more mappings as needed
 };
@@ -126,6 +127,14 @@ const AddNewProduct = () => {
 
   const [showDeleteVideoDialog, setShowVideoDeleteDialog] = useState(false);
 
+  const [showPriceBreakout, setShowPriceBreakout] = useState(false);
+  const [productAmountData, setProductAmountData] = useState({});
+  const [settlementAmount, setSettlementAmount] = useState(0);
+
+  const handleSettlementAmountChange = (value) => {
+    setSettlementAmount(value);
+  };
+
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -138,8 +147,10 @@ const AddNewProduct = () => {
 
 
   const calculateTotalPrice = (metalInfo, stoneInfo) => {
-    const metal = typeof metalInfo === 'string' ? JSON.parse(metalInfo) : metalInfo;
-    const stone = typeof stoneInfo === 'string' ? JSON.parse(stoneInfo) : stoneInfo;
+    const metal =
+      typeof metalInfo === "string" ? JSON.parse(metalInfo) : metalInfo;
+    const stone =
+      typeof stoneInfo === "string" ? JSON.parse(stoneInfo) : stoneInfo;
 
     const metalRate = rates[metal.quality_name] || 0;
     // Calculate net weight
@@ -155,7 +166,8 @@ const AddNewProduct = () => {
       metalBaseAmount = parseFloat(metal.making_charge_amount || 0);
     } else {
       metalBaseAmount = parseFloat(netWeightAfterWastage * metalRate);
-      metalBaseAmount += parseFloat(metal.making_charge_amount || 0) +
+      metalBaseAmount +=
+        parseFloat(metal.making_charge_amount || 0) +
         parseFloat(metal.stone_amount || 0) +
         parseFloat(metal.hallmark_charge || 0) +
         parseFloat(metal.rodium_charge || 0);
@@ -164,14 +176,27 @@ const AddNewProduct = () => {
     // set making charge amount
     if (makingChargeType == 6) {
       setMakingChargeAmount(
-        (parseFloat(metal.making_charge_value) * parseFloat(netWeightAfterWastage || 0)).toFixed(2)
+        (
+          parseFloat(metal.making_charge_value) *
+          parseFloat(netWeightAfterWastage || 0)
+        ).toFixed(2)
       );
     } else if (makingChargeType == 7 || makingChargeType == 8) {
-      setMakingChargeAmount(parseFloat(metal.making_charge_value || 0).toFixed(2));
+      setMakingChargeAmount(
+        parseFloat(metal.making_charge_value || 0).toFixed(2)
+      );
     } else if (makingChargeType == 9) {
       setMakingChargeAmount(
         parseFloat(
-          isNaN(metal.making_charge_value * (rate / 100) * (netWeightAfterWastage || netWeight || 0)) ? 0 : metal.making_charge_value * (rate / 100) * (netWeightAfterWastage || netWeight || 0)
+          isNaN(
+            metal.making_charge_value *
+            (rate / 100) *
+            (netWeightAfterWastage || netWeight || 0)
+          )
+            ? 0
+            : metal.making_charge_value *
+            (rate / 100) *
+            (netWeightAfterWastage || netWeight || 0)
         ).toFixed(2)
       );
     }
@@ -181,9 +206,12 @@ const AddNewProduct = () => {
     const metalNetAmount = metalBaseAmount + metalGst;
 
     // Stone calculations (already correct)
-    const stoneWeight = parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
+    const stoneWeight =
+      parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
     const stoneBaseAmount = parseFloat(stone.stone_rate) * stoneWeight;
-    const stoneGst = isNaN(stoneBaseAmount * (parseFloat(stone.gst_perc) / 100)) ? 0 : stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
+    const stoneGst = isNaN(stoneBaseAmount * (parseFloat(stone.gst_perc) / 100))
+      ? 0
+      : stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
     const stoneNetAmount = stoneBaseAmount + stoneGst;
 
     console.log("stoneNetAmount", stoneNetAmount);
@@ -191,7 +219,7 @@ const AddNewProduct = () => {
     const totalPrice = (metalNetAmount || 0) + (stoneNetAmount || 0);
     console.log("totalPrice", totalPrice);
 
-    return {
+    const priceDetails = {
       total_price: totalPrice.toFixed(2),
       metal_calculation: {
         net_weight: netWeight,
@@ -199,15 +227,27 @@ const AddNewProduct = () => {
         net_weight_after_wastage: netWeightAfterWastage,
         base_amount: metalBaseAmount,
         gst_amount: metalGst,
-        net_amount: metalNetAmount
+        net_amount: metalNetAmount,
+        mc: makingChargeAmount,
+        total_amount: metalNetAmount + stoneNetAmount,
+        gst_perc: gstPercent
       },
       stone_calculation: {
         stone_weight: stoneWeight,
         base_amount: stoneBaseAmount,
         gst_amount: stoneGst,
-        net_amount: stoneNetAmount
-      }
+        net_amount: stoneNetAmount,
+        gst_perc: stoneGSTPercent,
+        mc: makingChargeAmount,
+        total_amount: stoneNetAmount + makingChargeAmount,
+        wastage_weight: wastageWeight,
+        wastage_prec: wastagePercent,
+        net_weight_after_wastage: netWeightAfterWastage,
+        net_weight: netWeight
+      },
     };
+    setProductAmountData(priceDetails);
+    return priceDetails;
   };
 
   const handleMakingChargeValueChange = (e) => {
@@ -259,8 +299,16 @@ const AddNewProduct = () => {
     setMakingChargeAmount(makingChargeAmount);
 
     const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
-    setStoneTotalAmount(parseFloat(isNaN(priceDetails.stone_calculation.net_amount) ? 0 : priceDetails.stone_calculation.net_amount));
-    setTotalAmount(parseFloat(isNaN(priceDetails.total_price) ? 0 : priceDetails.total_price));
+    setStoneTotalAmount(
+      parseFloat(
+        isNaN(priceDetails.stone_calculation.net_amount)
+          ? 0
+          : priceDetails.stone_calculation.net_amount
+      )
+    );
+    setTotalAmount(
+      parseFloat(isNaN(priceDetails.total_price) ? 0 : priceDetails.total_price)
+    );
   }, [
     grossWeight,
     stoneWeight,
@@ -278,7 +326,7 @@ const AddNewProduct = () => {
     stoneGSTPercent,
     netWeightAfterWastage,
     rate,
-    makingChargeAmount
+    makingChargeAmount,
   ]);
 
   useEffect(() => {
@@ -286,15 +334,11 @@ const AddNewProduct = () => {
     if (metalType === "gold") {
       selectedOption = dropdownValues?.[0]?.customization_fields
         .find((field) => field.name === "gold_quality")
-        ?.property_value.find(
-          (opt) => opt.name === purity
-        )?.name;
+        ?.property_value.find((opt) => opt.name === purity)?.name;
     } else if (metalType === "silver") {
       selectedOption = dropdownValues?.[1]?.customization_fields
         .find((field) => field.name === "silver_quality")
-        ?.property_value.find(
-          (opt) => opt.name === purity
-        )?.name;
+        ?.property_value.find((opt) => opt.name === purity)?.name;
     }
 
     setQualityName(selectedOption);
@@ -303,14 +347,14 @@ const AddNewProduct = () => {
       const rateKey = selectedOption === "silver22" ? "silver" : selectedOption;
       setRate(rates[rateKey] || 0);
     }
-  }, [metalType, purity])
+  }, [metalType, purity]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     Promise.all([
       axios.get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/all.php?type=product_add_template",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/customization/all.php?type=product_add_template`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -318,7 +362,7 @@ const AddNewProduct = () => {
         }
       ),
       axios.get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php?type=category",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/all.php?type=category`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -326,7 +370,7 @@ const AddNewProduct = () => {
         }
       ),
       axios.get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/jewelleryInventory/jewellryInventory.php?type=get_latest",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/jewelleryInventory/jewellryInventory.php?type=get_latest`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -336,7 +380,10 @@ const AddNewProduct = () => {
     ])
       .then(([dropdownResponse, categoriesResponse, ratesResponse]) => {
         setDropdownValues(dropdownResponse.data.response);
-        console.log("dropdownResponse.data.response", dropdownResponse.data.response);
+        console.log(
+          "dropdownResponse.data.response",
+          dropdownResponse.data.response
+        );
         const categories = categoriesResponse.data.response || [];
         setCategoriesData(categories);
         setRates(ratesResponse.data.response.jewelry_prices);
@@ -405,7 +452,7 @@ const AddNewProduct = () => {
   const getAllCustomizationFields = () => {
     axios
       .get(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/field/all.php",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/customization/field/all.php`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -424,7 +471,7 @@ const AddNewProduct = () => {
     if (selectedCustomizationTypeId > 0)
       axios
         .get(
-          `https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedCustomizationTypeId}`,
+          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedCustomizationTypeId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -543,6 +590,160 @@ const AddNewProduct = () => {
     setImages(newImages);
   };
 
+  const handleProductSave = async () => {
+    try {
+      // First save the product details
+      const formData = {
+        type: "item",
+        category: selectedCategory || "",
+        sub_category: selectedSubcategory || "",
+        name: productName || "",
+        // desc: desc || "",
+        desc: (finalDescription || "").replace(/^\d+\.\s*/, ""),
+        customization_option: [quantity, makingChargeType, stoneType]
+          .filter((val) => val !== null && val !== 0)
+          .join(","),
+        size: size || "",
+        hsn: hsnCode || "",
+        quantity: inventoryQty || 1,
+        tags: tags || "",
+        discount_perc: discount || "0",
+        metal: {
+          metal: metalType || "",
+          quality: qualityName || "",
+          quantity: quantity || "0",
+          gross_wt: grossWeight || "0",
+          stone_wt: stoneWeight || "0",
+          net_wt: netWeight || "0",
+          wastage_prec: wastagePercent || "0",
+          wastage_wt: wastageWeight || "0",
+          net_wt_after_wastage: netWeightAfterWastage || "0",
+          making_charge_type: makingChargeType || "0",
+          making_charge_value: makingChargeValue || "0",
+          making_charge_amount: makingChargeAmount || "0",
+          stone_amount: stoneAmount || "0",
+          hallmark_charge: hallmarkCharge || "0",
+          rodium_charge: rodiumCharge || "0",
+          gst_perc: gstPercent || "0",
+        },
+        stone: {
+          stone_type: stoneType || "",
+          color: stoneColor || "",
+          clarity: stoneClarity || "",
+          cut: stoneCut || "0",
+          pieces: stonePieces || "0",
+          carat: stoneCarat || "0",
+          stone_wt: stoneInternalWeight || "0",
+          stone_rate: stoneRate || "0",
+          gst_perc: stoneGSTPercent || "0",
+        },
+      };
+
+      const productResponse = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/addProduct.php`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const productId = productResponse.data.response.id;
+
+      // Then upload all images and video
+      const uploadPromises = [];
+
+      // Upload images
+      images.forEach((image, index) => {
+        const imageFormData = new FormData();
+        imageFormData.append("type", "infographics");
+        imageFormData.append("product", productId);
+        imageFormData.append("is_primary", index === 0 ? true : false);
+        imageFormData.append("file_type", "img");
+        imageFormData.append("file", image);
+
+        uploadPromises.push(
+          axios.post(
+            `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
+            imageFormData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          )
+        );
+      });
+
+      // Upload video if exists
+      if (video) {
+        const videoFormData = new FormData();
+        videoFormData.append("type", "infographics");
+        videoFormData.append("product", productId);
+        videoFormData.append("is_primary", false);
+        videoFormData.append("file_type", "vid");
+        videoFormData.append("file", video);
+
+        uploadPromises.push(
+          axios.post(
+            `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
+            videoFormData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          )
+        );
+      }
+
+      // Wait for all uploads to complete
+      await Promise.all(uploadPromises);
+      toast.success("Product saved successfully!");
+      navigate("/products");
+    } catch (error) {
+      console.error("Error saving product:", error);
+      setLoading(false);
+      toast.error("Error saving product. Please try again.");
+    }
+  };
+
+  const handleCategoryChange = (e) => {
+    const categoryId = e.target.value;
+    const selectedCategory = categoriesData.find(
+      (category) => category.id === categoryId
+    );
+    setSelectedCategory(categoryId);
+
+    if (selectedCategory) {
+      const hsn = hsnMapping[selectedCategory.name];
+      console.log("hsn", hsn);
+      setHsnCode(hsn || "");
+      setMetalType(typeMapping[selectedCategory.name] || "");
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    const newImages = files.map((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setCurrentImage(reader.result);
+        setCurrentImageIndex(images.length); // Set to new image index
+      };
+      reader.readAsDataURL(file);
+      return file;
+    });
+
+    setImages((prevImages) => [...prevImages, ...newImages]);
+  };
+
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
@@ -608,310 +809,9 @@ const AddNewProduct = () => {
     }
   };
 
-  const handleProductSave = async () => {
-    // Validate required fields
-    // if (!productName) {
-    //   toast.error("Please enter product name", generalToastStyle);
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!selectedCategory) {
-    //   toast.error("Please select a category", generalToastStyle);
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!selectedSubcategory) {
-    //   toast.error("Please select a subcategory", generalToastStyle);
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!desc) {
-    //   toast.error("Please enter product description", generalToastStyle);
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!inventoryQty) {
-    //   toast.error("Please enter product quantity", generalToastStyle);
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!images || images.length === 0) {
-    //   toast.error(
-    //     "Please select at least one product image",
-    //     generalToastStyle
-    //   );
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!video) {
-    //   toast.error("Please select a product video", generalToastStyle);
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (!metalType && !stoneType) {
-    //   toast.error(
-    //     "Please select either metal type or stone type",
-    //     generalToastStyle
-    //   );
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (metalType) {
-    //   if (makingChargeType == 8) {
-    //     // Only validate making charge and GST for type 8
-    //     if (!makingChargeValue) {
-    //       toast.error("Please enter making charge value", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!makingChargeAmount) {
-    //       toast.error("Please enter making charge amount", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!gstPercent) {
-    //       console.log(gstPercent);
-    //       toast.error("Please enter GST percentage", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //   } else {
-    //     // Validate all fields for other types
-    //     if (!purity) {
-    //       toast.error("Please select quality/purity", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!quantity) {
-    //       toast.error("Please enter quantity", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!grossWeight) {
-    //       toast.error("Please enter gross weight", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!netWeight) {
-    //       toast.error("Please enter net weight", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!netWeightAfterWastage) {
-    //       toast.error(
-    //         "Please enter net weight after wastage",
-    //         generalToastStyle
-    //       );
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!makingChargeType) {
-    //       toast.error("Please select making charge type", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!makingChargeValue) {
-    //       toast.error("Please enter making charge value", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!makingChargeAmount) {
-    //       toast.error("Please enter making charge amount", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!hallmarkCharge) {
-    //       toast.error("Please enter hallmark charge", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //     if (!gstPercent) {
-    //       console.log(gstPercent);
-    //       toast.error("Please enter GST percentage", generalToastStyle);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //   }
-    // }
-    // if (stoneType) {
-    //   if (!stoneClass) {
-    //     toast.error("Please select stone class", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stoneClarity) {
-    //     toast.error("Please select stone clarity", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stoneCut) {
-    //     toast.error("Please select stone cut", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stonePieces) {
-    //     toast.error("Please enter number of stone pieces", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stoneCarat) {
-    //     toast.error("Please enter stone carat", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stoneInternalWeight) {
-    //     toast.error("Please enter stone weight", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stoneRate) {
-    //     toast.error("Please enter stone rate", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   if (!stoneGSTPercent) {
-    //     toast.error("Please enter stone GST percentage", generalToastStyle);
-    //     setLoading(false);
-    //     return;
-    //   }
-    // }
-
-    try {
-      // First save the product details
-      const formData = {
-        type: "item",
-        category: selectedCategory || "",
-        sub_category: selectedSubcategory || "",
-        name: productName || "",
-        // desc: desc || "",
-        desc: (finalDescription || "").replace(/^\d+\.\s*/, ""),
-        customization_option: [quantity, makingChargeType, stoneType]
-          .filter((val) => val !== null && val !== 0)
-          .join(","),
-        size: size || "",
-        hsn: hsnCode || "",
-        quantity: inventoryQty || 1,
-        tags: tags || "",
-        discount_perc: discount || "0",
-        metal: {
-          metal: metalType || "",
-          quality: qualityName || "",
-          quantity: quantity || "0",
-          gross_wt: grossWeight || "0",
-          stone_wt: stoneWeight || "0",
-          net_wt: netWeight || "0",
-          wastage_prec: wastagePercent || "0",
-          wastage_wt: wastageWeight || "0",
-          net_wt_after_wastage: netWeightAfterWastage || "0",
-          making_charge_type: makingChargeType || "0",
-          making_charge_value: makingChargeValue || "0",
-          making_charge_amount: makingChargeAmount || "0",
-          stone_amount: stoneAmount || "0",
-          hallmark_charge: hallmarkCharge || "0",
-          rodium_charge: rodiumCharge || "0",
-          gst_perc: gstPercent || "0"
-        },
-        stone: {
-          stone_type: stoneType || "",
-          color: stoneColor || "",
-          clarity: stoneClarity || "",
-          cut: stoneCut || "0",
-          pieces: stonePieces || "0",
-          carat: stoneCarat || "0",
-          stone_wt: stoneInternalWeight || "0",
-          stone_rate: stoneRate || "0",
-          gst_perc: stoneGSTPercent || "0",
-        },
-      };
-
-      const productResponse = await axios.post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/addProduct.php",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      const productId = productResponse.data.response.id;
-
-      // Then upload all images and video
-      const uploadPromises = [];
-
-      // Upload images
-      images.forEach((image, index) => {
-        const imageFormData = new FormData();
-        imageFormData.append("type", "infographics");
-        imageFormData.append("product", productId);
-        imageFormData.append("is_primary", index === 0 ? true : false);
-        imageFormData.append("file_type", "img");
-        imageFormData.append("file", image);
-
-        uploadPromises.push(
-          axios.post(
-            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-            imageFormData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-            }
-          )
-        );
-      });
-
-      // Upload video if exists
-      if (video) {
-        const videoFormData = new FormData();
-        videoFormData.append("type", "infographics");
-        videoFormData.append("product", productId);
-        videoFormData.append("is_primary", false);
-        videoFormData.append("file_type", "vid");
-        videoFormData.append("file", video);
-
-        uploadPromises.push(
-          axios.post(
-            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
-            videoFormData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-            }
-          )
-        );
-      }
-
-      // Wait for all uploads to complete
-      await Promise.all(uploadPromises);
-      toast.success("Product saved successfully!");
-      navigate("/products");
-    } catch (error) {
-      console.error("Error saving product:", error);
-      setLoading(false);
-      toast.error("Error saving product. Please try again.");
-    }
-  };
-
-  const handleCategoryChange = (e) => {
-    const categoryId = e.target.value;
-    const selectedCategory = categoriesData.find(category => category.id === categoryId);
-    setSelectedCategory(categoryId);
-
-    if (selectedCategory) {
-      const hsn = hsnMapping[selectedCategory.name];
-      console.log("hsn", hsn);
-      setHsnCode(hsn || "");
-      setMetalType(typeMapping[selectedCategory.name] || "");
-    }
-  };
-
   return (
     <div className="AddNewProduct">
+      <PriceBreakout handleSettlementAmountChange={handleSettlementAmountChange} open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
       <ToastContainer />
 
       {/* Confirmation Dialog */}
@@ -1148,6 +1048,7 @@ const AddNewProduct = () => {
                     type="file"
                     accept="image/*"
                     id="imageInput"
+                    multiple
                     onChange={handleImageChange}
                     style={{ display: "none" }}
                   />
@@ -1157,7 +1058,7 @@ const AddNewProduct = () => {
                       className="selectButton"
                       component="span"
                     >
-                      <PhotoCamera /> Select Image
+                      <PhotoCamera /> Select Images
                     </Button>
                   </label>
 
@@ -1380,6 +1281,24 @@ const AddNewProduct = () => {
                   />
                 </div>
               </div>
+              <div style={{ marginRight: "20px" }}>
+                <div>Settlement Amount</div>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {parseFloat(settlementAmount).toFixed(2)}
+                </div>
+                <Typography
+                  style={{
+                    fontFamily: '"Roboto", sans-serif',
+                    fontSize: "0.9rem",
+                    color: "grey",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                  onClick={() => setShowPriceBreakout(true)}
+                >
+                  Price Breakout
+                </Typography>
+              </div>
             </div>
           </div>
           <Divider />
@@ -1521,7 +1440,12 @@ const AddNewProduct = () => {
                   {dropdownValues?.[0]?.customization_fields
                     .find((field) => field.name === "hsn")
                     ?.property_value.map((option) => (
-                      <MenuItem key={option.name} value={option.name.replace(/\n/g, '').replace(/&NoBreak;/g, '')}>
+                      <MenuItem
+                        key={option.name}
+                        value={option.name
+                          .replace(/\n/g, "")
+                          .replace(/&NoBreak;/g, "")}
+                      >
                         {option.display_name}
                       </MenuItem>
                     ))}

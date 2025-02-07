@@ -53,7 +53,7 @@ const SettlementModal = ({ modalOpen, setModalOpen, selectedPaymentId }) => {
       if (!token) return;
 
       const { data } = await axios.get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/orders/all.php?type=settlement_detail&settlement_public_id=${selectedPaymentId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/orders/all.php?type=settlement_detail&settlement_public_id=${selectedPaymentId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

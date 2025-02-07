@@ -62,7 +62,7 @@ const ContactUs = () => {
 
       axios
         .post(
-          "https://api.sadashrijewelkart.com/v1.0.0/admin/contact.php",
+          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/admin/contact.php`,
           formData,
           {
             headers: {

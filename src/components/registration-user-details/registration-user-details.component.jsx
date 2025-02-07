@@ -65,7 +65,7 @@ const RegistrationUserDetails = () => {
 
       axios
         .post(
-          "https://api.sadashrijewelkart.com/v1.0.0/user/otp.php",
+          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/user/otp.php`,
           formData,
           {
             headers: {
@@ -108,7 +108,7 @@ const RegistrationUserDetails = () => {
 
     axios
       .get(
-        `https://api.sadashrijewelkart.com/v1.0.0/seller/otp.php?type=verify_otp&otp=${otp}&mobile=${`${mobile}`}`,
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/otp.php?type=verify_otp&otp=${otp}&mobile=${`${mobile}`}`,
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -130,7 +130,7 @@ const RegistrationUserDetails = () => {
 
             axios
               .post(
-                "https://api.sadashrijewelkart.com/v1.0.0/seller/register.php",
+                `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/register.php`,
                 formData,
                 {
                   headers: {

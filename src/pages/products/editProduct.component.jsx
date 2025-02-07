@@ -245,7 +245,7 @@ const EditProduct = () => {
       );
       console.log("subcategory", subcategory);
       setSelectedSubcategory(subcategory ? `${subcategory.id}_${subcategory.admin_comm_perc}` : "");
-      setAdminCommissionPerc(subcategory.admin_comm_perc);
+      setAdminCommissionPerc(subcategory?.admin_comm_perc ?? 0);
 
       setSize(productData.size);
       setTags(productData.tags);
@@ -285,6 +285,7 @@ const EditProduct = () => {
       setNetWeightAfterWastage(
         productData.customizations[0]?.metal_info?.net_wt_after_wastage || 0
       );
+      handleStoneWeightChangeValue();
       setMakingChargeValue(
         productData.customizations[0]?.metal_info?.making_charge_value
       );
@@ -729,6 +730,15 @@ const EditProduct = () => {
 
     calculateMakingChargeAmount();
   };
+
+  const handleStoneWeightChangeValue = () => {
+    const newNetWeight = grossWeight - stoneWeight;
+    setNetWeight(newNetWeight);
+    const newWastageWeight = newNetWeight * (wastagePercent / 100);
+    setWastageWeight(newWastageWeight);
+    const newNetWeightAfterWastage = newNetWeight + newWastageWeight;
+    setNetWeightAfterWastage(newNetWeightAfterWastage);
+  }
 
   const handleWastagePercentChange = (e) => {
     const newWastagePercent = e.target.value;

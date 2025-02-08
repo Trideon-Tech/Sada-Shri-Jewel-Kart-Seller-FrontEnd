@@ -486,29 +486,6 @@ const AddNewProduct = () => {
         });
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-
-    // Create URL for the image
-    const reader = new FileReader();
-    reader.onload = () => {
-      setCurrentImage(reader.result);
-      setCurrentImageIndex(images.length); // Set to new image index
-      setCrop({ x: 0, y: 0 });
-      setZoom(1);
-      setCropDialogOpen(true);
-    };
-    reader.readAsDataURL(file);
-
-
-    if (file) {
-      setSelectedImage(file);
-      // setImagePreview(URL.createObjectURL(file));
-    }
-  };
-
   const handleGenerateSubmit = async (e) => {
     e.preventDefault();
     if (!selectedImage) {
@@ -742,6 +719,7 @@ const AddNewProduct = () => {
     });
 
     setImages((prevImages) => [...prevImages, ...newImages]);
+    setSelectedImage(files[0]);
   };
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {

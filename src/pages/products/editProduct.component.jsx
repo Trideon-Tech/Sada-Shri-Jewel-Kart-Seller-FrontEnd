@@ -370,11 +370,12 @@ const EditProduct = () => {
     });
 
     setImages((prevImages) => [...prevImages, ...newImages]);
+    setSelectedImage(files[0]);
 
-    if (file) {
-      setSelectedImage(file);
-      // setImagePreview(URL.createObjectURL(file));
-    }
+    // if (file) {
+    //   setSelectedImage(file);
+    //   // setImagePreview(URL.createObjectURL(file));
+    // }
   };
 
 

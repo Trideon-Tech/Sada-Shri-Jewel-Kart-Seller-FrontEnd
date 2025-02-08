@@ -501,6 +501,7 @@ const EditProduct = () => {
         imageFormData.append("is_primary", index === 0 ? true : false);
         imageFormData.append("file_type", "img");
         imageFormData.append("file", image);
+        imageFormData.append("display_order", index);
 
         uploadPromises.push(
           axios.post(

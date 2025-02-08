@@ -200,12 +200,7 @@ function AddBulkProduct() {
                         <Button
                             variant="text"
                             onClick={() => {
-                                const link = document.createElement('a');
-                                link.href = '/templates/ssjk_bulk_import_template.csv'; // You'll need to place your CSV file in the public/templates folder
-                                link.download = 'ssjk_bulk_import_template.csv';
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
+                                window.open('https://docs.google.com/spreadsheets/d/137rZMX0PxvhZEksWhfQOngnNiqX6JpRmi9mNvbR1bSw/edit?gid=1247132821#gid=1247132821', '_blank');
                             }}
                             sx={{
                                 color: '#a36e29',

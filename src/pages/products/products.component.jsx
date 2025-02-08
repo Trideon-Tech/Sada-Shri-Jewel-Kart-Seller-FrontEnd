@@ -22,11 +22,12 @@ import {
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
-import { Clear, Close, Done, Edit } from "@mui/icons-material";
+import { Clear, Close, Done, Edit, Add, SetMealOutlined } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { generalToastStyle } from "../../utils/toast.styles";
 import AddBulkProduct from "./addBulkProduct.component";
+import Variants from "./variants.component";
 import "./products.styles.scss";
 
 const theme = createTheme({
@@ -55,6 +56,7 @@ const Products = () => {
   const [editQuantity, setEditQuantity] = useState();
 
   const [searchResults, setSearchResults] = useState([]);
+  const [variantsOpen, setVariantsOpen] = useState(false);
 
   const getProductList = () => {
     axios
@@ -395,6 +397,10 @@ const Products = () => {
                               className="block"
                               onClick={() => openDeleteDialog(row.id)}
                             />
+                            <Add
+                              className="allow"
+                              onClick={() => setVariantsOpen(true)}
+                            />
                           </TableCell>
                         </TableRow>
                       );
@@ -498,6 +504,7 @@ const Products = () => {
           </Box>
         </Box>
       </Modal>
+      <Variants open={variantsOpen} onClose={() => setVariantsOpen(false)} />
     </div>
   );
 };

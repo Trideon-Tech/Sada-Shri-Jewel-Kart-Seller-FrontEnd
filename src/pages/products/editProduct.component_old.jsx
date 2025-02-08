@@ -1,5 +1,4 @@
 import { Delete, PhotoCamera, VideoCameraFront } from "@mui/icons-material";
-import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
 import {
   Button,
   CircularProgress,
@@ -21,14 +20,13 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import Cropper from "react-easy-crop";
-import "react-quill/dist/quill.snow.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { generalToastStyle } from "../../utils/toast.styles";
 import "./addNewProduct.styles.scss";
-import PriceBreakout from "./priceBreakout.component";
 
 const theme = createTheme({
   palette: {
@@ -41,30 +39,25 @@ const theme = createTheme({
   },
 });
 
-// Example HSN mapping
-const hsnMapping = {
-  "GOLD JEWELLERY": "Gold Jewelry - 7113",
-  "SILVER ARTICLES": "Silver Articles - 7114",
-  "SILVER JEWELLERY": "Silver Jewelry - 7113",
-  GEMSTONE: "Gemstone Jewelry - 7113",
-  "DIAMOND JEWELLERY": "Diamond Jewelry - 7113 ",
-  // Add more mappings as needed
-};
+/* 
+Delete Image Types
+1. Existing Image
+2. New Image
+*/
 
-const typeMapping = {
-  "GOLD JEWELLERY": "gold",
-  "SILVER JEWELLERY": "silver",
-};
-
-const AddNewProduct = () => {
-  let navigate = useNavigate();
+const EditProduct = () => {
   let token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get("id");
+  const productNameQuery = searchParams.get("name");
+  const hash = searchParams.get("hash");
 
-  const [images, setImages] = useState([]);
-  const [video, setVideo] = useState(null);
-  const [productName, setProductName] = useState();
+  const [loading, setLoading] = useState(false);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+
   const [desc, setDesc] = useState();
-  const [purity, setPurity] = useState("gold22");
+  const [purity, setPurity] = useState('');
   const [customizationTypes, setCustomizationTypes] = useState([]);
   const [categoriesData, setCategoriesData] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -75,10 +68,9 @@ const AddNewProduct = () => {
     useState("");
   const [customizationOptions, setCustomizationOptions] = useState([]);
   const [dropdownValues, setDropdownValues] = useState();
-  const [metalType, setMetalType] = useState("");
+  const [metalType, setMetalType] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [grossWeight, setGrossWeight] = useState();
-  const [tags, setTags] = useState();
   const [stoneWeight, setStoneWeight] = useState(0);
   const [netWeight, setNetWeight] = useState();
   const [wastagePercent, setWastagePercent] = useState(0);
@@ -95,22 +87,31 @@ const AddNewProduct = () => {
   const [rate, setRate] = useState(0);
   const [amount, setAmount] = useState(0);
   const [stoneTotalAmount, setStoneTotalAmount] = useState(0);
-  const [stoneType, setStoneType] = useState();
+  const [stoneType, setStoneType] = useState('');
   const [stoneClass, setStoneClass] = useState();
-  const [stoneCut, setStoneCut] = useState();
+  const [stoneCut, setStoneCut] = useState('');
   const [stonePieces, setStonePieces] = useState();
   const [stoneCarat, setStoneCarat] = useState();
-  const [stoneClarity, setStoneClarity] = useState();
+  const [stoneClarity, setStoneClarity] = useState('');
   const [stoneRate, setStoneRate] = useState();
   const [stoneInternalWeight, setStoneInternalWeight] = useState();
-  const [stoneGSTPercent, setStoneGSTPercent] = useState();
+  const [stoneGSTPercent, setStoneGSTPercent] = useState('');
   const [qualityName, setQualityName] = useState();
   const [size, setSize] = useState();
-  const [hsnCode, setHsnCode] = useState("");
+  const [tags, setTags] = useState();
+  const [hsnCode, setHsnCode] = useState('');
   const [inventoryQty, setInventoryQty] = useState(false);
-  const [discount, setDiscount] = useState(0);
-  const [stoneColor, setStoneColor] = useState();
-  const [totalAmount, setTotalAmount] = useState(0);
+  const [showVideoDeleteDialog, setShowVideoDeleteDialog] = useState(false);
+  const [stoneColor, setStoneColor] = useState('');
+
+  const [origImages, setOrigImages] = useState([]);
+  const [images, setImages] = useState([]);
+  const [origVideo, setOrigVideo] = useState(null);
+  const [video, setVideo] = useState(null);
+  const [videoIndex, setVideoIndex] = useState(null);
+
+  const [product, setProduct] = useState(null);
+
   // Crop related states
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState(null);
@@ -119,609 +120,13 @@ const AddNewProduct = () => {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
-  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [showDeleteImageDialog, setShowDeleteImageDialog] = useState(false);
   const [deleteImageIndex, setDeleteImageIndex] = useState();
-  const [loading, setLoading] = useState(false);
+  const [deleteImageType, setDeleteImageType] = useState();
+  const [productName, setProductName] = useState(productNameQuery);
+  const [discount, setDiscount] = useState(0);
+  const fileInputRef = useRef(null);
 
-
-  const [showDeleteVideoDialog, setShowVideoDeleteDialog] = useState(false);
-
-  const [showPriceBreakout, setShowPriceBreakout] = useState(false);
-  const [productAmountData, setProductAmountData] = useState({});
-  const [settlementAmount, setSettlementAmount] = useState(0);
-
-  const handleSettlementAmountChange = (value) => {
-    setSettlementAmount(value);
-  };
-
-
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imagePreviews, setImagePreviews] = useState([]);
-  // const [productName, setProductName] = useState("");
-  const [imageDescriptions, setImageDescriptions] = useState([]);
-  const [selectedDescription, setSelectedDescription] = useState("");
-  const [finalDescription, setFinalDescription] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [openDescriptionModal, setOpenDescriptionModal] = useState(false); // Modal open state
-
-
-  const calculateTotalPrice = (metalInfo, stoneInfo) => {
-    const metal =
-      typeof metalInfo === "string" ? JSON.parse(metalInfo) : metalInfo;
-    const stone =
-      typeof stoneInfo === "string" ? JSON.parse(stoneInfo) : stoneInfo;
-
-    const metalRate = rates[metal.quality_name] || 0;
-    // Calculate net weight
-    const netWeight = parseFloat(metal.gross_wt) - parseFloat(metal.stone_wt);
-    const wastageWeight = netWeight * (parseFloat(metal.wastage_prec) / 100);
-
-    const netWeightAfterWastage = netWeight + wastageWeight;
-
-    // Calculate metal base amount
-    let metalBaseAmount = 0;
-
-    if (metal.making_charge_type === "8") {
-      metalBaseAmount = parseFloat(metal.making_charge_amount || 0);
-    } else {
-      metalBaseAmount = parseFloat(netWeightAfterWastage * metalRate);
-      metalBaseAmount +=
-        parseFloat(metal.making_charge_amount || 0) +
-        parseFloat(metal.stone_amount || 0) +
-        parseFloat(metal.hallmark_charge || 0) +
-        parseFloat(metal.rodium_charge || 0);
-    }
-
-    // set making charge amount
-    if (makingChargeType == 6) {
-      setMakingChargeAmount(
-        (
-          parseFloat(metal.making_charge_value) *
-          parseFloat(netWeightAfterWastage || 0)
-        ).toFixed(2)
-      );
-    } else if (makingChargeType == 7 || makingChargeType == 8) {
-      setMakingChargeAmount(
-        parseFloat(metal.making_charge_value || 0).toFixed(2)
-      );
-    } else if (makingChargeType == 9) {
-      setMakingChargeAmount(
-        parseFloat(
-          isNaN(
-            metal.making_charge_value *
-            (rate / 100) *
-            (netWeightAfterWastage || netWeight || 0)
-          )
-            ? 0
-            : metal.making_charge_value *
-            (rate / 100) *
-            (netWeightAfterWastage || netWeight || 0)
-        ).toFixed(2)
-      );
-    }
-
-    // Calculate GST for metal
-    const metalGst = metalBaseAmount * (parseFloat(metal.gst_perc) / 100);
-    const metalNetAmount = metalBaseAmount + metalGst;
-
-    // Stone calculations (already correct)
-    const stoneWeight =
-      parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
-    const stoneBaseAmount = parseFloat(stone.stone_rate) * stoneWeight;
-    const stoneGst = isNaN(stoneBaseAmount * (parseFloat(stone.gst_perc) / 100))
-      ? 0
-      : stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
-    const stoneNetAmount = stoneBaseAmount + stoneGst;
-
-    console.log("stoneNetAmount", stoneNetAmount);
-    // Total price
-    const totalPrice = (metalNetAmount || 0) + (stoneNetAmount || 0);
-    console.log("totalPrice", totalPrice);
-
-    const priceDetails = {
-      total_price: totalPrice.toFixed(2),
-      metal_calculation: {
-        net_weight: netWeight,
-        wastage_weight: wastageWeight,
-        net_weight_after_wastage: netWeightAfterWastage,
-        base_amount: metalBaseAmount,
-        gst_amount: metalGst,
-        net_amount: metalNetAmount,
-        mc: makingChargeAmount,
-        total_amount: metalNetAmount + stoneNetAmount,
-        gst_perc: gstPercent
-      },
-      stone_calculation: {
-        stone_weight: stoneWeight,
-        base_amount: stoneBaseAmount,
-        gst_amount: stoneGst,
-        net_amount: stoneNetAmount,
-        gst_perc: stoneGSTPercent,
-        mc: makingChargeAmount,
-        total_amount: stoneNetAmount + makingChargeAmount,
-        wastage_weight: wastageWeight,
-        wastage_prec: wastagePercent,
-        net_weight_after_wastage: netWeightAfterWastage,
-        net_weight: netWeight
-      },
-    };
-    setProductAmountData(priceDetails);
-    return priceDetails;
-  };
-
-  const handleMakingChargeValueChange = (e) => {
-    const value = e.target.value;
-    setMakingChargeValue(value);
-
-    if (makingChargeType == 6) {
-      setMakingChargeAmount(
-        (parseFloat(value) * parseFloat(netWeightAfterWastage || 0)).toFixed(2)
-      );
-    } else if (makingChargeType == 7 || makingChargeType == 8) {
-      setMakingChargeAmount(parseFloat(value || 0).toFixed(2));
-    } else if (makingChargeType == 9) {
-      setMakingChargeAmount(
-        parseFloat(
-          value * (rate / 100) * (netWeightAfterWastage || netWeight || 0)
-        ).toFixed(2)
-      );
-    }
-  };
-
-  const handlePurityChange = (e) => {
-    setPurity(e.target.value);
-  };
-
-  useEffect(() => {
-    const metalInfo = {
-      gross_wt: grossWeight,
-      stone_wt: stoneWeight,
-      wastage_prec: wastagePercent,
-      making_charge_type: makingChargeType,
-      making_charge_value: makingChargeValue,
-      stone_amount: stoneAmount,
-      hallmark_charge: hallmarkCharge,
-      rodium_charge: rodiumCharge,
-      gst_perc: gstPercent,
-      quality: purity,
-      quality_name: qualityName,
-      making_charge_amount: makingChargeAmount,
-    };
-
-    const stoneInfo = {
-      pieces: stonePieces,
-      carat: stoneCarat,
-      stone_rate: stoneRate,
-      gst_perc: stoneGSTPercent,
-    };
-
-    setMakingChargeAmount(makingChargeAmount);
-
-    const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
-    setStoneTotalAmount(
-      parseFloat(
-        isNaN(priceDetails.stone_calculation.net_amount)
-          ? 0
-          : priceDetails.stone_calculation.net_amount
-      )
-    );
-    setTotalAmount(
-      parseFloat(isNaN(priceDetails.total_price) ? 0 : priceDetails.total_price)
-    );
-  }, [
-    grossWeight,
-    stoneWeight,
-    wastagePercent,
-    makingChargeType,
-    makingChargeValue,
-    stoneAmount,
-    hallmarkCharge,
-    rodiumCharge,
-    gstPercent,
-    purity,
-    stonePieces,
-    stoneCarat,
-    stoneRate,
-    stoneGSTPercent,
-    netWeightAfterWastage,
-    rate,
-    makingChargeAmount,
-  ]);
-
-  useEffect(() => {
-    let selectedOption;
-    if (metalType === "gold") {
-      selectedOption = dropdownValues?.[0]?.customization_fields
-        .find((field) => field.name === "gold_quality")
-        ?.property_value.find((opt) => opt.name === purity)?.name;
-    } else if (metalType === "silver") {
-      selectedOption = dropdownValues?.[1]?.customization_fields
-        .find((field) => field.name === "silver_quality")
-        ?.property_value.find((opt) => opt.name === purity)?.name;
-    }
-
-    setQualityName(selectedOption);
-
-    if (selectedOption) {
-      const rateKey = selectedOption === "silver22" ? "silver" : selectedOption;
-      setRate(rates[rateKey] || 0);
-    }
-  }, [metalType, purity]);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    Promise.all([
-      axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/customization/all.php?type=product_add_template`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      ),
-      axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/all.php?type=category`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      ),
-      axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/jewelleryInventory/jewellryInventory.php?type=get_latest`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      ),
-    ])
-      .then(([dropdownResponse, categoriesResponse, ratesResponse]) => {
-        setDropdownValues(dropdownResponse.data.response);
-        console.log(
-          "dropdownResponse.data.response",
-          dropdownResponse.data.response
-        );
-        const categories = categoriesResponse.data.response || [];
-        setCategoriesData(categories);
-        setRates(ratesResponse.data.response.jewelry_prices);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-
-  useEffect(() => {
-    getAllCustomizationFields();
-
-    if (selectedCustomizationTypeId !== null) {
-      setSelectedCustomizationTypeName(
-        customizationTypes.find((i) => i.id === selectedCustomizationTypeId)
-          ?.name
-      );
-
-      getAllCustomizationOptionsPerField();
-    }
-  }, [selectedCustomizationTypeId]);
-
-  useEffect(() => {
-    let baseAmount = 0;
-
-    if (makingChargeType == 8) {
-      setAmount(parseFloat(makingChargeAmount || 0));
-      return;
-    }
-
-    // Calculate base amount based on weight
-    if (netWeightAfterWastage) {
-      baseAmount = netWeightAfterWastage * rate;
-    } else if (netWeight) {
-      baseAmount = netWeight * rate;
-    } else if (grossWeight) {
-      baseAmount = grossWeight * rate;
-    }
-
-    // Add additional charges
-    let totalAmount = baseAmount;
-    if (makingChargeAmount) totalAmount += parseFloat(makingChargeAmount);
-    if (hallmarkCharge) totalAmount += parseFloat(hallmarkCharge);
-    if (rodiumCharge) totalAmount += parseFloat(rodiumCharge);
-    if (stoneAmount) totalAmount += parseFloat(stoneAmount);
-
-    // Add GST if present
-    if (gstPercent) {
-      totalAmount += (totalAmount * parseFloat(gstPercent)) / 100;
-    }
-
-    setAmount(totalAmount);
-  }, [
-    netWeightAfterWastage,
-    netWeight,
-    grossWeight,
-    rate,
-    makingChargeAmount,
-    hallmarkCharge,
-    rodiumCharge,
-    stoneAmount,
-    gstPercent,
-    makingChargeType,
-  ]);
-
-  const getAllCustomizationFields = () => {
-    axios
-      .get(
-        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/customization/field/all.php`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        setCustomizationTypes(response.data.response);
-      })
-      .catch((error) => {
-        console.error("Error fetching customization types:", error);
-      });
-  };
-
-  const getAllCustomizationOptionsPerField = () => {
-    if (selectedCustomizationTypeId > 0)
-      axios
-        .get(
-          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/customization/option/all.php?customization_field=${selectedCustomizationTypeId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        .then((response) => {
-          setCustomizationOptions(response.data.response);
-        })
-        .catch((error) => {
-          console.error("Error fetching customization options:", error);
-        });
-  };
-
-  const handleGenerateSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedImage) {
-
-      return;
-    }
-
-    // const imageInput = document.getElementById("imageInput"); // Assuming an input element with ID 'imageInput'
-
-
-    // const selectedImage = imageInput.files[0]; // Get the selected file
-
-    // alert("Selected Image: " + selectedImage.name);
-
-    // Log the entire file object to the console
-    console.log("Selected Image Object:", selectedImage);
-
-    const formData = new FormData();
-    formData.append("image", selectedImage);
-
-
-
-    setIsLoading(true);
-    try {
-      const response = await axios.post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/uploads/upload.php",
-
-        formData,
-        { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${localStorage.getItem("token")}` } }
-      );
-
-      console.log("Response Data:", response.data); // Debugging
-
-      // Ensure response contains expected fields
-      // const productName = response.data?.product_name ?? "";
-      let productName = response.data?.product_name ?? "";
-
-      // Remove surrounding quotes if they exist
-      productName = productName.replace(/^"(.*)"$/, "$1");
-      // alert(productName);
-      console.log(productName);
-      const descriptions = response.data?.descriptions ?? [];
-
-      if (response.data.error) {
-        alert(response.data.error);
-        setProductName(""); // Reset in case of errors
-        setImageDescriptions([]); // Reset in case of errors
-      } else {
-        setProductName(productName);
-        setImageDescriptions(descriptions);
-        setSelectedDescription(descriptions.length > 0 ? descriptions[0] : "");
-        setOpenDescriptionModal(true); // Open modal with descriptions
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      alert("An error occurred while uploading. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleCloseModal = () => {
-    setOpenDescriptionModal(false); // Close modal
-  };
-
-  const handleVideoChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-      setVideo(file);
-    } catch (error) {
-      console.error("Error handling video:", error);
-    }
-  };
-
-  const handleDeleteImage = (index) => {
-    const newImages = [...images];
-    newImages.splice(index, 1);
-    setImages(newImages);
-  };
-
-  const handleProductSave = async () => {
-    try {
-      // First save the product details
-      const formData = {
-        type: "item",
-        category: selectedCategory || "",
-        sub_category: selectedSubcategory || "",
-        name: productName || "",
-        // desc: desc || "",
-        desc: (finalDescription || "").replace(/^\d+\.\s*/, ""),
-        customization_option: [quantity, makingChargeType, stoneType]
-          .filter((val) => val !== null && val !== 0)
-          .join(","),
-        size: size || "",
-        hsn: hsnCode || "",
-        quantity: inventoryQty || 1,
-        tags: tags || "",
-        discount_perc: discount || "0",
-        metal: {
-          metal: metalType || "",
-          quality: qualityName || "",
-          quantity: quantity || "0",
-          gross_wt: grossWeight || "0",
-          stone_wt: stoneWeight || "0",
-          net_wt: netWeight || "0",
-          wastage_prec: wastagePercent || "0",
-          wastage_wt: wastageWeight || "0",
-          net_wt_after_wastage: netWeightAfterWastage || "0",
-          making_charge_type: makingChargeType || "0",
-          making_charge_value: makingChargeValue || "0",
-          making_charge_amount: makingChargeAmount || "0",
-          stone_amount: stoneAmount || "0",
-          hallmark_charge: hallmarkCharge || "0",
-          rodium_charge: rodiumCharge || "0",
-          gst_perc: gstPercent || "0",
-        },
-        stone: {
-          stone_type: stoneType || "",
-          color: stoneColor || "",
-          clarity: stoneClarity || "",
-          cut: stoneCut || "0",
-          pieces: stonePieces || "0",
-          carat: stoneCarat || "0",
-          stone_wt: stoneInternalWeight || "0",
-          stone_rate: stoneRate || "0",
-          gst_perc: stoneGSTPercent || "0",
-        },
-      };
-
-      const productResponse = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/addProduct.php`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      const productId = productResponse.data.response.id;
-
-      // Then upload all images and video
-      const uploadPromises = [];
-
-      // Upload images
-      images.forEach((image, index) => {
-        const imageFormData = new FormData();
-        imageFormData.append("type", "infographics");
-        imageFormData.append("product", productId);
-        imageFormData.append("is_primary", index === 0 ? true : false);
-        imageFormData.append("file_type", "img");
-        imageFormData.append("file", image);
-        imageFormData.append("display_order", index);
-
-        uploadPromises.push(
-          axios.post(
-            `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
-            imageFormData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-            }
-          )
-        );
-      });
-
-      // Upload video if exists
-      if (video) {
-        const videoFormData = new FormData();
-        videoFormData.append("type", "infographics");
-        videoFormData.append("product", productId);
-        videoFormData.append("is_primary", false);
-        videoFormData.append("file_type", "vid");
-        videoFormData.append("file", video);
-
-        uploadPromises.push(
-          axios.post(
-            `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/add.php`,
-            videoFormData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-            }
-          )
-        );
-      }
-
-      // Wait for all uploads to complete
-      await Promise.all(uploadPromises);
-      toast.success("Product saved successfully!");
-      navigate("/products");
-    } catch (error) {
-      console.error("Error saving product:", error);
-      setLoading(false);
-      toast.error("Error saving product. Please try again.");
-    }
-  };
-
-  const handleCategoryChange = (e) => {
-    const categoryId = e.target.value;
-    const selectedCategory = categoriesData.find(
-      (category) => category.id === categoryId
-    );
-    setSelectedCategory(categoryId);
-
-    if (selectedCategory) {
-      const hsn = hsnMapping[selectedCategory.name];
-      console.log("hsn", hsn);
-      setHsnCode(hsn || "");
-      setMetalType(typeMapping[selectedCategory.name] || "");
-    }
-  };
-
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length === 0) return;
-
-    const newImages = files.map((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setCurrentImage(reader.result);
-        setCurrentImageIndex(images.length); // Set to new image index
-      };
-      reader.readAsDataURL(file);
-      return file;
-    });
-
-    setImages((prevImages) => [...prevImages, ...newImages]);
-    setSelectedImage(files[0]);
-  };
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -788,9 +193,571 @@ const AddNewProduct = () => {
     }
   };
 
+  const fetchProduct = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/details.php?name=${productName}&hash=${hash}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const productData = response.data.response;
+      setProduct(productData);
+
+      setOrigImages(productData.images);
+      if (typeof productData.video !== "string") {
+        setOrigVideo(productData.video);
+      }
+
+      const category = categoriesData.find(
+        (cat) => cat.name === productData.category
+      );
+      setSelectedCategory(category ? category.id : "");
+
+      const subcategory = category?.sub_categories.find(
+        (subcat) => subcat.name === productData.sub_category
+      );
+      setSelectedSubcategory(subcategory ? subcategory.id : "");
+
+      setSize(productData.size);
+      setTags(productData.tags);
+
+      const hsn = dropdownValues?.[0]?.customization_fields
+        .find((field) => field.name === 'hsn')
+        ?.property_value.find((option) => option.name === productData.hsn);
+
+      setHsnCode('Gold Jewelry - 7113');
+
+      setInventoryQty(productData.quantity);
+
+      const strippedDesc = productData.description.replace(
+        /<\/?[^>]+(>|$)/g,
+        ""
+      );
+      setDesc(strippedDesc);
+
+      // metal details
+      setGrossWeight(productData.customizations[0]?.metal_info?.gross_wt);
+      setStoneWeight(productData.customizations[0]?.metal_info?.stone_wt || 0);
+      setNetWeight(productData.customizations[0]?.metal_info?.net_wt || 0);
+      setWastagePercent(
+        productData.customizations[0]?.metal_info?.wastage_prec || 0
+      );
+      setMetalType(productData.customizations[0]?.metal_info?.metal);
+      setPurity(productData.customizations[0]?.metal_info?.quality);
+
+      // Set the rate based on quality/purity
+      const metalQuality = productData.customizations[0]?.metal_info?.quality;
+      if (metalQuality) {
+        const rateKey = metalQuality.toLowerCase();
+        setRate(rates[rateKey] || 0);
+      }
+
+      setWastageWeight(productData.customizations[0]?.metal_info?.wastage_wt);
+      setNetWeightAfterWastage(productData.customizations[0]?.metal_info?.net_wt_after_wastage || 0);
+      setMakingChargeValue(productData.customizations[0]?.metal_info?.making_charge_value);
+      setMakingChargeAmount(productData.customizations[0]?.metal_info?.making_charge_amount);
+      setStoneAmount(productData.customizations[0]?.metal_info?.stone_amount || 0);
+      setHallmarkCharge(productData.customizations[0]?.metal_info?.hallmark_charge || 0);
+      setRodiumCharge(productData.customizations[0]?.metal_info?.rodium_charge || 0);
+      setGstPercent(productData.customizations[0]?.metal_info?.gst_perc || 3);
+      //stone details
+      setStoneType(productData.customizations[0]?.stone_info?.stone_type);
+      setStoneClarity(productData.customizations[0]?.stone_info?.clarity);
+      setStoneClass(productData.customizations[0]?.stone_info?.class);
+      setStoneCut(productData.customizations[0]?.stone_info?.cut);
+      setStonePieces(productData.customizations[0]?.stone_info?.pieces);
+      setStoneCarat(productData.customizations[0]?.stone_info?.carat);
+      setStoneRate(productData.customizations[0]?.stone_info?.stone_rate);
+      setStoneColor(productData.customizations[0]?.stone_info?.color);
+      setStoneInternalWeight(
+        productData.customizations[0]?.stone_info?.stone_wt
+      );
+      setDiscount(productData.discount_perc);
+      setStoneGSTPercent(productData.customizations[0]?.stone_info?.gst_perc);
+      setVideoIndex(productData.video.id);
+      setVideo(productData.video.file);
+    } catch (error) {
+      console.error("Error fetching product data:", error);
+    }
+  };
+
+  const handleCategoryChange = (e) => {
+    const categoryId = e.target.value;
+    setSelectedCategory(categoryId);
+    setSelectedSubcategory("");
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Create URL for the image
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCurrentImage(reader.result);
+      setCurrentImageIndex(images.length); // Set to new image index
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setCropDialogOpen(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // // Check file size
+    // if (file.size > 10 * 1024 * 1024) {
+    //   toast.error("Video size exceeds 10MB limit");
+    //   e.target.value = null; // Clear the input
+    //   return;
+    // }
+
+    // Set the video directly without creating a new Blob
+    setVideo(file);
+    fileInputRef.current.value = null;
+  };
+
+  const deleteExistingImage = async (index) => {
+    let deleteImage = origImages[index];
+
+    await axios.delete(
+      `https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          type: "infographics",
+          infographics_id: deleteImage.id,
+        },
+      }
+    );
+
+    toast("Image deleted successfully", generalToastStyle);
+
+    fetchProduct();
+  };
+
+  const deleteExistingVideo = async () => {
+    let deleteVideo = origVideo;
+    if (deleteVideo !== null) {
+      await axios.delete(
+        `https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: {
+            type: "infographics",
+            infographics_id: deleteVideo.id,
+          },
+        }
+      );
+    }
+
+    toast("Video deleted successfully", generalToastStyle);
+
+    setVideo(null);
+    setOrigVideo(null);
+    fetchProduct();
+  };
+
+  const handleDeleteImage = (index) => {
+    const newImages = [...images];
+    newImages.splice(index, 1);
+    setImages(newImages);
+  };
+
+  const handleProductSave = async () => {
+
+    try {
+      // First save the product details
+      const formData = {
+        id: productId,
+        type: "update_item",
+        category: selectedCategory || "",
+        sub_category: selectedSubcategory || "",
+        name: productName || "",
+        desc: desc || "",
+        customization_option: [quantity, makingChargeType, stoneType]
+          .filter((val) => val !== null && val !== 0)
+          .join(","),
+        size: size || "",
+        hsn: hsnCode || "",
+        quantity: inventoryQty || 1,
+        tags: tags || "",
+        discount_perc: discount || "0",
+        metal: {
+          metal: metalType || "",
+          quantity: quantity || "0",
+          quality: purity || "",
+          gross_wt: grossWeight || "0",
+          stone_wt: stoneWeight || "0",
+          net_wt: netWeight || "0",
+          wastage_prec: wastagePercent || "0",
+          wastage_wt: wastageWeight || "0",
+          net_wt_after_wastage: netWeightAfterWastage || "0",
+          making_charge_type: makingChargeType || "0",
+          making_charge_value: makingChargeValue || "0",
+          making_charge_amount: makingChargeAmount || "0",
+          stone_amount: stoneAmount || "0",
+          hallmark_charge: hallmarkCharge || "0",
+          rodium_charge: rodiumCharge || "0",
+          gst_perc: gstPercent || "0"
+        },
+        stone: {
+          stone_type: stoneType || "",
+          color: stoneColor || "",
+          clarity: stoneClarity || "",
+          cut: stoneCut || "",
+          pieces: stonePieces || "0",
+          carat: stoneCarat || "0",
+          stone_wt: stoneInternalWeight || "0",
+          stone_rate: stoneRate || "0",
+          gst_perc: stoneGSTPercent || "0",
+        },
+      };
+
+      const productResponse = await axios.put(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/update.php",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      // Then upload all images and video
+      const uploadPromises = [];
+
+      // Upload images
+      images.forEach((image, index) => {
+        const imageFormData = new FormData();
+        imageFormData.append("type", "infographics");
+        imageFormData.append("product", productId);
+        imageFormData.append("is_primary", index === 0 ? true : false);
+        imageFormData.append("file_type", "img");
+        imageFormData.append("file", image);
+
+
+        uploadPromises.push(
+          axios.post(
+            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+            imageFormData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          )
+        );
+      });
+
+      // Upload video if exists
+      if (video) {
+        const videoFormData = new FormData();
+        videoFormData.append("type", "infographics");
+        videoFormData.append("product", productId);
+        videoFormData.append("is_primary", false);
+        videoFormData.append("file_type", "vid");
+        videoFormData.append("file", video);
+
+        uploadPromises.push(
+          axios.post(
+            "https://api.sadashrijewelkart.com/v1.0.0/seller/product/add.php",
+            videoFormData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          )
+        );
+      }
+
+      // Wait for all uploads to complete
+      await Promise.all(uploadPromises);
+      toast.success("Product saved successfully!");
+      navigate("/products");
+    } catch (error) {
+      console.error("Error saving product:", error);
+      setLoading(false);
+      toast.error("Error saving product. " + error.response.data.message);
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    Promise.all([
+      axios.get(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/customization/all.php?type=product_add_template",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      ),
+      axios.get(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/product/all.php?type=category",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      ),
+      axios.get(
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/jewelleryInventory/jewellryInventory.php?type=get_latest",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      ),
+    ])
+      .then(([dropdownResponse, categoriesResponse, ratesResponse]) => {
+        setDropdownValues(() => dropdownResponse.data.response || []);
+        const categories = categoriesResponse.data.response || [];
+        setCategoriesData(() => categories);
+        setRates(ratesResponse.data.response?.jewelry_prices || []);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetchProduct();
+  }, [dropdownValues]);
+
+  useEffect(() => {
+    let baseAmount = 0;
+
+    if (makingChargeType == 8) {
+      setAmount(parseFloat(makingChargeAmount || 0));
+      return;
+    }
+
+    // Calculate base amount based on weight
+    if (netWeightAfterWastage) {
+      baseAmount = netWeightAfterWastage * rate;
+    } else if (netWeight) {
+      baseAmount = netWeight * rate;
+    } else if (grossWeight) {
+      baseAmount = grossWeight * rate;
+    }
+
+    // Add additional charges
+    let totalAmount = baseAmount;
+    if (makingChargeAmount) totalAmount += parseFloat(makingChargeAmount);
+    if (hallmarkCharge) totalAmount += parseFloat(hallmarkCharge);
+    if (rodiumCharge) totalAmount += parseFloat(rodiumCharge);
+    if (stoneAmount) totalAmount += parseFloat(stoneAmount);
+
+    // Add GST if present
+    if (gstPercent) {
+      totalAmount += (totalAmount * parseFloat(gstPercent)) / 100;
+    }
+
+    setAmount(totalAmount);
+  }, [
+    netWeightAfterWastage,
+    netWeight,
+    grossWeight,
+    rate,
+    makingChargeAmount,
+    hallmarkCharge,
+    rodiumCharge,
+    stoneAmount,
+    gstPercent,
+    makingChargeType,
+  ]);
+
+  useEffect(() => {
+    if (stoneInternalWeight && stoneRate) {
+      const baseStoneAmount = parseFloat(stoneInternalWeight) * parseFloat(stoneRate);
+      let totalStoneAmount = baseStoneAmount;
+
+      // Add GST if present
+      if (stoneGSTPercent) {
+        totalStoneAmount += (baseStoneAmount * parseFloat(stoneGSTPercent)) / 100;
+      }
+
+      setStoneTotalAmount(totalStoneAmount.toFixed(2));
+    } else {
+      setStoneTotalAmount(0);
+    }
+  }, [stoneInternalWeight, stoneRate, stoneGSTPercent]);
+
+  const handlePurityChange = (e) => {
+    setPurity(e.target.value);
+
+    let selectedOption;
+    if (metalType === "gold") {
+      selectedOption = dropdownValues?.[0]?.customization_fields
+        .find((field) => field.name === "gold_quality")
+        ?.property_value.find(
+          (opt) => opt.name === e.target.value
+        )?.name;
+    } else if (metalType === "silver") {
+      selectedOption = dropdownValues?.[1]?.customization_fields
+        .find((field) => field.name === "silver_quality")
+        ?.property_value.find(
+          (opt) => opt.name === e.target.value
+        )?.name;
+    }
+
+    setQualityName(selectedOption);
+
+    if (selectedOption) {
+      const rateKey = selectedOption === "silver22" ? "silver" : selectedOption;
+      setRate(rates[rateKey] || 0);
+    }
+  };
+
+  const handleMetalTypeChange = (e) => {
+    setMetalType(e.target.value);
+    setMakingChargeType(9);
+    setPurity(''); // Reset purity when metal type changes
+    setRate(0); // Reset rate when metal type changes
+  };
+
+  const handleMakingChargeValueChange = (e) => {
+    const value = e.target.value;
+    setMakingChargeValue(value);
+
+    if (makingChargeType == 6) {
+      setMakingChargeAmount(
+        (parseFloat(value) * parseFloat(netWeightAfterWastage || 0)).toFixed(2)
+      );
+    } else if (makingChargeType == 7 || makingChargeType == 8) {
+      setMakingChargeAmount(parseFloat(value || 0).toFixed(2));
+    } else if (makingChargeType == 9) {
+      setMakingChargeAmount(
+        parseFloat(
+          value * (rate / 100) * (netWeightAfterWastage || netWeight || 0)
+        ).toFixed(2)
+      );
+    }
+  };
+
+  const calculateTotalPrice = (metalInfo, stoneInfo) => {
+    const metal = typeof metalInfo === 'string' ? JSON.parse(metalInfo) : metalInfo;
+    const stone = typeof stoneInfo === 'string' ? JSON.parse(stoneInfo) : stoneInfo;
+
+    const metalRate = rates[metal.quality] || 0;
+
+    // Calculate net weight
+    const netWeight = parseFloat(metal.gross_wt) - parseFloat(metal.stone_wt);
+
+    const wastageWeight = netWeight * (parseFloat(metal.wastage_prec) / 100);
+
+    const netWeightAfterWastage = netWeight + wastageWeight;
+
+    // Calculate metal base amount
+    let metalBaseAmount;
+    if (metal.making_charge_type === "8") {
+      metalBaseAmount = parseFloat(metal.making_charge_amount);
+    } else {
+      metalBaseAmount = netWeightAfterWastage * metalRate;
+      metalBaseAmount += parseFloat(metal.making_charge_amount) +
+        parseFloat(metal.stone_amount || 0) +
+        parseFloat(metal.hallmark_charge || 0) +
+        parseFloat(metal.rodium_charge || 0);
+    }
+
+    // Calculate GST for metal
+    const metalGst = metalBaseAmount * (parseFloat(metal.gst_perc) / 100);
+
+    const metalNetAmount = metalBaseAmount + metalGst;
+
+    // Stone calculations (already correct)
+    const stoneWeight = parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
+
+    const stoneBaseAmount = parseFloat(stone.stone_rate) * stoneWeight;
+
+    const stoneGst = stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
+
+    const stoneNetAmount = stoneBaseAmount + stoneGst;
+
+    // Total price
+    const totalPrice = metalNetAmount + stoneNetAmount;
+
+    return {
+      total_price: totalPrice.toFixed(2),
+      metal_calculation: {
+        net_weight: netWeight,
+        wastage_weight: wastageWeight,
+        net_weight_after_wastage: netWeightAfterWastage,
+        base_amount: metalBaseAmount,
+        gst_amount: metalGst,
+        net_amount: metalNetAmount
+      },
+      stone_calculation: {
+        stone_weight: stoneWeight,
+        base_amount: stoneBaseAmount,
+        gst_amount: stoneGst,
+        net_amount: stoneNetAmount
+      }
+    };
+  };
+
+  useEffect(() => {
+    if (product) {
+      const metalInfo = {
+        gross_wt: grossWeight,
+        stone_wt: stoneWeight,
+        wastage_prec: wastagePercent,
+        making_charge_type: makingChargeType,
+        making_charge_amount: makingChargeAmount,
+        stone_amount: stoneAmount,
+        hallmark_charge: hallmarkCharge,
+        rodium_charge: rodiumCharge,
+        gst_perc: gstPercent,
+        quality: purity,
+      };
+
+      const stoneInfo = {
+        pieces: stonePieces,
+        carat: stoneCarat,
+        stone_rate: stoneRate,
+        gst_perc: stoneGSTPercent,
+      };
+
+      const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
+      // setAmount(parseFloat(priceDetails.metal_calculation.net_amount));
+      setStoneTotalAmount(parseFloat(priceDetails.stone_calculation.net_amount));
+    }
+  }, [
+    grossWeight,
+    stoneWeight,
+    wastagePercent,
+    makingChargeType,
+    makingChargeAmount,
+    stoneAmount,
+    hallmarkCharge,
+    rodiumCharge,
+    gstPercent,
+    purity,
+    stonePieces,
+    stoneCarat,
+    stoneRate,
+    stoneGSTPercent,
+    product,
+  ]);
+
   return (
     <div className="AddNewProduct">
-      <PriceBreakout handleSettlementAmountChange={handleSettlementAmountChange} open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
       <ToastContainer />
 
       {/* Confirmation Dialog */}
@@ -901,7 +868,11 @@ const AddNewProduct = () => {
           </Button>
           <Button
             onClick={() => {
-              handleDeleteImage(deleteImageIndex);
+              if (deleteImageType == 1) {
+                deleteExistingImage(deleteImageIndex);
+              } else {
+                handleDeleteImage(deleteImageIndex);
+              }
               setShowDeleteImageDialog(false);
             }}
             variant="contained"
@@ -920,34 +891,14 @@ const AddNewProduct = () => {
 
       {/* Delete Video Dialog */}
       <Dialog
-        open={showDeleteVideoDialog}
+        open={showVideoDeleteDialog}
         onClose={() => setShowVideoDeleteDialog(false)}
         maxWidth="sm"
         fullWidth
-        PaperProps={{
-          style: {
-            backgroundColor: "#fff",
-            fontFamily: '"Roboto", sans-serif',
-          },
-        }}
       >
-        <DialogTitle
-          sx={{
-            color: "#a36e29",
-            fontFamily: '"Roboto", sans-serif',
-          }}
-        >
-          Confirm Delete
-        </DialogTitle>
+        <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          <Typography
-            sx={{
-              color: "#333",
-              fontFamily: '"Roboto", sans-serif',
-            }}
-          >
-            Are you sure you want to delete this video?
-          </Typography>
+          <Typography>Are you sure you want to delete this video?</Typography>
         </DialogContent>
         <DialogActions>
           <Button
@@ -963,7 +914,7 @@ const AddNewProduct = () => {
           </Button>
           <Button
             onClick={() => {
-              setVideo(null);
+              deleteExistingVideo();
               setShowVideoDeleteDialog(false);
             }}
             variant="contained"
@@ -991,7 +942,7 @@ const AddNewProduct = () => {
           boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         }}
       >
-        <div className="head-txt">Add New Product</div>
+        <div className="head-txt">Edit Product</div>
         <div className="btns">
           <Button className="button1" onClick={() => navigate("/products")}>
             Cancel
@@ -1007,12 +958,13 @@ const AddNewProduct = () => {
             {loading ? (
               <CircularProgress size={24} sx={{ color: "#fff" }} />
             ) : (
-              "Save"
+              "Update"
             )}
           </Button>
         </div>
       </div>
       <Divider />
+
       {/* Image and Video Input */}
       <ThemeProvider theme={theme}>
         <div className="inputFilePreviewContainer">
@@ -1027,7 +979,6 @@ const AddNewProduct = () => {
                     type="file"
                     accept="image/*"
                     id="imageInput"
-                    multiple
                     onChange={handleImageChange}
                     style={{ display: "none" }}
                   />
@@ -1037,58 +988,59 @@ const AddNewProduct = () => {
                       className="selectButton"
                       component="span"
                     >
-                      <PhotoCamera /> Select Images
+                      <PhotoCamera /> Select Image
                     </Button>
                   </label>
-
-
                   <div className="previewContainer">
-                    {images.map((image, index) => (
-                      <div key={index} className="imagePreview" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <img
-                          src={URL.createObjectURL(image)}
-                          alt={`Preview ${index + 1}`}
-                          style={{ marginBottom: '10px' }}
-                        />
-                        <div style={{ display: 'flex', justifyContent: 'start'}}>
+                    {origImages &&
+                      origImages !== "Product Infographics doesn't exist." &&
+                      origImages.map((image, index) => (
+                        <div key={index} className="imagePreview">
+                          <img
+                            src={`https://api.sadashrijewelkart.com/assets/${image.file}`}
+                            alt={`Preview ${index + 1}`}
+                          />
                           <IconButton
                             className="deleteButton"
                             onClick={() => {
+                              setDeleteImageType(1);
                               setDeleteImageIndex(index);
                               setShowDeleteImageDialog(true);
                             }}
                           >
                             <Delete />
                           </IconButton>
-                          <Button
-                            variant="contained"
-                            onClick={() => startCropImage(index)}
-                            size="small"
-                          >
-                            Crop
-                          </Button>
                         </div>
+                      ))}
+                    {images.map((image, index) => (
+                      <div key={index} className="imagePreview">
+                        <img
+                          src={image ? URL.createObjectURL(image) : ""}
+                          alt={`Preview ${index + 1}`}
+                        />
+                        <IconButton
+                          className="deleteButton"
+                          onClick={() => {
+                            setDeleteImageType(2);
+                            setDeleteImageIndex(index);
+                            setShowDeleteImageDialog(true);
+                          }}
+                        >
+                          <Delete />
+                        </IconButton>
+                        <Button
+                          variant="contained"
+                          onClick={() => startCropImage(index)}
+                          size="small"
+                          style={{
+                            marginTop: "10px",
+                          }}
+                        >
+                          Crop
+                        </Button>
                       </div>
                     ))}
-
-                    {/* Single Generate Button for all images */}
-                    {/* {images.length > 0 && (
-    <div style={{ marginTop: '30%' }}>
-      <Button
-        variant="contained"
-        size="small"
-        type="submit"
-        disabled={isLoading}
-        onClick={handleGenerateSubmit}
-      >
-        {isLoading ? "Generating..." : "Generate"}
-      </Button>
-      {isLoading && <p className="text-center text-primary">Loading, please wait...</p>}
-    </div>
-  )} */}
                   </div>
-
-
                 </div>
               </Grid>
 
@@ -1101,16 +1053,8 @@ const AddNewProduct = () => {
                     type="file"
                     accept="video/*"
                     id="videoInput"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      // if (file && file.size > 10 * 1024 * 1024) {
-                      //   // 10MB in bytes
-                      //   toast.error("Video size exceeds 10MB limit");
-                      //   e.target.value = null; // Clear the input
-                      //   return;
-                      // }
-                      handleVideoChange(e);
-                    }}
+                    ref={fileInputRef}
+                    onChange={handleVideoChange}
                     style={{ display: "none" }}
                   />
                   <label htmlFor="videoInput">
@@ -1127,7 +1071,12 @@ const AddNewProduct = () => {
                     <div className="previewContainer">
                       <video controls>
                         <source
-                          src={URL.createObjectURL(video)}
+                          src={
+                            video instanceof File
+                              ? URL.createObjectURL(video)
+                              : "https://api.sadashrijewelkart.com/assets/" +
+                              video
+                          }
                           type="video/mp4"
                         />
                       </video>
@@ -1191,24 +1140,7 @@ const AddNewProduct = () => {
               alignItems: "center",
             }}
           >
-            <div className="heading" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              Product Details
-              {images.length > 0 && (
-                <IconButton
-                  color="primary"
-                  onClick={handleGenerateSubmit}
-                  disabled={isLoading}
-                  size="small"
-                  style={{ padding: 0 }}
-                >
-                  {isLoading ? (
-                    <CircularProgress size={20} color="primary" />
-                  ) : (
-                    <AutoFixHighIcon />
-                  )}
-                </IconButton>
-              )}
-            </div>
+            <div className="heading">Product Details</div>
             <div
               style={{
                 display: "flex",
@@ -1216,8 +1148,6 @@ const AddNewProduct = () => {
                 alignItems: "center",
               }}
             >
-
-
               <div style={{ marginRight: "20px" }}>
                 <div>Metal Rate</div>
                 <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
@@ -1227,7 +1157,7 @@ const AddNewProduct = () => {
               <div style={{ marginRight: "20px" }}>
                 <div>Metal Amount</div>
                 <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
-                  {amount.toFixed(2)}
+                  {Number(amount).toFixed(2)}
                 </div>
               </div>
               <div style={{ marginRight: "20px" }}>
@@ -1239,7 +1169,7 @@ const AddNewProduct = () => {
               <div style={{ marginRight: "20px" }}>
                 <div>Total Amount</div>
                 <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
-                  {parseFloat(totalAmount).toFixed(2)}
+                  {parseFloat(amount + stoneTotalAmount).toFixed(2)}
                 </div>
               </div>
               <div style={{ marginRight: "20px" }}>
@@ -1249,8 +1179,6 @@ const AddNewProduct = () => {
                     type="number"
                     value={discount}
                     onChange={(e) => setDiscount(e.target.value)}
-                    fullWidth
-                    placeholder="Enter discount"
                     style={{ width: "100px" }}
                     InputProps={{
                       style: {
@@ -1259,24 +1187,6 @@ const AddNewProduct = () => {
                     }}
                   />
                 </div>
-              </div>
-              <div style={{ marginRight: "20px" }}>
-                <div>Settlement Amount</div>
-                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
-                  {parseFloat(settlementAmount).toFixed(2)}
-                </div>
-                <Typography
-                  style={{
-                    fontFamily: '"Roboto", sans-serif',
-                    fontSize: "0.9rem",
-                    color: "grey",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                  }}
-                  onClick={() => setShowPriceBreakout(true)}
-                >
-                  Price Breakout
-                </Typography>
               </div>
             </div>
           </div>
@@ -1306,30 +1216,7 @@ const AddNewProduct = () => {
             <Grid item xs={1.5}>
               <div className="label">Product Name</div>
               <FormControl fullWidth>
-                <TextField
-                  name="Name"
-                  value={productName}
-                  onChange={(e) =>
-                    setProductName(
-                      e.target.value
-                        .split(" ")
-                        .map(
-                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                        )
-                        .join(" ")
-                    )
-                  }
-                  fullWidth
-                  placeholder="Enter name"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      document
-                        .querySelector('select[name="category"]')
-                        ?.focus();
-                    }
-                  }}
-                />
+                <TextField name="Name" value={productName} fullWidth onChange={(e) => setProductName(e.target.value)} />
               </FormControl>
             </Grid>
             <Grid item xs={1}>
@@ -1419,12 +1306,7 @@ const AddNewProduct = () => {
                   {dropdownValues?.[0]?.customization_fields
                     .find((field) => field.name === "hsn")
                     ?.property_value.map((option) => (
-                      <MenuItem
-                        key={option.name}
-                        value={option.name
-                          .replace(/\n/g, "")
-                          .replace(/&NoBreak;/g, "")}
-                      >
+                      <MenuItem key={option.name} value={option.name}>
                         {option.display_name}
                       </MenuItem>
                     ))}
@@ -1455,7 +1337,7 @@ const AddNewProduct = () => {
                 />
               </FormControl>
             </Grid>
-            {/* 
+
             <Grid item xs={4.5}>
               <div className="label">Description</div>
               <TextField
@@ -1468,23 +1350,7 @@ const AddNewProduct = () => {
                   setDesc(e.target.value);
                 }}
               />
-            </Grid> */}
-            <Grid item xs={4.5}>
-              <div className="label">Description</div>
-              <TextField
-                multiline
-                rows={1}
-                fullWidth
-                placeholder="Product Description"
-                value={finalDescription.replace(/^\d+\.\s*/, "")}
-                onChange={(e) => {
-                  setFinalDescription(e.target.value);
-                }}
-
-              />
             </Grid>
-
-
             <Grid item xs={12}>
               <Divider />
             </Grid>
@@ -1497,18 +1363,17 @@ const AddNewProduct = () => {
                 <Select
                   name="metalType"
                   value={metalType}
-                  onChange={(e) => {
-                    setMetalType(e.target.value);
-                    setMakingChargeType(9);
-                  }}
+                  onChange={handleMetalTypeChange}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
-                      document.querySelector('input[name="purity"]')?.focus();
+                      document.querySelector('select[name="purity"]')?.focus();
                     }
                   }}
                 >
-                  <MenuItem value="gold">Gold</MenuItem>
+                  <MenuItem defaultChecked={true} value="gold">
+                    Gold
+                  </MenuItem>
                   <MenuItem value="silver">Silver</MenuItem>
                 </Select>
               </FormControl>
@@ -1538,11 +1403,13 @@ const AddNewProduct = () => {
                   {metalType === "silver" &&
                     dropdownValues?.[1]?.customization_fields
                       .find((field) => field.name === "silver_quality")
-                      ?.property_value.map((option) => (
-                        <MenuItem key={option.name} value={option.name}>
-                          {option.display_name}
-                        </MenuItem>
-                      ))}
+                      ?.property_value.map((option) => {
+                        return (
+                          <MenuItem key={option.name} value={option.name}>
+                            {option.display_name}
+                          </MenuItem>
+                        )
+                      })}
                 </Select>
               </FormControl>
             </Grid>
@@ -1669,7 +1536,7 @@ const AddNewProduct = () => {
                       (grossWeight - stoneWeight) * (e.target.value / 100)
                     );
                     setNetWeightAfterWastage(
-                      (grossWeight - stoneWeight) * (1 + e.target.value / 100)
+                      (grossWeight - stoneWeight) + wastageWeight
                     );
                   }}
                   fullWidth
@@ -1747,7 +1614,6 @@ const AddNewProduct = () => {
                   name="makingChargeType"
                   value={makingChargeType}
                   onChange={(e) => {
-                    console.log(e.target.value);
                     setMakingChargeType(e.target.value);
                     setMakingChargeValue();
                   }}
@@ -1780,7 +1646,7 @@ const AddNewProduct = () => {
               </FormControl>
             </Grid>
             <Grid item xs={1.5}>
-              <div className="label">MC</div>
+              <div className="label">MC %</div>
               <FormControl fullWidth>
                 <TextField
                   name="makingChargeValue"
@@ -1919,8 +1785,236 @@ const AddNewProduct = () => {
                   name="gstPercent"
                   value={gstPercent}
                   onChange={(e) => {
-                    console.log("GST Percent changed:", e.target.value);
                     setGstPercent(e.target.value);
+                  }}
+                  fullWidth
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "gst")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.name} value={option.name}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <Divider />
+            </Grid>
+            <Grid item xs={12}>
+              <div className="label">Stone Details</div>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Type</div>
+              <FormControl fullWidth>
+                <Select
+                  name="stoneType"
+                  value={stoneType}
+                  onChange={(e) => setStoneType(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stoneClass"]')
+                        ?.focus();
+                    }
+                  }}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "stone_type")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Color</div>
+              <FormControl fullWidth>
+                <Select
+                  name="stoneColor"
+                  value={stoneColor}
+                  onChange={(e) => setStoneColor(e.target.value)}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "color")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.name}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Clarity</div>
+              <FormControl fullWidth>
+                <Select
+                  name="stoneClarity"
+                  value={stoneClarity}
+                  onChange={(e) => setStoneClarity(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document.querySelector('input[name="stoneCut"]')?.focus();
+                    }
+                  }}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "clarity")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Cut</div>
+              <FormControl fullWidth>
+                <Select
+                  name="stoneCut"
+                  value={stoneCut}
+                  onChange={(e) => setStoneCut(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stonePieces"]')
+                        ?.focus();
+                    }
+                  }}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "cut")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Pieces</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="stonePieces"
+                  type="number"
+                  value={stonePieces}
+                  onChange={(e) => {
+                    setStonePieces(e.target.value);
+                    const weight =
+                      e.target.value && stoneCarat
+                        ? (stoneCarat * 0.2 * e.target.value).toFixed(2)
+                        : "";
+                    setStoneInternalWeight(weight);
+                  }}
+                  fullWidth
+                  placeholder="Enter number of pieces"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stoneCarat"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Carat</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="stoneCarat"
+                  type="number"
+                  value={stoneCarat}
+                  onChange={(e) => {
+                    setStoneCarat(e.target.value);
+                    const weight =
+                      e.target.value && stonePieces
+                        ? (e.target.value * 0.2 * stonePieces).toFixed(2)
+                        : "";
+                    setStoneInternalWeight(weight);
+                  }}
+                  fullWidth
+                  placeholder="Enter carat"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stoneInternalWeight"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Weight (gm)</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={stoneInternalWeight}
+                  disabled
+                  fullWidth
+                  placeholder="Auto-calculated weight"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Rate</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={stoneRate}
+                  onChange={(e) => {
+                    setStoneRate(e.target.value);
+                    const total =
+                      stoneInternalWeight && e.target.value
+                        ? (
+                          parseFloat(stoneInternalWeight) *
+                          parseFloat(e.target.value)
+                        ).toFixed(2)
+                        : 0;
+                    setStoneTotalAmount(total);
+                  }}
+                  fullWidth
+                  placeholder="Enter rate"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">₹</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">GST Percentage</div>
+              <FormControl fullWidth>
+                <Select
+                  value={stoneGSTPercent}
+                  onChange={(e) => {
+                    setStoneGSTPercent(e.target.value);
+                    const baseAmount =
+                      stoneInternalWeight && stoneRate
+                        ? parseFloat(stoneInternalWeight) *
+                        parseFloat(stoneRate)
+                        : 0;
+                    const gstAmount =
+                      baseAmount * (parseFloat(e.target.value) / 100);
+                    const total = (baseAmount + gstAmount).toFixed(2);
+                    setStoneTotalAmount(total);
                   }}
                   fullWidth
                 >
@@ -1937,153 +2031,8 @@ const AddNewProduct = () => {
           </Grid>
         </Paper>
       </ThemeProvider>
-
-
-      <Dialog
-        open={openDescriptionModal}
-        onClose={handleCloseModal}
-        fullWidth
-        maxWidth="sm"
-        sx={{
-          "& .MuiDialog-paper": {
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            borderRadius: "10px",
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{
-            color: "#a36e29",
-            padding: "12px 24px",
-            fontWeight: "bold",
-            fontSize: "25px",
-            borderTopLeftRadius: "10px",
-            borderTopRightRadius: "10px",
-          }}
-        >
-          Select a description
-        </DialogTitle>
-        <DialogContent
-          sx={{
-            padding: "16px",
-            paddingTop: "10px",
-            borderRadius: "8px",
-            backgroundColor: "#f9f9f9",
-            fontSize: "14px",
-            lineHeight: "1.8", // Improved readability
-            fontWeight: "700",
-            textAlign: "justify",
-          }}
-        >
-          {imageDescriptions.length > 0 ? (
-            <>
-              {/* Display Product Name */}
-              <h3
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                  color: "#a36e29",
-                  margin: "20px",
-                }}
-              >
-                Product Name: {productName || "N/A"}
-              </h3>
-
-              {/* Render Descriptions */}
-              {imageDescriptions.map((desc, index) => {
-                const trimmedDesc =
-                  desc.length > 250 ? desc.substring(0, 250) + "..." : desc;
-
-                return (
-                  <div
-                    key={index}
-                    className="form-check mb-2 mt-4"
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                    }}
-                  >
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="description"
-                      value={trimmedDesc}
-                      id={`description-${index}`}
-                      checked={selectedDescription === trimmedDesc}
-                      onChange={() => setSelectedDescription(trimmedDesc)}
-                      style={{
-                        marginTop: "6px",
-                      }}
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor={`description-${index}`}
-                      style={{
-                        fontWeight: "bold",
-                        fontSize: "16px",
-                        cursor: "pointer",
-                        marginLeft: "49px",
-                        textAlign: "justify",
-                        lineHeight: "1.8",
-                        textIndent: "-2em", // Adds an indent to the first line
-                        display: "block", // Ensures multiline text alignment
-                      }}
-                    >
-                      {trimmedDesc}
-                    </label>
-                  </div>
-                );
-              })}
-            </>
-          ) : (
-            <p>No descriptions available.</p>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleCloseModal}
-            color="primary"
-            variant="contained"
-            sx={{
-              backgroundColor: "#a36e29",
-              "&:hover": {
-                backgroundColor: "#a36e29",
-              },
-              padding: "8px 16px",
-              borderRadius: "5px",
-              fontWeight: "bold",
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              setFinalDescription(selectedDescription); // Update final description
-              handleCloseModal(); // Close the modal
-            }}
-            color="primary"
-            variant="contained"
-            sx={{
-              backgroundColor: "#a36e29",
-              "&:hover": {
-                backgroundColor: "#a36e29",
-              },
-              padding: "8px 16px",
-              borderRadius: "5px",
-              fontWeight: "bold",
-            }}
-          >
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-
     </div>
-
-
   );
 };
 
-export default AddNewProduct;
-
+export default EditProduct;

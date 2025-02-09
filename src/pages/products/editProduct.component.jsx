@@ -130,6 +130,7 @@ const EditProduct = () => {
   const [origVideo, setOrigVideo] = useState(null);
   const [video, setVideo] = useState(null);
   const [videoIndex, setVideoIndex] = useState(null);
+  const [currentImageUrl, setCurrentImageUrl] = useState([]);
 
   const [product, setProduct] = useState(null);
 
@@ -151,7 +152,7 @@ const EditProduct = () => {
   const [productAmountData, setProductAmountData] = useState(null);
   const [adminCommissionPerc, setAdminCommissionPerc] = useState(0);
   const [settlementAmount, setSettlementAmount] = useState(0);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState([]);
   // const [imagePreview, setImagePreview] = useState(null);
   // const [productName, setProductName] = useState("");
   const [imageDescriptions, setImageDescriptions] = useState([]);
@@ -241,6 +242,7 @@ const EditProduct = () => {
       setProduct(productData);
 
       setOrigImages(productData.images);
+      setCurrentImageUrl(productData.images.map(image => `${process.env.REACT_APP_API_BASE_URL}/assets/${image.file}`));
       if (typeof productData.video !== "string") {
         setOrigVideo(productData.video);
       }
@@ -370,35 +372,29 @@ const EditProduct = () => {
     });
 
     setImages((prevImages) => [...prevImages, ...newImages]);
-    setSelectedImage(files[0]);
+    setSelectedImage(files);
 
-    // if (file) {
-    //   setSelectedImage(file);
-    //   // setImagePreview(URL.createObjectURL(file));
-    // }
   };
 
 
   const handleGenerateSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedImage) {
-
+    if ((!selectedImage || selectedImage.length === 0) && (origImages.length === 0)) {
+      console.log("No images selected");
+      alert("Please select at least one image");
       return;
     }
-
-    // const imageInput = document.getElementById("imageInput"); // Assuming an input element with ID 'imageInput'
-
-
-    // const selectedImage = imageInput.files[0]; // Get the selected file
-
-    // alert("Selected Image: " + selectedImage.name);
 
     // Log the entire file object to the console
     console.log("Selected Image Object:", selectedImage);
 
     const formData = new FormData();
-    formData.append("images[]", selectedImage);
-    formData.append("image_url", "[]");
+    // Append each selected image to formData
+    selectedImage.forEach((image) => {
+      formData.append("images[]", image);
+    });
+
+    formData.append("image_url", JSON.stringify(currentImageUrl));
 
     setIsLoading(true);
     try {
@@ -409,11 +405,9 @@ const EditProduct = () => {
         { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
 
-      console.log("Response Data:", response.data); // Debugging
-
       // Ensure response contains expected fields
       // const productName = response.data?.product_name ?? "";
-      let productName = response.data?.product_name ?? "";
+      let productName = response.data?.productName ?? "";
 
       // Remove surrounding quotes if they exist
       productName = productName.replace(/^"(.*)"$/, "$1");
@@ -1373,7 +1367,7 @@ const EditProduct = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div className="heading">Product Details</div>
-              {images.length > 0 && (
+              {origImages.length > 0 && (
                 <IconButton
                   color="primary"
                   onClick={handleGenerateSubmit}

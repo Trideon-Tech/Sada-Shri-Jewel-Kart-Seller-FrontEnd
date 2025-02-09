@@ -136,7 +136,7 @@ const AddNewProduct = () => {
   };
 
 
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   // const [productName, setProductName] = useState("");
   const [imageDescriptions, setImageDescriptions] = useState([]);
@@ -488,60 +488,53 @@ const AddNewProduct = () => {
 
   const handleGenerateSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedImage) {
-
+    if (!selectedImage || selectedImage.length === 0) {
+      toast.error("Please select at least one image");
       return;
     }
 
-    // const imageInput = document.getElementById("imageInput"); // Assuming an input element with ID 'imageInput'
-
-
-    // const selectedImage = imageInput.files[0]; // Get the selected file
-
-    // alert("Selected Image: " + selectedImage.name);
-
-    // Log the entire file object to the console
-    console.log("Selected Image Object:", selectedImage);
-
     const formData = new FormData();
-    formData.append("image", selectedImage);
 
+    // Append each selected image to formData
+    selectedImage.forEach((image) => {
+      formData.append("images[]", image);
+    });
 
+    // If you need to include image URLs as well
+    formData.append("image_url", "[]");
 
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/uploads/upload.php",
-
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/upload.php",
         formData,
-        { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        }
       );
 
-      console.log("Response Data:", response.data); // Debugging
+      console.log("Response Data:", response.data);
 
-      // Ensure response contains expected fields
-      // const productName = response.data?.product_name ?? "";
-      let productName = response.data?.product_name ?? "";
-
-      // Remove surrounding quotes if they exist
+      let productName = response.data?.productName ?? "";
       productName = productName.replace(/^"(.*)"$/, "$1");
-      // alert(productName);
-      console.log(productName);
       const descriptions = response.data?.descriptions ?? [];
 
       if (response.data.error) {
-        alert(response.data.error);
-        setProductName(""); // Reset in case of errors
-        setImageDescriptions([]); // Reset in case of errors
+        toast.error(response.data.error);
+        setProductName("");
+        setImageDescriptions([]);
       } else {
         setProductName(productName);
         setImageDescriptions(descriptions);
         setSelectedDescription(descriptions.length > 0 ? descriptions[0] : "");
-        setOpenDescriptionModal(true); // Open modal with descriptions
+        setOpenDescriptionModal(true);
       }
     } catch (error) {
-      console.error("Error uploading file:", error);
-      alert("An error occurred while uploading. Please try again.");
+      console.error("Error uploading files:", error);
+      toast.error("An error occurred while uploading. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -720,7 +713,7 @@ const AddNewProduct = () => {
     });
 
     setImages((prevImages) => [...prevImages, ...newImages]);
-    setSelectedImage(files[0]);
+    setSelectedImage(files);
   };
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
@@ -1050,7 +1043,7 @@ const AddNewProduct = () => {
                           alt={`Preview ${index + 1}`}
                           style={{ marginBottom: '10px' }}
                         />
-                        <div style={{ display: 'flex', justifyContent: 'start'}}>
+                        <div style={{ display: 'flex', justifyContent: 'start' }}>
                           <IconButton
                             className="deleteButton"
                             onClick={() => {

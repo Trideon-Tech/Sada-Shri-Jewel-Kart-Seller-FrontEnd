@@ -397,12 +397,13 @@ const EditProduct = () => {
     console.log("Selected Image Object:", selectedImage);
 
     const formData = new FormData();
-    formData.append("image", selectedImage);
+    formData.append("images[]", selectedImage);
+    formData.append("image_url", "[]");
 
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/uploads/upload.php",
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/upload.php",
 
         formData,
         { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${localStorage.getItem("token")}` } }

@@ -19,6 +19,7 @@ import {
   TextField,
   ThemeProvider,
   Typography,
+  Switch,
 } from "@mui/material";
 import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -130,6 +131,7 @@ const EditProduct = () => {
   const [origVideo, setOrigVideo] = useState(null);
   const [video, setVideo] = useState(null);
   const [videoIndex, setVideoIndex] = useState(null);
+  const [currentImageUrl, setCurrentImageUrl] = useState([]);
 
   const [product, setProduct] = useState(null);
 
@@ -151,14 +153,14 @@ const EditProduct = () => {
   const [productAmountData, setProductAmountData] = useState(null);
   const [adminCommissionPerc, setAdminCommissionPerc] = useState(0);
   const [settlementAmount, setSettlementAmount] = useState(0);
-  const [selectedImage, setSelectedImage] = useState(null);
-  // const [imagePreview, setImagePreview] = useState(null);
-  // const [productName, setProductName] = useState("");
+  const [selectedImage, setSelectedImage] = useState([]);
   const [imageDescriptions, setImageDescriptions] = useState([]);
   const [selectedDescription, setSelectedDescription] = useState("");
   const [finalDescription, setFinalDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [openDescriptionModal, setOpenDescriptionModal] = useState(false); // Modal open state
+  const [useNewPromptProductName, setUseNewPromptProductName] = useState(false);
+  const [productNameFromPrompt, setProductNameFromPrompt] = useState("");
 
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
@@ -241,6 +243,7 @@ const EditProduct = () => {
       setProduct(productData);
 
       setOrigImages(productData.images);
+      setCurrentImageUrl(productData.images.map(image => `${process.env.REACT_APP_API_BASE_URL}/assets/${image.file}`));
       if (typeof productData.video !== "string") {
         setOrigVideo(productData.video);
       }
@@ -370,54 +373,58 @@ const EditProduct = () => {
     });
 
     setImages((prevImages) => [...prevImages, ...newImages]);
-    setSelectedImage(files[0]);
+    setSelectedImage(files);
 
-    // if (file) {
-    //   setSelectedImage(file);
-    //   // setImagePreview(URL.createObjectURL(file));
-    // }
   };
 
 
   const handleGenerateSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedImage) {
-
+    if ((!selectedImage || selectedImage.length === 0) && (origImages.length === 0)) {
+      console.log("No images selected");
+      alert("Please select at least one image");
       return;
     }
 
-    // const imageInput = document.getElementById("imageInput"); // Assuming an input element with ID 'imageInput'
-
-
-    // const selectedImage = imageInput.files[0]; // Get the selected file
-
-    // alert("Selected Image: " + selectedImage.name);
-
-    // Log the entire file object to the console
-    console.log("Selected Image Object:", selectedImage);
-
+    const metaData = {
+      category: selectedCategory,
+      subcategory: selectedSubcategory,
+      purity: purity,
+      metal: metalType,
+      stone: stoneType,
+      stone_color: stoneColor,
+      stone_clarity: stoneClarity,
+      stone_cut: stoneCut,
+      stone_pieces: stonePieces,
+      stone_carat: stoneCarat
+    }
     const formData = new FormData();
-    formData.append("image", selectedImage);
+    // Append each selected image to formData
+    selectedImage.forEach((image) => {
+      formData.append("images[]", image);
+    });
+
+    formData.append("meta_data", JSON.stringify(metaData));
+
+    formData.append("image_url", JSON.stringify(currentImageUrl));
 
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/uploads/upload.php",
+        "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/upload.php",
 
         formData,
         { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
 
-      console.log("Response Data:", response.data); // Debugging
-
       // Ensure response contains expected fields
       // const productName = response.data?.product_name ?? "";
-      let productName = response.data?.product_name ?? "";
+      let productName = response.data?.productName ?? "";
 
       // Remove surrounding quotes if they exist
       productName = productName.replace(/^"(.*)"$/, "$1");
       // alert(productName);
-      console.log(productName);
+      setProductNameFromPrompt(productName);
       const descriptions = response.data?.descriptions ?? [];
       // alert(descriptions);
 
@@ -426,7 +433,6 @@ const EditProduct = () => {
         setProductName(""); // Reset in case of errors
         setImageDescriptions([]); // Reset in case of errors
       } else {
-        setProductName(productName);
         setImageDescriptions(descriptions);
         setSelectedDescription(descriptions.length > 0 ? descriptions[0] : "");
         setOpenDescriptionModal(true); // Open modal with descriptions
@@ -1372,7 +1378,7 @@ const EditProduct = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div className="heading">Product Details</div>
-              {images.length > 0 && (
+              {origImages.length > 0 && (
                 <IconButton
                   color="primary"
                   onClick={handleGenerateSubmit}
@@ -2327,17 +2333,35 @@ const EditProduct = () => {
         >
           {imageDescriptions.length > 0 ? (
             <>
-              {/* Display Product Name */}
-              <h3
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                  color: "#a36e29",
-                  margin: "20px",
-                }}
-              >
-                Product Name: {productName || "N/A"}
-              </h3>
+              <div className="d-flex justify-content-between align-items-center">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <h3
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "18px",
+                      color: "#a36e29",
+                      margin: "20px 0",
+                    }}
+                  >
+                    Product Name: {productNameFromPrompt || "N/A"}
+                  </h3>
+                  <Switch
+                    checked={useNewPromptProductName}
+                    onChange={() => setUseNewPromptProductName(!useNewPromptProductName)}
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': {
+                        color: '#a36e29',
+                        '&:hover': {
+                          backgroundColor: 'rgba(163, 110, 41, 0.08)',
+                        },
+                      },
+                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#a36e29',
+                      },
+                    }}
+                  />
+                </div>
+              </div>
 
               {/* Render Descriptions */}
               {imageDescriptions.map((desc, index) => {
@@ -2367,16 +2391,13 @@ const EditProduct = () => {
                       }}
                     />
                     <label
-                      className="form-check-label"
                       htmlFor={`description-${index}`}
                       style={{
-                        fontWeight: "bold",
                         fontSize: "16px",
                         cursor: "pointer",
-                        marginLeft: "49px",
+                        marginLeft: "1rem",
                         textAlign: "justify",
                         lineHeight: "1.8",
-                        textIndent: "-2em", // Adds an indent to the first line
                         display: "block", // Ensures multiline text alignment
                       }}
                     >
@@ -2393,22 +2414,18 @@ const EditProduct = () => {
         <DialogActions>
           <Button
             onClick={handleCloseModal}
-            color="primary"
-            variant="contained"
-            sx={{
-              backgroundColor: "#a36e29",
-              "&:hover": {
-                backgroundColor: "#a36e29",
-              },
-              padding: "8px 16px",
-              borderRadius: "5px",
-              fontWeight: "bold",
+            className="button1"
+            style={{
+              color: "#a36e29",
             }}
           >
             Cancel
           </Button>
           <Button
             onClick={() => {
+              if (useNewPromptProductName) {
+                setProductName(productNameFromPrompt);
+              }
               setFinalDescription(selectedDescription); // Update final description
               handleCloseModal(); // Close the modal
             }}

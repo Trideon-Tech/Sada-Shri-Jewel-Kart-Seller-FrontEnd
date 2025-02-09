@@ -19,6 +19,7 @@ import {
   TextField,
   ThemeProvider,
   Typography,
+  Switch,
 } from "@mui/material";
 import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -153,13 +154,13 @@ const EditProduct = () => {
   const [adminCommissionPerc, setAdminCommissionPerc] = useState(0);
   const [settlementAmount, setSettlementAmount] = useState(0);
   const [selectedImage, setSelectedImage] = useState([]);
-  // const [imagePreview, setImagePreview] = useState(null);
-  // const [productName, setProductName] = useState("");
   const [imageDescriptions, setImageDescriptions] = useState([]);
   const [selectedDescription, setSelectedDescription] = useState("");
   const [finalDescription, setFinalDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [openDescriptionModal, setOpenDescriptionModal] = useState(false); // Modal open state
+  const [useNewPromptProductName, setUseNewPromptProductName] = useState(false);
+  const [productNameFromPrompt, setProductNameFromPrompt] = useState("");
 
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
@@ -412,7 +413,7 @@ const EditProduct = () => {
       // Remove surrounding quotes if they exist
       productName = productName.replace(/^"(.*)"$/, "$1");
       // alert(productName);
-      console.log(productName);
+      setProductNameFromPrompt(productName);
       const descriptions = response.data?.descriptions ?? [];
       // alert(descriptions);
 
@@ -421,7 +422,6 @@ const EditProduct = () => {
         setProductName(""); // Reset in case of errors
         setImageDescriptions([]); // Reset in case of errors
       } else {
-        setProductName(productName);
         setImageDescriptions(descriptions);
         setSelectedDescription(descriptions.length > 0 ? descriptions[0] : "");
         setOpenDescriptionModal(true); // Open modal with descriptions
@@ -2322,17 +2322,35 @@ const EditProduct = () => {
         >
           {imageDescriptions.length > 0 ? (
             <>
-              {/* Display Product Name */}
-              <h3
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                  color: "#a36e29",
-                  margin: "20px",
-                }}
-              >
-                Product Name: {productName || "N/A"}
-              </h3>
+              <div className="d-flex justify-content-between align-items-center">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <h3
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "18px",
+                      color: "#a36e29",
+                      margin: "20px 0",
+                    }}
+                  >
+                    Product Name: {productNameFromPrompt || "N/A"}
+                  </h3>
+                  <Switch
+                    checked={useNewPromptProductName}
+                    onChange={() => setUseNewPromptProductName(!useNewPromptProductName)}
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': {
+                        color: '#a36e29',
+                        '&:hover': {
+                          backgroundColor: 'rgba(163, 110, 41, 0.08)',
+                        },
+                      },
+                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#a36e29',
+                      },
+                    }}
+                  />
+                </div>
+              </div>
 
               {/* Render Descriptions */}
               {imageDescriptions.map((desc, index) => {
@@ -2362,16 +2380,13 @@ const EditProduct = () => {
                       }}
                     />
                     <label
-                      className="form-check-label"
                       htmlFor={`description-${index}`}
                       style={{
-                        fontWeight: "bold",
                         fontSize: "16px",
                         cursor: "pointer",
-                        marginLeft: "49px",
+                        marginLeft: "1rem",
                         textAlign: "justify",
                         lineHeight: "1.8",
-                        textIndent: "-2em", // Adds an indent to the first line
                         display: "block", // Ensures multiline text alignment
                       }}
                     >
@@ -2388,22 +2403,18 @@ const EditProduct = () => {
         <DialogActions>
           <Button
             onClick={handleCloseModal}
-            color="primary"
-            variant="contained"
-            sx={{
-              backgroundColor: "#a36e29",
-              "&:hover": {
-                backgroundColor: "#a36e29",
-              },
-              padding: "8px 16px",
-              borderRadius: "5px",
-              fontWeight: "bold",
+            className="button1"
+            style={{
+              color: "#a36e29",
             }}
           >
             Cancel
           </Button>
           <Button
             onClick={() => {
+              if (useNewPromptProductName) {
+                setProductName(productNameFromPrompt);
+              }
               setFinalDescription(selectedDescription); // Update final description
               handleCloseModal(); // Close the modal
             }}

@@ -386,14 +386,25 @@ const EditProduct = () => {
       return;
     }
 
-    // Log the entire file object to the console
-    console.log("Selected Image Object:", selectedImage);
-
+    const metaData = {
+      category: selectedCategory,
+      subcategory: selectedSubcategory,
+      purity: purity,
+      metal: metalType,
+      stone: stoneType,
+      stone_color: stoneColor,
+      stone_clarity: stoneClarity,
+      stone_cut: stoneCut,
+      stone_pieces: stonePieces,
+      stone_carat: stoneCarat
+    }
     const formData = new FormData();
     // Append each selected image to formData
     selectedImage.forEach((image) => {
       formData.append("images[]", image);
     });
+
+    formData.append("meta_data", JSON.stringify(metaData));
 
     formData.append("image_url", JSON.stringify(currentImageUrl));
 

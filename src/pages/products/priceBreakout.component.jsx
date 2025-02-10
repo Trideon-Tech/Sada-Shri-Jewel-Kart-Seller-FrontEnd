@@ -68,8 +68,11 @@ const PriceBreakout = ({ open, onClose, data, handleSettlementAmountChange }) =>
 
         const tcs = isNaN(parseFloat((totalAmount - commission - tdsAmount) * 0.01).toFixed(2)) ? 0 : parseFloat((totalAmount - commission - tdsAmount) * 0.01).toFixed(2);
         console.log('tcs:', tcs);
-        
-        const totalAmountAfterDeduction = isNaN(parseFloat((totalAmount - commission - tdsAmount - tcs - taxAmount).toFixed(2))) ? 0 : parseFloat((totalAmount - commission - tdsAmount - tcs - taxAmount).toFixed(2));
+
+        const pgCharge = isNaN(parseFloat((totalAmount * 0.02).toFixed(2))) ? 0 : parseFloat((totalAmount * 0.02).toFixed(2));
+        console.log('pgCharge:', pgCharge);
+
+        const totalAmountAfterDeduction = isNaN(parseFloat((totalAmount - commission - tdsAmount - tcs - taxAmount - pgCharge).toFixed(2))) ? 0 : parseFloat((totalAmount - commission - tdsAmount - tcs - taxAmount - pgCharge).toFixed(2));
         console.log('totalAmountAfterDeduction:', totalAmountAfterDeduction);
         
         return {
@@ -83,6 +86,7 @@ const PriceBreakout = ({ open, onClose, data, handleSettlementAmountChange }) =>
             commission: commission,
             tcs: tcs,
             totalAmountAfterDeduction: totalAmountAfterDeduction,
+            pgCharge: pgCharge,
             metal_calculation: {
                 base_amount: metalBaseAmount,
                 gst_perc: data.metal_calculation?.gst_perc,
@@ -114,15 +118,13 @@ const PriceBreakout = ({ open, onClose, data, handleSettlementAmountChange }) =>
                                 <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1rem' }}>Metal Calculation</h2>
                                 <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>Base Amount:</span> ₹{!isNaN(priceDetails.metal_calculation.base_amount) ? priceDetails.metal_calculation.base_amount : 0}</p>
                                 <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>Making Charge Amount:</span> ₹{!isNaN(priceDetails.metal_calculation.making_charge_amount) ? priceDetails.metal_calculation.making_charge_amount : 0}</p>
-                                <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>GST Percentage:</span> {!isNaN(priceDetails.metal_calculation.gst_perc) ? priceDetails.metal_calculation.gst_perc : 0}%</p>
-                                <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>GST Amount:</span> ₹{!isNaN(priceDetails.metal_calculation.gst_amount) ? priceDetails.metal_calculation.gst_amount : 0}</p>
+                                <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>GST @ {!isNaN(priceDetails.metal_calculation.gst_perc) ? priceDetails.metal_calculation.gst_perc : 0}%</span>₹{!isNaN(priceDetails.metal_calculation.gst_amount) ? priceDetails.metal_calculation.gst_amount : 0}</p>
                                 <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>Net Amount:</span> ₹{!isNaN(priceDetails.metal_calculation.net_amount) ? priceDetails.metal_calculation.net_amount : 0}</p>
                             </div>
                             <div style={{ border: '1px solid #ccc', padding: '10px', width: '100%' }}>
                                 <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1rem' }}>Stone Calculation</h2>
                                 <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>Base Amount:</span> ₹{!isNaN(priceDetails.stone_calculation.base_amount) ? priceDetails.stone_calculation.base_amount : 0}</p>
-                                <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>GST Percentage:</span> {!isNaN(priceDetails.stone_calculation.gst_perc) ? priceDetails.stone_calculation.gst_perc : 0}%</p>
-                                <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>GST Amount:</span> ₹{!isNaN(priceDetails.stone_calculation.gst_amount) ? priceDetails.stone_calculation.gst_amount : 0}</p>
+                                <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>GST @ {!isNaN(priceDetails.stone_calculation.gst_perc) ? priceDetails.stone_calculation.gst_perc : 0}%</span>₹{!isNaN(priceDetails.stone_calculation.gst_amount) ? priceDetails.stone_calculation.gst_amount : 0}</p>
                                 <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>Net Amount:</span> ₹{!isNaN(priceDetails.stone_calculation.net_amount) ? priceDetails.stone_calculation.net_amount : 0}</p>
                             </div>
                         </div>
@@ -130,11 +132,10 @@ const PriceBreakout = ({ open, onClose, data, handleSettlementAmountChange }) =>
                         <div style={{ border: '1px solid #ccc', padding: '10px', width: '100%' }}>
                             <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1rem' }}>Total</h2>
                             <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>Subtotal:</span> ₹{!isNaN(priceDetails.subTotal) ? priceDetails.subTotal : 0}</p>
-                            <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>Tax Rate:</span> {!isNaN(priceDetails.taxRate) ? priceDetails.taxRate : 0}%</p>
-                            <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>Tax Amount:</span> ₹{!isNaN(priceDetails.taxAmount) ? priceDetails.taxAmount : 0}</p>
-                            <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>TDS Amount:</span> ₹{!isNaN(priceDetails.tdsAmount) ? priceDetails.tdsAmount : 0}</p>
-                            <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>Commission:</span> ₹{!isNaN(priceDetails.commission) ? priceDetails.commission : 0}</p>
+                            <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>TDS:</span> ₹{!isNaN(priceDetails.tdsAmount) ? priceDetails.tdsAmount : 0}</p>
                             <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>TCS:</span> ₹{!isNaN(priceDetails.tcs) ? priceDetails.tcs : 0}</p>
+                            <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>PG Charge:</span> ₹{!isNaN(priceDetails.pgCharge) ? priceDetails.pgCharge : 0}</p>
+                            <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>Commission:</span> ₹{!isNaN(priceDetails.commission) ? priceDetails.commission : 0}</p>
                             <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}><span style={{ marginRight: '10px' }}>Settlement Amount:</span> ₹{!isNaN(priceDetails.totalAmountAfterDeduction) ? priceDetails.totalAmountAfterDeduction : 0}</p>
                         </div>
                     </div>

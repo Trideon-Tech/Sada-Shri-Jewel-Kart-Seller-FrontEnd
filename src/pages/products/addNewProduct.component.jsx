@@ -19,6 +19,7 @@ import {
   TextField,
   ThemeProvider,
   Typography,
+  Switch
 } from "@mui/material";
 import axios from "axios";
 import React, { useCallback, useEffect, useState } from "react";
@@ -123,6 +124,8 @@ const AddNewProduct = () => {
   const [showDeleteImageDialog, setShowDeleteImageDialog] = useState(false);
   const [deleteImageIndex, setDeleteImageIndex] = useState();
   const [loading, setLoading] = useState(false);
+  const [useNewPromptProductName, setUseNewPromptProductName] = useState(false);
+  const [productNameFromPrompt, setProductNameFromPrompt] = useState("");
 
 
   const [showDeleteVideoDialog, setShowVideoDeleteDialog] = useState(false);
@@ -495,10 +498,30 @@ const AddNewProduct = () => {
 
     const formData = new FormData();
 
+    const metaData = {
+      purity: purity,
+      metal: metalType,
+      stone: stoneType,
+      stone_color: stoneColor,
+      stone_clarity: stoneClarity,
+      stone_cut: stoneCut,
+      stone_pieces: stonePieces,
+      stone_carat: stoneCarat
+    }
+
+    if(selectedCategory && selectedCategory !== 0 && selectedCategory !== "") {
+      metaData.category = selectedCategory;
+    }
+    if(selectedSubcategory && selectedSubcategory !== 0 && selectedSubcategory !== "") {
+      metaData.subcategory = selectedSubcategory;
+    }
+
     // Append each selected image to formData
     selectedImage.forEach((image) => {
       formData.append("images[]", image);
     });
+
+    formData.append("meta_data", JSON.stringify(metaData));
 
     // If you need to include image URLs as well
     formData.append("image_url", "[]");
@@ -506,7 +529,7 @@ const AddNewProduct = () => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/upload.php",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/prompt/upload.php`,
         formData,
         {
           headers: {
@@ -527,7 +550,7 @@ const AddNewProduct = () => {
         setProductName("");
         setImageDescriptions([]);
       } else {
-        setProductName(productName);
+        setProductNameFromPrompt(productName);
         setImageDescriptions(descriptions);
         setSelectedDescription(descriptions.length > 0 ? descriptions[0] : "");
         setOpenDescriptionModal(true);
@@ -1963,7 +1986,7 @@ const AddNewProduct = () => {
             borderRadius: "8px",
             backgroundColor: "#f9f9f9",
             fontSize: "14px",
-            lineHeight: "1.8", // Improved readability
+            lineHeight: "1.5",
             fontWeight: "700",
             textAlign: "justify",
           }}
@@ -1971,16 +1994,35 @@ const AddNewProduct = () => {
           {imageDescriptions.length > 0 ? (
             <>
               {/* Display Product Name */}
-              <h3
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                  color: "#a36e29",
-                  margin: "20px",
-                }}
-              >
-                Product Name: {productName || "N/A"}
-              </h3>
+              <div className="d-flex justify-content-between align-items-center">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <h3
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "18px",
+                      color: "#a36e29",
+                      margin: "20px 0",
+                    }}
+                  >
+                    Product Name: {productNameFromPrompt || "N/A"}
+                  </h3>
+                  <Switch
+                    checked={useNewPromptProductName}
+                    onChange={() => setUseNewPromptProductName(!useNewPromptProductName)}
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': {
+                        color: '#a36e29',
+                        '&:hover': {
+                          backgroundColor: 'rgba(163, 110, 41, 0.08)',
+                        },
+                      },
+                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#a36e29',
+                      },
+                    }}
+                  />
+                </div>
+              </div>
 
               {/* Render Descriptions */}
               {imageDescriptions.map((desc, index) => {
@@ -2015,10 +2057,9 @@ const AddNewProduct = () => {
                         fontWeight: "bold",
                         fontSize: "16px",
                         cursor: "pointer",
-                        marginLeft: "49px",
+                        marginLeft: "1rem",
                         textAlign: "justify",
                         lineHeight: "1.8",
-                        textIndent: "-2em", // Adds an indent to the first line
                         display: "block", // Ensures multiline text alignment
                       }}
                     >
@@ -2051,6 +2092,9 @@ const AddNewProduct = () => {
           </Button>
           <Button
             onClick={() => {
+              if (useNewPromptProductName) {
+                setProductName(productNameFromPrompt);
+              }
               setFinalDescription(selectedDescription); // Update final description
               handleCloseModal(); // Close the modal
             }}

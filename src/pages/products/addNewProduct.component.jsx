@@ -498,10 +498,30 @@ const AddNewProduct = () => {
 
     const formData = new FormData();
 
+    const metaData = {
+      purity: purity,
+      metal: metalType,
+      stone: stoneType,
+      stone_color: stoneColor,
+      stone_clarity: stoneClarity,
+      stone_cut: stoneCut,
+      stone_pieces: stonePieces,
+      stone_carat: stoneCarat
+    }
+
+    if(selectedCategory && selectedCategory !== 0 && selectedCategory !== "") {
+      metaData.category = selectedCategory;
+    }
+    if(selectedSubcategory && selectedSubcategory !== 0 && selectedSubcategory !== "") {
+      metaData.subcategory = selectedSubcategory;
+    }
+
     // Append each selected image to formData
     selectedImage.forEach((image) => {
       formData.append("images[]", image);
     });
+
+    formData.append("meta_data", JSON.stringify(metaData));
 
     // If you need to include image URLs as well
     formData.append("image_url", "[]");
@@ -509,7 +529,7 @@ const AddNewProduct = () => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/upload.php",
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/prompt/upload.php`,
         formData,
         {
           headers: {

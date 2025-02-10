@@ -147,7 +147,7 @@ const AddNewProduct = () => {
   const [finalDescription, setFinalDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [openDescriptionModal, setOpenDescriptionModal] = useState(false); // Modal open state
-
+  const [sellerAIAssist, setSellerAIAssist] = useState(0);
 
   const calculateTotalPrice = (metalInfo, stoneInfo) => {
     const metal =
@@ -252,7 +252,32 @@ const AddNewProduct = () => {
     setProductAmountData(priceDetails);
     return priceDetails;
   };
+  const getSellerAIAssist = () => {
+    let data = new FormData();
 
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/all.php?type=seller_details`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+
+        const aiAssistValue = response?.data?.response?.organization?.ai_assist;
+        console.log("AI Assist Value from API:", aiAssistValue);
+        setSellerAIAssist(Number(aiAssistValue)); // Convert to number explicitly
+        console.log("Setting sellerAIAssist to:", aiAssistValue);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   const handleMakingChargeValueChange = (e) => {
     const value = e.target.value;
     setMakingChargeValue(value);
@@ -394,6 +419,8 @@ const AddNewProduct = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
+
+    getSellerAIAssist();
   }, []);
 
   useEffect(() => {
@@ -509,10 +536,10 @@ const AddNewProduct = () => {
       stone_carat: stoneCarat
     }
 
-    if(selectedCategory && selectedCategory !== 0 && selectedCategory !== "") {
+    if (selectedCategory && selectedCategory !== 0 && selectedCategory !== "") {
       metaData.category = selectedCategory;
     }
-    if(selectedSubcategory && selectedSubcategory !== 0 && selectedSubcategory !== "") {
+    if (selectedSubcategory && selectedSubcategory !== 0 && selectedSubcategory !== "") {
       metaData.subcategory = selectedSubcategory;
     }
 
@@ -1209,7 +1236,7 @@ const AddNewProduct = () => {
           >
             <div className="heading" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               Product Details
-              {images.length > 0 && (
+              {images.length > 0 && sellerAIAssist !== 0 && (
                 <IconButton
                   color="primary"
                   onClick={handleGenerateSubmit}

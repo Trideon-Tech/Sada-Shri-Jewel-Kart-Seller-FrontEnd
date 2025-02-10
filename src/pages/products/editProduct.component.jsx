@@ -161,6 +161,7 @@ const EditProduct = () => {
   const [openDescriptionModal, setOpenDescriptionModal] = useState(false); // Modal open state
   const [useNewPromptProductName, setUseNewPromptProductName] = useState(false);
   const [productNameFromPrompt, setProductNameFromPrompt] = useState("");
+  const [sellerAIAssist, setSellerAIAssist] = useState(0);
 
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
@@ -775,6 +776,33 @@ const EditProduct = () => {
     setRate(0); // Reset rate when metal type changes
   };
 
+  const getSellerAIAssist = () => {
+    let data = new FormData();
+
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/all.php?type=seller_details`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+
+        const aiAssistValue = response?.data?.response?.organization?.ai_assist;
+        console.log("AI Assist Value from API:", aiAssistValue);
+        setSellerAIAssist(Number(aiAssistValue)); // Convert to number explicitly
+        console.log("Setting sellerAIAssist to:", aiAssistValue);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const calculateMakingChargeAmount = () => {
 
     if (makingChargeType === 6) {
@@ -965,6 +993,10 @@ const EditProduct = () => {
     adminCommissionPerc,
     settlementAmount,
   ]);
+
+  useEffect(() => {
+    getSellerAIAssist();
+  }, []);
 
   const handleSettlementAmountChange = (value) => {
     console.log("Settlement Amount:", value);
@@ -1378,7 +1410,7 @@ const EditProduct = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div className="heading">Product Details</div>
-              {origImages.length > 0 && (
+              {origImages.length > 0 && sellerAIAssist !== 0 && (
                 <IconButton
                   color="primary"
                   onClick={handleGenerateSubmit}

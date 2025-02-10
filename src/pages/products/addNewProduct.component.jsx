@@ -19,6 +19,7 @@ import {
   TextField,
   ThemeProvider,
   Typography,
+  Switch
 } from "@mui/material";
 import axios from "axios";
 import React, { useCallback, useEffect, useState } from "react";
@@ -123,6 +124,8 @@ const AddNewProduct = () => {
   const [showDeleteImageDialog, setShowDeleteImageDialog] = useState(false);
   const [deleteImageIndex, setDeleteImageIndex] = useState();
   const [loading, setLoading] = useState(false);
+  const [useNewPromptProductName, setUseNewPromptProductName] = useState(false);
+  const [productNameFromPrompt, setProductNameFromPrompt] = useState("");
 
 
   const [showDeleteVideoDialog, setShowVideoDeleteDialog] = useState(false);
@@ -527,7 +530,7 @@ const AddNewProduct = () => {
         setProductName("");
         setImageDescriptions([]);
       } else {
-        setProductName(productName);
+        setProductNameFromPrompt(productName);
         setImageDescriptions(descriptions);
         setSelectedDescription(descriptions.length > 0 ? descriptions[0] : "");
         setOpenDescriptionModal(true);
@@ -1963,7 +1966,7 @@ const AddNewProduct = () => {
             borderRadius: "8px",
             backgroundColor: "#f9f9f9",
             fontSize: "14px",
-            lineHeight: "1.8", // Improved readability
+            lineHeight: "1.5",
             fontWeight: "700",
             textAlign: "justify",
           }}
@@ -1971,16 +1974,35 @@ const AddNewProduct = () => {
           {imageDescriptions.length > 0 ? (
             <>
               {/* Display Product Name */}
-              <h3
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                  color: "#a36e29",
-                  margin: "20px",
-                }}
-              >
-                Product Name: {productName || "N/A"}
-              </h3>
+              <div className="d-flex justify-content-between align-items-center">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <h3
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "18px",
+                      color: "#a36e29",
+                      margin: "20px 0",
+                    }}
+                  >
+                    Product Name: {productNameFromPrompt || "N/A"}
+                  </h3>
+                  <Switch
+                    checked={useNewPromptProductName}
+                    onChange={() => setUseNewPromptProductName(!useNewPromptProductName)}
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': {
+                        color: '#a36e29',
+                        '&:hover': {
+                          backgroundColor: 'rgba(163, 110, 41, 0.08)',
+                        },
+                      },
+                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#a36e29',
+                      },
+                    }}
+                  />
+                </div>
+              </div>
 
               {/* Render Descriptions */}
               {imageDescriptions.map((desc, index) => {
@@ -2015,10 +2037,9 @@ const AddNewProduct = () => {
                         fontWeight: "bold",
                         fontSize: "16px",
                         cursor: "pointer",
-                        marginLeft: "49px",
+                        marginLeft: "1rem",
                         textAlign: "justify",
                         lineHeight: "1.8",
-                        textIndent: "-2em", // Adds an indent to the first line
                         display: "block", // Ensures multiline text alignment
                       }}
                     >
@@ -2051,6 +2072,9 @@ const AddNewProduct = () => {
           </Button>
           <Button
             onClick={() => {
+              if (useNewPromptProductName) {
+                setProductName(productNameFromPrompt);
+              }
               setFinalDescription(selectedDescription); // Update final description
               handleCloseModal(); // Close the modal
             }}

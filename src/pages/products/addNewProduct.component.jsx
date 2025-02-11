@@ -219,7 +219,7 @@ const AddNewProduct = () => {
 
     console.log("stoneNetAmount", stoneNetAmount);
     // Total price
-    const totalPrice = (metalNetAmount || 0) + (stoneNetAmount || 0);
+    const totalPrice = (amount || 0) + (stoneNetAmount || 0);
     console.log("totalPrice", totalPrice);
 
     const priceDetails = {
@@ -1964,6 +1964,232 @@ const AddNewProduct = () => {
                   onChange={(e) => {
                     console.log("GST Percent changed:", e.target.value);
                     setGstPercent(e.target.value);
+                  }}
+                  fullWidth
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "gst")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.name} value={option.name}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <div className="label">Stone Details</div>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Type</div>
+              <FormControl fullWidth>
+                <Select
+                  name="stoneType"
+                  value={stoneType}
+                  onChange={(e) => setStoneType(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stoneClass"]')
+                        ?.focus();
+                    }
+                  }}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "stone_type")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Color</div>
+              <FormControl fullWidth>
+                <Select
+                  name="stoneColor"
+                  value={stoneColor}
+                  onChange={(e) => setStoneColor(e.target.value)}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "color")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.name}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Clarity</div>
+              <FormControl fullWidth>
+                <Select
+                  name="stoneClarity"
+                  value={stoneClarity}
+                  onChange={(e) => setStoneClarity(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document.querySelector('input[name="stoneCut"]')?.focus();
+                    }
+                  }}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "clarity")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Cut</div>
+              <FormControl fullWidth>
+                <Select
+                  name="stoneCut"
+                  value={stoneCut}
+                  onChange={(e) => setStoneCut(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stonePieces"]')
+                        ?.focus();
+                    }
+                  }}
+                >
+                  {dropdownValues?.[0]?.customization_fields
+                    .find((field) => field.name === "cut")
+                    ?.property_value.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.display_name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Pieces</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="stonePieces"
+                  type="number"
+                  value={stonePieces}
+                  onChange={(e) => {
+                    setStonePieces(e.target.value);
+                    const weight =
+                      e.target.value && stoneCarat
+                        ? (stoneCarat * 0.2 * e.target.value).toFixed(2)
+                        : "";
+                    setStoneInternalWeight(weight);
+                  }}
+                  fullWidth
+                  placeholder="Enter number of pieces"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stoneCarat"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Carat</div>
+              <FormControl fullWidth>
+                <TextField
+                  name="stoneCarat"
+                  type="number"
+                  value={stoneCarat}
+                  onChange={(e) => {
+                    setStoneCarat(e.target.value);
+                    const weight =
+                      e.target.value && stonePieces
+                        ? (e.target.value * 0.2 * stonePieces).toFixed(2)
+                        : "";
+                    setStoneInternalWeight(weight);
+                  }}
+                  fullWidth
+                  placeholder="Enter carat"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document
+                        .querySelector('input[name="stoneInternalWeight"]')
+                        ?.focus();
+                    }
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Weight (gm)</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={stoneInternalWeight}
+                  disabled
+                  fullWidth
+                  placeholder="Auto-calculated weight"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gm</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">Rate</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="number"
+                  value={stoneRate}
+                  onChange={(e) => {
+                    setStoneRate(e.target.value);
+                    const total =
+                      stoneInternalWeight && e.target.value
+                        ? (
+                          parseFloat(stoneInternalWeight) *
+                          parseFloat(e.target.value)
+                        ).toFixed(2)
+                        : 0;
+                    setStoneTotalAmount(total);
+                  }}
+                  fullWidth
+                  placeholder="Enter rate"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">₹</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1.33}>
+              <div className="label">GST Percentage</div>
+              <FormControl fullWidth>
+                <Select
+                  value={stoneGSTPercent}
+                  onChange={(e) => {
+                    setStoneGSTPercent(e.target.value);
+                    const baseAmount =
+                      stoneInternalWeight && stoneRate
+                        ? parseFloat(stoneInternalWeight) *
+                        parseFloat(stoneRate)
+                        : 0;
+                    const gstAmount =
+                      baseAmount * (parseFloat(e.target.value) / 100);
+                    const total = (baseAmount + gstAmount).toFixed(2);
+                    setStoneTotalAmount(total);
                   }}
                   fullWidth
                 >

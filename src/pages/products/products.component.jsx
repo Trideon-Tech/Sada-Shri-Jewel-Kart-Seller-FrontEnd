@@ -142,6 +142,7 @@ const Products = () => {
     const results = products.filter(
       (product) =>
         product.tags.toLowerCase().includes(query.toLowerCase()) ||
+        product.hash.toLowerCase().includes(query.toLowerCase()) ||
         product.customizations.variants.options[0].metal_info.gross_wt
           .toString()
           .toLowerCase()
@@ -217,6 +218,7 @@ const Products = () => {
                     <TableCell>Name</TableCell>
                     <TableCell>Price</TableCell>
                     <TableCell>Tag</TableCell>
+                    <TableCell>UID</TableCell>
                     <TableCell>Gross Weight</TableCell>
                     <TableCell>Stock</TableCell>
                     <TableCell>Admin Verified</TableCell>
@@ -258,6 +260,7 @@ const Products = () => {
                             ₹{row.customizations.variants.options[0]?.price}
                           </TableCell>
                           <TableCell>{row.tags}</TableCell>
+                          <TableCell>{row.hash}</TableCell>
                           <TableCell>
                             {`${row.customizations.variants.options[0]?.metal_info.gross_wt} gm`}
                           </TableCell>

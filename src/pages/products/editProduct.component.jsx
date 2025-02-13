@@ -1676,7 +1676,7 @@ const EditProduct = () => {
                 <TextField
                   name="netWeight"
                   type="number"
-                  value={netWeight.toFixed(2)}
+                  value={netWeight !== undefined ? netWeight.toFixed(2) : netWeight }
                   disabled
                   fullWidth
                   InputProps={{
@@ -1752,7 +1752,7 @@ const EditProduct = () => {
                 <TextField
                   name="netWeightAfterWastage"
                   type="number"
-                  value={netWeightAfterWastage.toFixed(2)}
+                  value={netWeightAfterWastage !== undefined ? netWeightAfterWastage.toFixed(2) : netWeightAfterWastage}
                   disabled
                   fullWidth
                   InputProps={{

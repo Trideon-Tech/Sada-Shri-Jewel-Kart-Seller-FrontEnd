@@ -119,7 +119,7 @@ const AddNewProduct = () => {
   const [qualityName, setQualityName] = useState();
   const [size, setSize] = useState();
   const [hsnCode, setHsnCode] = useState("");
-  const [inventoryQty, setInventoryQty] = useState(false);
+  const [inventoryQty, setInventoryQty] = useState(1);
   const [discount, setDiscount] = useState(0);
   const [stoneColor, setStoneColor] = useState();
   const [totalAmount, setTotalAmount] = useState(0);
@@ -1432,8 +1432,8 @@ const AddNewProduct = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={1.5}>
-              <div className="label">Quantity</div>
+            <Grid item xs={1.5} style={{display: "none"}}>
+              <div className="label" >Quantity</div>
               <FormControl fullWidth>
                 <TextField
                   name="quantity"

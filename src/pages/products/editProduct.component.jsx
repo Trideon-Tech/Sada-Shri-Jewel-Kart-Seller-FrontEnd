@@ -129,7 +129,7 @@ const EditProduct = () => {
   const [size, setSize] = useState();
   const [tags, setTags] = useState();
   const [hsnCode, setHsnCode] = useState("");
-  const [inventoryQty, setInventoryQty] = useState(false);
+  const [inventoryQty, setInventoryQty] = useState(1);
   const [showVideoDeleteDialog, setShowVideoDeleteDialog] = useState(false);
   const [stoneColor, setStoneColor] = useState("");
 
@@ -1597,7 +1597,7 @@ const EditProduct = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={1.5}>
+            <Grid item xs={1.5} style={{display: "none"}}>
               <div className="label">Quantity</div>
               <FormControl fullWidth>
                 <TextField

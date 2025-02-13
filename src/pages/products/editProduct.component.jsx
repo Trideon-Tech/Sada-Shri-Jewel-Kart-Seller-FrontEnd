@@ -292,7 +292,7 @@ const EditProduct = () => {
 
       setWastageWeight(productData.customizations[0]?.metal_info?.wastage_wt);
       setNetWeightAfterWastage(
-       productData.customizations[0]?.metal_info?.net_wt_after_wastage || 0
+        productData.customizations[0]?.metal_info?.net_wt_after_wastage || 0
       );
       handleStoneWeightChangeValue();
       setMakingChargeValue(
@@ -640,6 +640,7 @@ const EditProduct = () => {
     }
 
     setAmount(totalAmount);
+    calculateMakingChargeAmount();
   }, [
     netWeightAfterWastage,
     netWeight,
@@ -701,7 +702,7 @@ const EditProduct = () => {
   };
 
   const calculateMakingChargeAmount = () => {
-
+    console.log("makingchargetype",makingChargeType);
     if (makingChargeType === 6) {
       setMakingChargeAmount(
         (
@@ -725,11 +726,11 @@ const EditProduct = () => {
     const newGrossWeight = e.target.value;
     setGrossWeight(newGrossWeight);
     const newNetWeight = newGrossWeight - stoneWeight;
-    setNetWeight(newNetWeight.toFixed(2));
+    setNetWeight(newNetWeight);
     const newWastageWeight = newNetWeight * (wastagePercent / 100);
     setWastageWeight(newWastageWeight);
     const newNetWeightAfterWastage = newNetWeight + newWastageWeight;
-    setNetWeightAfterWastage(newNetWeightAfterWastage.toFixed(2));
+    setNetWeightAfterWastage(newNetWeightAfterWastage);
 
     calculateMakingChargeAmount();
   };
@@ -738,22 +739,22 @@ const EditProduct = () => {
     const newStoneWeight = e.target.value;
     setStoneWeight(newStoneWeight);
     const newNetWeight = grossWeight - newStoneWeight;
-    setNetWeight(newNetWeight.toFixed(2));
+    setNetWeight(newNetWeight);
     const newWastageWeight = newNetWeight * (wastagePercent / 100);
     setWastageWeight(newWastageWeight);
     const newNetWeightAfterWastage = newNetWeight + newWastageWeight;
-    setNetWeightAfterWastage(newNetWeightAfterWastage.toFixed(2));
+    setNetWeightAfterWastage(newNetWeightAfterWastage);
 
     calculateMakingChargeAmount();
   };
 
   const handleStoneWeightChangeValue = () => {
     const newNetWeight = grossWeight - stoneWeight;
-    setNetWeight(newNetWeight.toFixed(2));
+    setNetWeight(newNetWeight);
     const newWastageWeight = newNetWeight * (wastagePercent / 100);
     setWastageWeight(newWastageWeight);
     const newNetWeightAfterWastage = newNetWeight + newWastageWeight;
-    setNetWeightAfterWastage(newNetWeightAfterWastage.toFixed(2));
+    setNetWeightAfterWastage(newNetWeightAfterWastage);
   }
 
   const handleWastagePercentChange = (e) => {
@@ -762,12 +763,13 @@ const EditProduct = () => {
     const newWastageWeight = netWeight * (newWastagePercent / 100);
     setWastageWeight(newWastageWeight);
     const newNetWeightAfterWastage = netWeight + newWastageWeight;
-    setNetWeightAfterWastage(newNetWeightAfterWastage.toFixed(2));
+    setNetWeightAfterWastage(newNetWeightAfterWastage);
 
     calculateMakingChargeAmount();
   };
 
   const handleMakingChargeValueChange = (e) => {
+    console.log("making charge value changed");
     setMakingChargeValue(e.target.value);
     calculateMakingChargeAmount();
   };
@@ -895,6 +897,10 @@ const EditProduct = () => {
     console.log("Settlement Amount:", value);
     setSettlementAmount(value);
   };
+
+  useEffect(() => {
+    calculateMakingChargeAmount();
+  }, [makingChargeType, makingChargeValue, netWeightAfterWastage, netWeight, rate]);
 
   return (
     <div className="AddNewProduct">
@@ -1670,7 +1676,7 @@ const EditProduct = () => {
                 <TextField
                   name="netWeight"
                   type="number"
-                  value={netWeight}
+                  value={netWeight.toFixed(2)}
                   disabled
                   fullWidth
                   InputProps={{
@@ -1721,7 +1727,7 @@ const EditProduct = () => {
                 <TextField
                   name="wastageWeight"
                   type="number"
-                  value={wastageWeight}
+                  value={wastageWeight.toFixed(2)}
                   disabled
                   fullWidth
                   InputProps={{
@@ -1746,7 +1752,7 @@ const EditProduct = () => {
                 <TextField
                   name="netWeightAfterWastage"
                   type="number"
-                  value={netWeightAfterWastage}
+                  value={netWeightAfterWastage.toFixed(2)}
                   disabled
                   fullWidth
                   InputProps={{

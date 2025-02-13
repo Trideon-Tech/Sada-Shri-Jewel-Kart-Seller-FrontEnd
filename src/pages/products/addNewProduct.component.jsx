@@ -115,7 +115,7 @@ const AddNewProduct = () => {
   const [stoneClarity, setStoneClarity] = useState();
   const [stoneRate, setStoneRate] = useState();
   const [stoneInternalWeight, setStoneInternalWeight] = useState();
-  const [stoneGSTPercent, setStoneGSTPercent] = useState();
+  const [stoneGSTPercent, setStoneGSTPercent] = useState("");
   const [qualityName, setQualityName] = useState();
   const [size, setSize] = useState();
   const [hsnCode, setHsnCode] = useState("");
@@ -638,6 +638,12 @@ const AddNewProduct = () => {
       setMetalType(typeMapping[selectedCategory.name] || "");
       setMakingChargeType(mcTypeMapping[selectedCategory.name] || "")
       setPurity(purityMapping[selectedCategory.name] || "")
+      console.log(selectedCategory.name);
+      if (selectedCategory.name === "GEMSTONE") {
+        setStoneGSTPercent(3);
+      }else{
+        setStoneGSTPercent("");
+      }
     }
   };
 

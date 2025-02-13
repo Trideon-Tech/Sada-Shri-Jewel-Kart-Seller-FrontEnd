@@ -351,6 +351,11 @@ const EditProduct = () => {
       } else {
         setRate(rates[purityMapping[category]] || 0);
       }
+      if (category === "GEMSTONE") {
+        setStoneGSTPercent(3);
+      }else{
+        setStoneGSTPercent("");
+      }
     }
   };
 

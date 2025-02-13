@@ -959,7 +959,7 @@ const EditProduct = () => {
               },
             }}
           >
-            Save
+            Update
           </Button>
         </DialogActions>
       </Dialog>

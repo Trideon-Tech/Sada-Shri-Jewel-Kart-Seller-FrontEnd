@@ -792,7 +792,7 @@ const AddNewProduct = () => {
               },
             }}
           >
-            Save
+            Update
           </Button>
         </DialogActions>
       </Dialog>

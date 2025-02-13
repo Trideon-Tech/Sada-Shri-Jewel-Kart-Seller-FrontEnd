@@ -929,7 +929,7 @@ const EditProduct = () => {
     const stoneWeight =
       parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
 
-    const stoneBaseAmount = parseFloat(stone.stone_rate) * stoneWeight;
+    const stoneBaseAmount = parseFloat(stone.stone_rate) * stone.carat;
 
     const stoneGst = stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
 

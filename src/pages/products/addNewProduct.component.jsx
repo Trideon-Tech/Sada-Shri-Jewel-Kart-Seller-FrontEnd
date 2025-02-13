@@ -224,7 +224,7 @@ const AddNewProduct = () => {
     // Stone calculations (already correct)
     const stoneWeight =
       parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
-    const stoneBaseAmount = parseFloat(stone.stone_rate) * stoneWeight;
+    const stoneBaseAmount = parseFloat(stone.stone_rate) * stone.carat;
     const stoneGst = isNaN(stoneBaseAmount * (parseFloat(stone.gst_perc) / 100))
       ? 0
       : stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
@@ -2179,7 +2179,7 @@ const AddNewProduct = () => {
                     const total =
                       stoneInternalWeight && e.target.value
                         ? (
-                          parseFloat(stoneInternalWeight) *
+                          parseFloat(stoneCarat) *
                           parseFloat(e.target.value)
                         ).toFixed(2)
                         : 0;

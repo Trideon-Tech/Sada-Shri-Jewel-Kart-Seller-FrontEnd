@@ -45,7 +45,7 @@ const hsnMapping = {
   "GOLD JEWELLERY": "Gold Jewelry - 7113",
   "SILVER ARTICLES": "Silver Articles - 7114",
   "SILVER JEWELLERY": "Silver Jewelry - 7113",
-  GEMSTONE: "Gemstone Jewelry - 7113",
+  "GEMSTONE": "Gemstone Jewelry - 7113",
   "DIAMOND JEWELLERY": "Diamond Jewelry - 7113 ",
   // Add more mappings as needed
 };
@@ -53,12 +53,21 @@ const hsnMapping = {
 const typeMapping = {
   "GOLD JEWELLERY": "gold",
   "SILVER JEWELLERY": "silver",
+  "SILVER ARTICLES": "silver",
 };
 
 const purityMapping = {
   "GOLD JEWELLERY": "gold22",
+  "SILVER ARTICLES": "silver22",
   "SILVER JEWELLERY": "silver22",
 };
+
+const mcTypeMapping = {
+  "GOLD JEWELLERY": 9,
+  "SILVER ARTICLES": 6,
+  "SILVER JEWELLERY": 6,
+}
+
 /* 
 Delete Image Types
 1. Existing Image
@@ -336,6 +345,7 @@ const EditProduct = () => {
       setHsnCode(hsnMapping[category] || "");
       setMetalType(typeMapping[category] || "");
       setPurity(purityMapping[category] || ""); // Set purity based on category
+      setMakingChargeType(mcTypeMapping[category] || "")
       if (purityMapping[category] == "silver22") {
         setRate(rates["silver"] || 0);
       } else {

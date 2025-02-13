@@ -91,3 +91,34 @@
     }
   }
 }
+
+.button {
+  text-transform: none !important;
+  border-radius: 8px !important;
+  padding: 8px 16px !important;
+  font-weight: 500 !important;
+  
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+// Add specific styles for contained (filled) button
+.button[variant='contained'] {
+  background-color: #1976d2 !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: #1565c0 !important;
+  }
+}
+
+// Add specific styles for outlined button
+.button[variant='outlined'] {
+  border: 1px solid #1976d2 !important;
+  color: #1976d2 !important;
+  
+  &:hover {
+    background-color: rgba(25, 118, 210, 0.04) !important;
+  }
+}

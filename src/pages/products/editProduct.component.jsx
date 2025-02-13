@@ -47,7 +47,7 @@ const hsnMapping = {
   "GOLD JEWELLERY": "Gold Jewelry - 7113",
   "SILVER ARTICLES": "Silver Articles - 7114",
   "SILVER JEWELLERY": "Silver Jewelry - 7113",
-  GEMSTONE: "Gemstone Jewelry - 7113",
+  "GEMSTONE": "Gemstone Jewelry - 7113",
   "DIAMOND JEWELLERY": "Diamond Jewelry - 7113 ",
   // Add more mappings as needed
 };
@@ -55,12 +55,21 @@ const hsnMapping = {
 const typeMapping = {
   "GOLD JEWELLERY": "gold",
   "SILVER JEWELLERY": "silver",
+  "SILVER ARTICLES": "silver",
 };
 
 const purityMapping = {
   "GOLD JEWELLERY": "gold22",
+  "SILVER ARTICLES": "silver22",
   "SILVER JEWELLERY": "silver22",
 };
+
+const mcTypeMapping = {
+  "GOLD JEWELLERY": 9,
+  "SILVER ARTICLES": 6,
+  "SILVER JEWELLERY": 6,
+}
+
 /* 
 Delete Image Types
 1. Existing Image
@@ -122,7 +131,7 @@ const EditProduct = () => {
   const [size, setSize] = useState();
   const [tags, setTags] = useState();
   const [hsnCode, setHsnCode] = useState("");
-  const [inventoryQty, setInventoryQty] = useState(false);
+  const [inventoryQty, setInventoryQty] = useState(1);
   const [showVideoDeleteDialog, setShowVideoDeleteDialog] = useState(false);
   const [stoneColor, setStoneColor] = useState("");
 
@@ -351,10 +360,16 @@ const EditProduct = () => {
       setHsnCode(hsnMapping[category] || "");
       setMetalType(typeMapping[category] || "");
       setPurity(purityMapping[category] || ""); // Set purity based on category
+      setMakingChargeType(mcTypeMapping[category] || "")
       if (purityMapping[category] == "silver22") {
         setRate(rates["silver"] || 0);
       } else {
         setRate(rates[purityMapping[category]] || 0);
+      }
+      if (category === "GEMSTONE") {
+        setStoneGSTPercent(3);
+      }else{
+        setStoneGSTPercent("");
       }
     }
   };
@@ -716,6 +731,7 @@ const EditProduct = () => {
     }
 
     setAmount(totalAmount);
+    calculateMakingChargeAmount();
   }, [
     netWeightAfterWastage,
     netWeight,
@@ -804,7 +820,7 @@ const EditProduct = () => {
   };
 
   const calculateMakingChargeAmount = () => {
-
+    console.log("makingchargetype",makingChargeType);
     if (makingChargeType === 6) {
       setMakingChargeAmount(
         (
@@ -871,6 +887,7 @@ const EditProduct = () => {
   };
 
   const handleMakingChargeValueChange = (e) => {
+    console.log("making charge value changed");
     setMakingChargeValue(e.target.value);
     calculateMakingChargeAmount();
   };
@@ -1003,6 +1020,10 @@ const EditProduct = () => {
     setSettlementAmount(value);
   };
 
+  useEffect(() => {
+    calculateMakingChargeAmount();
+  }, [makingChargeType, makingChargeValue, netWeightAfterWastage, netWeight, rate]);
+
   return (
     <div className="AddNewProduct">
       <PriceBreakout handleSettlementAmountChange={handleSettlementAmountChange} open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
@@ -1066,7 +1087,7 @@ const EditProduct = () => {
               },
             }}
           >
-            Save
+            Update
           </Button>
         </DialogActions>
       </Dialog>
@@ -1738,7 +1759,7 @@ const EditProduct = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={1.5}>
+            <Grid item xs={1.5} style={{display: "none"}}>
               <div className="label">Quantity</div>
               <FormControl fullWidth>
                 <TextField
@@ -1817,7 +1838,7 @@ const EditProduct = () => {
                 <TextField
                   name="netWeight"
                   type="number"
-                  value={netWeight}
+                  value={netWeight !== undefined ? netWeight.toFixed(2) : netWeight }
                   disabled
                   fullWidth
                   InputProps={{
@@ -1868,7 +1889,7 @@ const EditProduct = () => {
                 <TextField
                   name="wastageWeight"
                   type="number"
-                  value={wastageWeight}
+                  value={wastageWeight.toFixed(2)}
                   disabled
                   fullWidth
                   InputProps={{
@@ -1893,7 +1914,7 @@ const EditProduct = () => {
                 <TextField
                   name="netWeightAfterWastage"
                   type="number"
-                  value={netWeightAfterWastage}
+                  value={netWeightAfterWastage !== undefined ? netWeightAfterWastage.toFixed(2) : netWeightAfterWastage}
                   disabled
                   fullWidth
                   InputProps={{

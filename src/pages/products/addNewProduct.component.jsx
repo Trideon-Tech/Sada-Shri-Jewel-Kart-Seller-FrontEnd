@@ -45,7 +45,7 @@ const hsnMapping = {
   "GOLD JEWELLERY": "Gold Jewelry - 7113",
   "SILVER ARTICLES": "Silver Articles - 7114",
   "SILVER JEWELLERY": "Silver Jewelry - 7113",
-  GEMSTONE: "Gemstone Jewelry - 7113",
+  "GEMSTONE": "Gemstone Jewelry - 7113",
   "DIAMOND JEWELLERY": "Diamond Jewelry - 7113 ",
   // Add more mappings as needed
 };
@@ -53,7 +53,20 @@ const hsnMapping = {
 const typeMapping = {
   "GOLD JEWELLERY": "gold",
   "SILVER JEWELLERY": "silver",
+  "SILVER ARTICLES": "silver"
 };
+
+const mcTypeMapping = {
+  "GOLD JEWELLERY": 9,
+  "SILVER ARTICLES": 6,
+  "SILVER JEWELLERY": 6,
+}
+
+const purityMapping = {
+  "GOLD JEWELLERY": "gold22",
+  "SILVER ARTICLES": "silver22",
+  "SILVER JEWELLERY": "silver22",
+}
 
 const AddNewProduct = () => {
   let navigate = useNavigate();
@@ -623,6 +636,8 @@ const AddNewProduct = () => {
       console.log("hsn", hsn);
       setHsnCode(hsn || "");
       setMetalType(typeMapping[selectedCategory.name] || "");
+      setMakingChargeType(mcTypeMapping[selectedCategory.name] || "")
+      setPurity(purityMapping[selectedCategory.name] || "")
     }
   };
 

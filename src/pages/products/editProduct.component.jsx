@@ -292,7 +292,7 @@ const EditProduct = () => {
 
       setWastageWeight(productData.customizations[0]?.metal_info?.wastage_wt);
       setNetWeightAfterWastage(
-        productData.customizations[0]?.metal_info?.net_wt_after_wastage || 0
+       productData.customizations[0]?.metal_info?.net_wt_after_wastage || 0
       );
       handleStoneWeightChangeValue();
       setMakingChargeValue(
@@ -725,11 +725,11 @@ const EditProduct = () => {
     const newGrossWeight = e.target.value;
     setGrossWeight(newGrossWeight);
     const newNetWeight = newGrossWeight - stoneWeight;
-    setNetWeight(newNetWeight);
+    setNetWeight(newNetWeight.toFixed(2));
     const newWastageWeight = newNetWeight * (wastagePercent / 100);
     setWastageWeight(newWastageWeight);
     const newNetWeightAfterWastage = newNetWeight + newWastageWeight;
-    setNetWeightAfterWastage(newNetWeightAfterWastage);
+    setNetWeightAfterWastage(newNetWeightAfterWastage.toFixed(2));
 
     calculateMakingChargeAmount();
   };
@@ -738,22 +738,22 @@ const EditProduct = () => {
     const newStoneWeight = e.target.value;
     setStoneWeight(newStoneWeight);
     const newNetWeight = grossWeight - newStoneWeight;
-    setNetWeight(newNetWeight);
+    setNetWeight(newNetWeight.toFixed(2));
     const newWastageWeight = newNetWeight * (wastagePercent / 100);
     setWastageWeight(newWastageWeight);
     const newNetWeightAfterWastage = newNetWeight + newWastageWeight;
-    setNetWeightAfterWastage(newNetWeightAfterWastage);
+    setNetWeightAfterWastage(newNetWeightAfterWastage.toFixed(2));
 
     calculateMakingChargeAmount();
   };
 
   const handleStoneWeightChangeValue = () => {
     const newNetWeight = grossWeight - stoneWeight;
-    setNetWeight(newNetWeight);
+    setNetWeight(newNetWeight.toFixed(2));
     const newWastageWeight = newNetWeight * (wastagePercent / 100);
     setWastageWeight(newWastageWeight);
     const newNetWeightAfterWastage = newNetWeight + newWastageWeight;
-    setNetWeightAfterWastage(newNetWeightAfterWastage);
+    setNetWeightAfterWastage(newNetWeightAfterWastage.toFixed(2));
   }
 
   const handleWastagePercentChange = (e) => {
@@ -762,7 +762,7 @@ const EditProduct = () => {
     const newWastageWeight = netWeight * (newWastagePercent / 100);
     setWastageWeight(newWastageWeight);
     const newNetWeightAfterWastage = netWeight + newWastageWeight;
-    setNetWeightAfterWastage(newNetWeightAfterWastage);
+    setNetWeightAfterWastage(newNetWeightAfterWastage.toFixed(2));
 
     calculateMakingChargeAmount();
   };

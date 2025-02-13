@@ -253,7 +253,7 @@ const EditProduct = () => {
       setProduct(productData);
 
       setOrigImages(productData.images);
-      setCurrentImageUrl(productData.images.map(image => `${process.env.REACT_APP_API_BASE_URL}/assets/${image.file}`));
+      setCurrentImageUrl(productData?.images?.map(image => `${process.env.REACT_APP_API_BASE_URL}/assets/${image.file}`));
       if (typeof productData.video !== "string") {
         setOrigVideo(productData.video);
       }
@@ -396,7 +396,7 @@ const EditProduct = () => {
 
   const handleGenerateSubmit = async (e) => {
     e.preventDefault();
-    if ((!selectedImage || selectedImage.length === 0) && (origImages.length === 0)) {
+    if ((!selectedImage || selectedImage.length === 0) && (origImages?.length === 0)) {
       console.log("No images selected");
       alert("Please select at least one image");
       return;
@@ -1265,7 +1265,7 @@ const EditProduct = () => {
                     {/* Display original images if they exist */}
                     {origImages &&
                       origImages !== "Product Infographics doesn't exist." &&
-                      origImages.map((image, index) => (
+                      origImages?.map((image, index) => (
                         <div key={index} className="imagePreview" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                           <img
                             src={`${process.env.REACT_APP_API_BASE_URL}/assets/${image.file}`}
@@ -1431,7 +1431,7 @@ const EditProduct = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div className="heading">Product Details</div>
-              {origImages.length > 0 && sellerAIAssist !== 0 && (
+              {origImages && origImages.length > 0 && sellerAIAssist !== 0 && (
                 <IconButton
                   color="primary"
                   onClick={handleGenerateSubmit}

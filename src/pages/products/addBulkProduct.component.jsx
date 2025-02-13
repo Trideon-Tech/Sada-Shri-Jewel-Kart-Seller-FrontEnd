@@ -99,7 +99,7 @@ function AddBulkProduct() {
                     wastage_wt: parseFloat(cleanedValues[headers.findIndex(h => h === 'Wastage Weight')]) || "0",
                     net_wt_after_wastage: parseFloat(cleanedValues[headers.findIndex(h => h === 'Net New Wt.')]) || "0",
                     making_charge_type: cleanedValues[headers.findIndex(h => h === 'MC Type')] || "0",
-                    making_charge_value: parseFloat(cleanedValues[headers.findIndex(h => h === 'MC %')]) || "0",
+                    making_charge_value: parseFloat(cleanedValues[headers.findIndex(h => h === 'MC')]) || "0",
                     making_charge_amount: parseFloat(cleanedValues[headers.findIndex(h => h === 'Mc Amt.')]) || "0",
                     stone_amount: parseFloat(cleanedValues[headers.findIndex(h => h === 'Stone Amt.')]) || "0",
                     hallmark_charge: parseFloat(cleanedValues[headers.findIndex(h => h === 'Hallmark Amt.')]) || "0",
@@ -114,9 +114,9 @@ function AddBulkProduct() {
                     cut: cleanedValues[headers.findIndex(h => h === 'Cut')] || "0",
                     pieces: parseInt(cleanedValues[headers.findIndex(h => h === 'Pieces')]) || "0",
                     carat: parseFloat(cleanedValues[headers.findIndex(h => h === 'Carat')]) || "0",
-                    stone_wt: parseFloat(cleanedValues[headers.findIndex(h => h === 'Stone Weight')]) || "0",
-                    stone_rate: parseFloat(cleanedValues[headers.findIndex(h => h === 'Stone Rate')]) || "0",
-                    gst_perc: parseFloat(cleanedValues[headers.findIndex(h => h === 'Stone GST')]) || "0",
+                    stone_wt: parseFloat(cleanedValues[headers.findIndex(h => h === 'Weight (gm)')]) || "0",
+                    stone_rate: parseFloat(cleanedValues[headers.findIndex(h => h === 'Rate')]) || "0",
+                    gst_perc: parseFloat(cleanedValues[headers.findIndex(h => h === 'Stone GST %')]) || "0",
                 }
             };
             items.push(item);
@@ -153,7 +153,7 @@ function AddBulkProduct() {
                     if (response.data.success === 1) {
                         toast("Products uploaded successfully!", generalToastStyle);
                         handleClose();
-                        navigate("/products");
+                        window.location.reload();
                     } else {
                         toast.error(response.data.message || "Failed to upload products");
                     }

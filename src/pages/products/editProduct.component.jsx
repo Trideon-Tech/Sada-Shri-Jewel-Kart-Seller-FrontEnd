@@ -16,10 +16,10 @@ import {
   MenuItem,
   Paper,
   Select,
+  Switch,
   TextField,
   ThemeProvider,
   Typography,
-  Switch,
 } from "@mui/material";
 import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -28,8 +28,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { generalToastStyle } from "../../utils/toast.styles";
-import PriceBreakout from "./priceBreakout.component";
 import "./addNewProduct.styles.scss";
+import PriceBreakout from "./priceBreakout.component";
 
 const theme = createTheme({
   palette: {
@@ -1048,7 +1048,7 @@ const EditProduct = () => {
             fontFamily: '"Roboto", sans-serif',
           }}
         >
-          Confirm Save
+          Confirm Update
         </DialogTitle>
         <DialogContent>
           <Typography
@@ -1057,7 +1057,7 @@ const EditProduct = () => {
               fontFamily: '"Roboto", sans-serif',
             }}
           >
-            Are you sure you want to save this product?
+            Are you sure you want to update this product?
           </Typography>
         </DialogContent>
         <DialogActions>

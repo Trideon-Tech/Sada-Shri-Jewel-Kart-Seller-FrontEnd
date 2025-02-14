@@ -47,7 +47,7 @@ const hsnMapping = {
   "GOLD JEWELLERY": "Gold Jewelry - 7113",
   "SILVER ARTICLES": "Silver Articles - 7114",
   "SILVER JEWELLERY": "Silver Jewelry - 7113",
-  "GEMSTONE": "Gemstone Jewelry - 7113",
+  GEMSTONE: "Gemstone Jewelry - 7113",
   "DIAMOND JEWELLERY": "Diamond Jewelry - 7113 ",
   // Add more mappings as needed
 };
@@ -68,7 +68,7 @@ const mcTypeMapping = {
   "GOLD JEWELLERY": 9,
   "SILVER ARTICLES": 6,
   "SILVER JEWELLERY": 6,
-}
+};
 
 /* 
 Delete Image Types
@@ -89,15 +89,9 @@ const EditProduct = () => {
 
   const [desc, setDesc] = useState();
   const [purity, setPurity] = useState("");
-  const [customizationTypes, setCustomizationTypes] = useState([]);
   const [categoriesData, setCategoriesData] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
-  const [selectedCustomizationTypeId, setSelectedCustomizationTypeId] =
-    useState("");
-  const [selectedCustomizationTypeName, setSelectedCustomizationTypeName] =
-    useState("");
-  const [customizationOptions, setCustomizationOptions] = useState([]);
   const [dropdownValues, setDropdownValues] = useState();
   const [metalType, setMetalType] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -171,7 +165,6 @@ const EditProduct = () => {
   const [useNewPromptProductName, setUseNewPromptProductName] = useState(false);
   const [productNameFromPrompt, setProductNameFromPrompt] = useState("");
   const [sellerAIAssist, setSellerAIAssist] = useState(0);
-
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -253,7 +246,12 @@ const EditProduct = () => {
       setProduct(productData);
 
       setOrigImages(productData.images);
-      setCurrentImageUrl(productData?.images?.map(image => `${process.env.REACT_APP_API_BASE_URL}/assets/${image.file}`));
+      setCurrentImageUrl(
+        productData?.images?.map(
+          (image) =>
+            `${process.env.REACT_APP_API_BASE_URL}/assets/${image.file}`
+        )
+      );
       if (typeof productData.video !== "string") {
         setOrigVideo(productData.video);
       }
@@ -267,7 +265,9 @@ const EditProduct = () => {
         (subcat) => subcat.name === productData.sub_category
       );
       console.log("subcategory", subcategory);
-      setSelectedSubcategory(subcategory ? `${subcategory.id}_${subcategory.admin_comm_perc}` : "");
+      setSelectedSubcategory(
+        subcategory ? `${subcategory.id}_${subcategory.admin_comm_perc}` : ""
+      );
       setAdminCommissionPerc(subcategory?.admin_comm_perc ?? 0);
 
       setSize(productData.size);
@@ -281,12 +281,13 @@ const EditProduct = () => {
 
       setInventoryQty(productData.quantity);
 
-      let cleanedDesc = productData.description ? productData.description.replace(/<\/?[^>]+(>|$)/g, "").trim() : "";
+      let cleanedDesc = productData.description
+        ? productData.description.replace(/<\/?[^>]+(>|$)/g, "").trim()
+        : "";
 
       console.log("Cleaned Description:", cleanedDesc); // Debugging log
       setDesc(cleanedDesc);
       setFinalDescription(cleanedDesc); // Ensure input field updates correctly
-
 
       // metal details
       setGrossWeight(productData.customizations[0]?.metal_info?.gross_wt);
@@ -360,7 +361,7 @@ const EditProduct = () => {
       setHsnCode(hsnMapping[category] || "");
       setMetalType(typeMapping[category] || "");
       setPurity(purityMapping[category] || ""); // Set purity based on category
-      setMakingChargeType(mcTypeMapping[category] || "")
+      setMakingChargeType(mcTypeMapping[category] || "");
       if (purityMapping[category] == "silver22") {
         setRate(rates["silver"] || 0);
       } else {
@@ -368,7 +369,7 @@ const EditProduct = () => {
       }
       if (category === "GEMSTONE") {
         setStoneGSTPercent(3);
-      }else{
+      } else {
         setStoneGSTPercent("");
       }
     }
@@ -390,13 +391,14 @@ const EditProduct = () => {
 
     setImages((prevImages) => [...prevImages, ...newImages]);
     setSelectedImage(files);
-
   };
-
 
   const handleGenerateSubmit = async (e) => {
     e.preventDefault();
-    if ((!selectedImage || selectedImage.length === 0) && (origImages?.length === 0)) {
+    if (
+      (!selectedImage || selectedImage.length === 0) &&
+      origImages?.length === 0
+    ) {
       console.log("No images selected");
       alert("Please select at least one image");
       return;
@@ -412,8 +414,8 @@ const EditProduct = () => {
       stone_clarity: stoneClarity,
       stone_cut: stoneCut,
       stone_pieces: stonePieces,
-      stone_carat: stoneCarat
-    }
+      stone_carat: stoneCarat,
+    };
     const formData = new FormData();
     // Append each selected image to formData
     selectedImage.forEach((image) => {
@@ -430,7 +432,12 @@ const EditProduct = () => {
         "https://api.sadashrijewelkart.com/v1.0.0/seller/prompt/upload.php",
 
         formData,
-        { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
 
       // Ensure response contains expected fields
@@ -460,7 +467,6 @@ const EditProduct = () => {
       setIsLoading(false);
     }
   };
-
 
   const handleCloseModal = () => {
     setOpenDescriptionModal(false); // Close modal
@@ -540,7 +546,7 @@ const EditProduct = () => {
         id: productId,
         type: "update_item",
         category: selectedCategory || "",
-        sub_category: (selectedSubcategory).split("_")[0] || "",
+        sub_category: selectedSubcategory.split("_")[0] || "",
         name: productName || "",
         // desc: desc || "",
         desc: (finalDescription || "").replace(/^\d+\.\s*/, ""),
@@ -808,7 +814,6 @@ const EditProduct = () => {
     axios
       .request(config)
       .then((response) => {
-
         const aiAssistValue = response?.data?.response?.organization?.ai_assist;
         console.log("AI Assist Value from API:", aiAssistValue);
         setSellerAIAssist(Number(aiAssistValue)); // Convert to number explicitly
@@ -820,7 +825,7 @@ const EditProduct = () => {
   };
 
   const calculateMakingChargeAmount = () => {
-    console.log("makingchargetype",makingChargeType);
+    console.log("makingchargetype", makingChargeType);
     if (makingChargeType === 6) {
       setMakingChargeAmount(
         (
@@ -833,8 +838,8 @@ const EditProduct = () => {
       setMakingChargeAmount(
         parseFloat(
           makingChargeValue *
-          (rate / 100) *
-          (netWeightAfterWastage || netWeight || 0)
+            (rate / 100) *
+            (netWeightAfterWastage || netWeight || 0)
         ).toFixed(2)
       );
     }
@@ -873,7 +878,7 @@ const EditProduct = () => {
     setWastageWeight(newWastageWeight);
     const newNetWeightAfterWastage = newNetWeight + newWastageWeight;
     setNetWeightAfterWastage(newNetWeightAfterWastage);
-  }
+  };
 
   const handleWastagePercentChange = (e) => {
     const newWastagePercent = e.target.value;
@@ -1022,11 +1027,23 @@ const EditProduct = () => {
 
   useEffect(() => {
     calculateMakingChargeAmount();
-  }, [makingChargeType, makingChargeValue, netWeightAfterWastage, netWeight, rate]);
+  }, [
+    makingChargeType,
+    makingChargeValue,
+    netWeightAfterWastage,
+    netWeight,
+    rate,
+  ]);
 
   return (
     <div className="AddNewProduct">
-      <PriceBreakout handleSettlementAmountChange={handleSettlementAmountChange} open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
+      <PriceBreakout
+        handleSettlementAmountChange={handleSettlementAmountChange}
+        open={showPriceBreakout}
+        data={productAmountData}
+        rates={rates}
+        onClose={() => setShowPriceBreakout(false)}
+      />
       <ToastContainer />
 
       {/* Confirmation Dialog */}
@@ -1266,7 +1283,15 @@ const EditProduct = () => {
                     {origImages &&
                       origImages !== "Product Infographics doesn't exist." &&
                       origImages?.map((image, index) => (
-                        <div key={index} className="imagePreview" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div
+                          key={index}
+                          className="imagePreview"
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                          }}
+                        >
                           <img
                             src={`${process.env.REACT_APP_API_BASE_URL}/assets/${image.file}`}
                             alt={`Preview ${index + 1}`}
@@ -1286,16 +1311,31 @@ const EditProduct = () => {
 
                     {/* Display newly uploaded images */}
                     {images.map((image, index) => (
-                      <div key={index} className="imagePreview" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div
+                        key={index}
+                        className="imagePreview"
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                        }}
+                      >
                         <img
                           src={image ? URL.createObjectURL(image) : ""}
                           alt={`Preview ${index + 1}`}
-                          style={{ marginBottom: '10px' }}
+                          style={{ marginBottom: "10px" }}
                         />
-                        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "10px",
+                            marginTop: "10px",
+                          }}
+                        >
                           <IconButton
                             className="deleteButton"
                             onClick={() => {
+                              setDeleteImageType(0);
                               setDeleteImageIndex(index);
                               setShowDeleteImageDialog(true);
                             }}
@@ -1329,7 +1369,6 @@ const EditProduct = () => {
     </div>
   )} */}
                   </div>
-
                 </div>
               </Grid>
 
@@ -1364,7 +1403,7 @@ const EditProduct = () => {
                             video instanceof File
                               ? URL.createObjectURL(video)
                               : `${process.env.REACT_APP_API_BASE_URL}/assets/` +
-                              video
+                                video
                           }
                           type="video/mp4"
                         />
@@ -1429,7 +1468,7 @@ const EditProduct = () => {
               alignItems: "center",
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <div className="heading">Product Details</div>
               {origImages && origImages.length > 0 && sellerAIAssist !== 0 && (
                 <IconButton
@@ -1438,7 +1477,11 @@ const EditProduct = () => {
                   disabled={isLoading}
                   size="small"
                 >
-                  {isLoading ? <CircularProgress size={20} /> : <AutoFixHighIcon />}
+                  {isLoading ? (
+                    <CircularProgress size={20} />
+                  ) : (
+                    <AutoFixHighIcon />
+                  )}
                 </IconButton>
               )}
             </div>
@@ -1585,8 +1628,8 @@ const EditProduct = () => {
                   value={selectedSubcategory}
                   onChange={(e) => {
                     console.log(e.target.value);
-                    setSelectedSubcategory((e.target.value));
-                    setAdminCommissionPerc((e.target.value).split("_")[1]);
+                    setSelectedSubcategory(e.target.value);
+                    setAdminCommissionPerc(e.target.value.split("_")[1]);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -1599,7 +1642,10 @@ const EditProduct = () => {
                     categoriesData
                       .find((category) => category.id === selectedCategory)
                       ?.sub_categories.map((subcategory) => (
-                        <MenuItem key={subcategory.id} value={`${subcategory.id}_${subcategory.admin_comm_perc}`}>
+                        <MenuItem
+                          key={subcategory.id}
+                          value={`${subcategory.id}_${subcategory.admin_comm_perc}`}
+                        >
                           {subcategory.name}
                         </MenuItem>
                       ))}
@@ -1679,7 +1725,6 @@ const EditProduct = () => {
             <Grid item xs={4.5}>
               <div className="label">Description</div>
               <TextField
-
                 multiline
                 rows={1}
                 fullWidth
@@ -1689,13 +1734,8 @@ const EditProduct = () => {
                   let inputValue = e.target.value.replace(/^\d+\.\s*/, ""); // Remove leading number
                   setFinalDescription(inputValue); // Update state with clean value
                 }}
-
               />
-
             </Grid>
-
-
-
 
             <Grid item xs={12}>
               <Divider />
@@ -1759,7 +1799,7 @@ const EditProduct = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={1.5} style={{display: "none"}}>
+            <Grid item xs={1.5} style={{ display: "none" }}>
               <div className="label">Quantity</div>
               <FormControl fullWidth>
                 <TextField
@@ -1838,7 +1878,9 @@ const EditProduct = () => {
                 <TextField
                   name="netWeight"
                   type="number"
-                  value={netWeight !== undefined ? netWeight.toFixed(2) : netWeight }
+                  value={
+                    netWeight !== undefined ? netWeight.toFixed(2) : netWeight
+                  }
                   disabled
                   fullWidth
                   InputProps={{
@@ -1914,7 +1956,11 @@ const EditProduct = () => {
                 <TextField
                   name="netWeightAfterWastage"
                   type="number"
-                  value={netWeightAfterWastage !== undefined ? netWeightAfterWastage.toFixed(2) : netWeightAfterWastage}
+                  value={
+                    netWeightAfterWastage !== undefined
+                      ? netWeightAfterWastage.toFixed(2)
+                      : netWeightAfterWastage
+                  }
                   disabled
                   fullWidth
                   InputProps={{
@@ -2300,9 +2346,9 @@ const EditProduct = () => {
                     const total =
                       stoneInternalWeight && e.target.value
                         ? (
-                          parseFloat(stoneInternalWeight) *
-                          parseFloat(e.target.value)
-                        ).toFixed(2)
+                            parseFloat(stoneInternalWeight) *
+                            parseFloat(e.target.value)
+                          ).toFixed(2)
                         : 0;
                     setStoneTotalAmount(total);
                   }}
@@ -2326,7 +2372,7 @@ const EditProduct = () => {
                     const baseAmount =
                       stoneInternalWeight && stoneRate
                         ? parseFloat(stoneInternalWeight) *
-                        parseFloat(stoneRate)
+                          parseFloat(stoneRate)
                         : 0;
                     const gstAmount =
                       baseAmount * (parseFloat(e.target.value) / 100);
@@ -2387,7 +2433,13 @@ const EditProduct = () => {
           {imageDescriptions.length > 0 ? (
             <>
               <div className="d-flex justify-content-between align-items-center">
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <h3
                     style={{
                       fontWeight: "bold",
@@ -2400,17 +2452,20 @@ const EditProduct = () => {
                   </h3>
                   <Switch
                     checked={useNewPromptProductName}
-                    onChange={() => setUseNewPromptProductName(!useNewPromptProductName)}
+                    onChange={() =>
+                      setUseNewPromptProductName(!useNewPromptProductName)
+                    }
                     sx={{
-                      '& .MuiSwitch-switchBase.Mui-checked': {
-                        color: '#a36e29',
-                        '&:hover': {
-                          backgroundColor: 'rgba(163, 110, 41, 0.08)',
+                      "& .MuiSwitch-switchBase.Mui-checked": {
+                        color: "#a36e29",
+                        "&:hover": {
+                          backgroundColor: "rgba(163, 110, 41, 0.08)",
                         },
                       },
-                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                        backgroundColor: '#a36e29',
-                      },
+                      "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                        {
+                          backgroundColor: "#a36e29",
+                        },
                     }}
                   />
                 </div>
@@ -2498,8 +2553,6 @@ const EditProduct = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
-
     </div>
   );
 };

@@ -245,9 +245,12 @@ const EditProduct = () => {
       const productData = response.data.response;
       setProduct(productData);
 
-      setOrigImages(productData.images);
+      const sortedImages = productData.images.sort((a, b) =>
+        a.file.localeCompare(b.file)
+      );
+      setOrigImages(sortedImages);
       setCurrentImageUrl(
-        productData?.images?.map(
+        sortedImages.map(
           (image) =>
             `${process.env.REACT_APP_API_BASE_URL}/assets/${image.file}`
         )

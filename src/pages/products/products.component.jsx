@@ -22,13 +22,19 @@ import {
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
-import { Clear, Close, Done, Edit, Add, SetMealOutlined } from "@mui/icons-material";
+import {
+  Add,
+  Clear,
+  Close,
+  Done,
+  Edit
+} from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { generalToastStyle } from "../../utils/toast.styles";
 import AddBulkProduct from "./addBulkProduct.component";
-import Variants from "./variants.component";
 import "./products.styles.scss";
+import Variants from "./variants.component";
 
 const theme = createTheme({
   palette: {
@@ -260,7 +266,13 @@ const Products = () => {
                             ₹{row.customizations.variants.options[0]?.price}
                           </TableCell>
                           <TableCell>{row.tags}</TableCell>
-                          <TableCell>{row.hash}</TableCell>
+                          <TableCell
+                            style={{
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {row.hash}
+                          </TableCell>
                           <TableCell>
                             {`${row.customizations.variants.options[0]?.metal_info.gross_wt} gm`}
                           </TableCell>

@@ -30,6 +30,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./addNewProduct.styles.scss";
 import PriceBreakout from "./priceBreakout.component";
+import AddVariant from "./addVariant.component";
 
 const theme = createTheme({
   palette: {
@@ -146,6 +147,8 @@ const AddNewProduct = () => {
   const [showPriceBreakout, setShowPriceBreakout] = useState(false);
   const [productAmountData, setProductAmountData] = useState({});
   const [settlementAmount, setSettlementAmount] = useState(0);
+
+  const [variants, setVariants] = useState([]);
 
   const handleSettlementAmountChange = (value) => {
     setSettlementAmount(value);
@@ -763,7 +766,7 @@ const AddNewProduct = () => {
       console.log(selectedCategory.name);
       if (selectedCategory.name === "GEMSTONE") {
         setStoneGSTPercent(3);
-      }else{
+      } else {
         setStoneGSTPercent("");
       }
     }
@@ -1610,14 +1613,20 @@ const AddNewProduct = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={1.5} style={{display: "none"}}>
+            <Grid item xs={1.5} style={{ display: "none" }}>
               <div className="label" >Quantity</div>
               <FormControl fullWidth>
                 <TextField
                   name="quantity"
                   type="number"
                   value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
+                  onChange={(e) => {
+                    setQuantity(e.target.value);
+                    setNetWeight(e.target.value - stoneWeight);
+                    setNetWeightAfterWastage(
+                      e.target.value - stoneWeight + wastageWeight
+                    );
+                  }}
                   fullWidth
                   placeholder="Enter quantity"
                   onKeyDown={(e) => {
@@ -2225,10 +2234,32 @@ const AddNewProduct = () => {
               </FormControl>
             </Grid>
           </Grid>
+          <Divider />
+          {variants.map((_, index) => (
+            <AddVariant key={index} variantIndex={index} />
+          ))}
         </Paper>
+        <Grid container spacing={2} style={{ display: "flex", justifyContent: "start", paddingLeft: "3rem", paddingBottom: "2rem"}}>
+          <Grid item xs={1.33}>
+            <div className="btns">
+              <Button
+                className="button2"
+                variant="contained"
+                sx={{
+                  backgroundColor: "#a36e29",
+                  fontFamily: '"Roboto", sans-serif',
+                  "&:hover": {
+                    backgroundColor: "#8b5d23",
+                  },
+                }}
+                onClick={() => setVariants((prev) => [...prev, {}])}
+              >
+                Add Variant
+              </Button>
+            </div>
+          </Grid>
+        </Grid>
       </ThemeProvider>
-
-
       <Dialog
         open={openDescriptionModal}
         onClose={handleCloseModal}
@@ -2388,8 +2419,6 @@ const AddNewProduct = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
-
     </div>
 
 

@@ -75,7 +75,12 @@ const Products = () => {
         }
       )
       .then((response) => {
-        console.log(response.data);
+        console.log(response.data.response);
+        response.data.response.map((item, index) => {
+          item.display_number = index;
+          return item;
+        })
+        console.log(response.data.response);
         setProducts(response.data.response);
         setSearchResults(response.data.response);
         setProductsLoaded(true);
@@ -247,7 +252,7 @@ const Products = () => {
                           key={row.id}
                         >
                           <TableCell>
-                            {index + (page * rowsPerPage + 1)}
+                            {row.display_number + (page * rowsPerPage + 1)}
                           </TableCell>
                           <TableCell>{row.created_at}</TableCell>
                           <TableCell className="name-content">

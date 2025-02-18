@@ -1,11 +1,22 @@
 import Grid from "@mui/system/Unstable_Grid";
 import { FormControl, Select, MenuItem, TextField, InputAdornment } from "@mui/material";
+import { useState } from "react";
 
 const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quantity, grossWeight, stoneWeight, netWeight, wastagePercent, wastageWeight, netWeightAfterWastage, makingChargeType, makingChargeValue, makingChargeAmount, stoneAmount, hallmarkCharge, gstPercent, rodiumCharge, stoneType, stoneColor, stoneClarity, stoneCut, stonePieces, stoneCarat, stoneRate, stoneInternalWeight, stoneGSTPercent }) => {
+    const [variantName, setVariantName] = useState("");
     return (<>
         <Grid container spacing={2}>
-        <Grid item xs={12}>
+            <Grid item xs={12}>
                 <div className="label">Variant Details {variantIndex + 1}</div>
+                <FormControl >
+                    <TextField
+                        name="variantName"
+                        value={variantName}
+                        onChange={(e) => setVariantName(e.target.value)}
+                        fullWidth
+                        placeholder="Enter Variant Name"
+                    />
+                </FormControl>
             </Grid>
             <Grid item xs={12}>
                 <div className="label">Metal Details</div>

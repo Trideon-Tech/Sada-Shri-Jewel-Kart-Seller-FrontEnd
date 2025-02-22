@@ -150,6 +150,10 @@ const AddNewProduct = () => {
 
   const [variants, setVariants] = useState([]);
 
+  const removeVariant = (index) => {
+    setVariants((prevVariants) => prevVariants.filter((_, i) => i !== index));
+  };
+
   const handleSettlementAmountChange = (value) => {
     setSettlementAmount(value);
   };
@@ -634,7 +638,6 @@ const AddNewProduct = () => {
         category: selectedCategory || "",
         sub_category: selectedSubcategory || "",
         name: productName || "",
-        // desc: desc || "",
         desc: (finalDescription || "").replace(/^\d+\.\s*/, ""),
         customization_option: [quantity, makingChargeType, stoneType]
           .filter((val) => val !== null && val !== 0)
@@ -675,6 +678,7 @@ const AddNewProduct = () => {
         },
       };
 
+      // Call the addProduct endpoint
       const productResponse = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/addProduct.php`,
         formData,
@@ -687,6 +691,61 @@ const AddNewProduct = () => {
       );
 
       const productId = productResponse.data.response.id;
+
+      console.log("all variants", variants)
+      // Upload variants after the product has been added
+      for (const variant of variants) {
+        const variantData = {
+          product_id: productId,
+          action: "variant",
+          name: variant.name, // Use actual variant name from state
+          size: variant.size, // Use actual variant size from state
+          hsn: variant.hsn || "", // Use the appropriate HSN code
+          quantity: variant.quantity, // Use actual variant quantity from state
+          tags: variant.tags, // Use actual variant tags from state
+          discount_perc: variant.discount_perc, // Use actual variant discount from state
+          metal: {
+            metal: variant.metal.metal || "", // Use actual metal type from state
+            quantity: variant.metal.quantity || 1, // Use actual metal quantity from state
+            quality: variant.metal.quality || "", // Use actual metal quality from state
+            gross_wt: variant.metal.gross_wt || "", // Use actual gross weight from state
+            stone_wt: variant.metal.stone_wt || "", // Use actual stone weight from state
+            net_wt: variant.metal.net_wt || "0", // Use actual net weight from state
+            wastage_prec: variant.metal.wastage_prec || "", // Use actual wastage percentage from state
+            wastage_wt: variant.metal.wastage_wt || "0", // Use actual wastage weight from state
+            net_wt_after_wastage: variant.metal.net_wt_after_wastage || "", // Use actual net weight after wastage from state
+            making_charge_type: variant.metal.making_charge_type || 9, // Use actual making charge type from state
+            making_charge_value: variant.metal.making_charge_value || "0", // Use actual making charge value from state
+            making_charge_amount: variant.metal.making_charge_amount || "0.00", // Use actual making charge amount from state
+            stone_amount: variant.metal.stone_amount || "0", // Use actual stone amount from state
+            hallmark_charge: variant.metal.hallmark_charge|| "0", // Use actual hallmark charge from state
+            rodium_charge: variant.metal.rodium_charge || "0", // Use actual rodium charge from state
+            gst_perc: variant.metal.gst_perc || 0, // Use actual GST percentage from state
+          },
+          stone: {
+            stone_type: variant.stone.stone_type || "", // Use actual stone type from state
+            color: variant.stone.color || "", // Use actual stone color from state
+            clarity: variant.stone.clarity || "", // Use actual stone clarity from state
+            cut: variant.stone.cut || "0", // Use actual stone cut from state
+            pieces: variant.stone.pieces || "0", // Use actual stone pieces from state
+            carat: variant.stone.carat || "0", // Use actual stone carat from state
+            stone_wt: variant.stone.stone_wt || "0", // Use actual stone weight from state
+            stone_rate: variant.stone.stone_rate || "0", // Use actual stone rate from state
+            gst_perc: variant.stone.gst_perc || "0", // Use actual stone GST percentage from state
+          },
+        };
+        
+        await axios.post(
+            `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/addVariants.php`,
+            variantData,
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            }
+        );
+      }
 
       // Then upload all images and video
       const uploadPromises = [];
@@ -2265,7 +2324,11 @@ const AddNewProduct = () => {
               stoneRate={stoneRate}
               stoneInternalWeight={stoneInternalWeight}
               stoneGSTPercent={stoneGSTPercent}
-              rates={rates} />
+              rates={rates}
+              removeVariant={removeVariant}
+              setVariants={setVariants} 
+              variants={variants}
+            />
           ))}
         </Paper>
         <Grid container spacing={2} style={{ display: "flex", justifyContent: "start", paddingLeft: "3rem", paddingBottom: "2rem" }}>

@@ -1,8 +1,9 @@
 import Grid from "@mui/system/Unstable_Grid";
-import { FormControl, Select, MenuItem, TextField, InputAdornment, Typography } from "@mui/material";
+import { FormControl, Select, MenuItem, TextField, InputAdornment, Typography, IconButton } from "@mui/material";
 import { useState } from "react";
 import { useEffect } from "react";
 import PriceBreakout from "./priceBreakout.component";
+import CloseIcon from "@mui/icons-material/Close";
 
 const AddVariant = (props) => {
     // Initialize state for each prop
@@ -45,111 +46,107 @@ const AddVariant = (props) => {
     const [settlementAmount, setSettlementAmount] = useState(0);
 
 
-    console.log("Dropdown Values:", props);
-
     const calculateTotalPrice = (metalInfo, stoneInfo) => {
         const metal =
-          typeof metalInfo === "string" ? JSON.parse(metalInfo) : metalInfo;
+            typeof metalInfo === "string" ? JSON.parse(metalInfo) : metalInfo;
         const stone =
-          typeof stoneInfo === "string" ? JSON.parse(stoneInfo) : stoneInfo;
-    
+            typeof stoneInfo === "string" ? JSON.parse(stoneInfo) : stoneInfo;
+
         const metalRate = rates[metal.quality_name] || 0;
         // Calculate net weight
         const netWeight = parseFloat(metal.gross_wt) - parseFloat(metal.stone_wt);
         const wastageWeight = netWeight * (parseFloat(metal.wastage_prec) / 100);
-    
+
         const netWeightAfterWastage = netWeight + wastageWeight;
-    
+
         // Calculate metal base amount
         let metalBaseAmount = 0;
-    
+
         if (metal.making_charge_type === "8") {
-          metalBaseAmount = parseFloat(metal.making_charge_amount || 0);
+            metalBaseAmount = parseFloat(metal.making_charge_amount || 0);
         } else {
-          metalBaseAmount = parseFloat(netWeightAfterWastage * metalRate);
-          metalBaseAmount +=
-            parseFloat(metal.making_charge_amount || 0) +
-            parseFloat(metal.stone_amount || 0) +
-            parseFloat(metal.hallmark_charge || 0) +
-            parseFloat(metal.rodium_charge || 0);
+            metalBaseAmount = parseFloat(netWeightAfterWastage * metalRate);
+            metalBaseAmount +=
+                parseFloat(metal.making_charge_amount || 0) +
+                parseFloat(metal.stone_amount || 0) +
+                parseFloat(metal.hallmark_charge || 0) +
+                parseFloat(metal.rodium_charge || 0);
         }
-    
+
         // set making charge amount
         if (makingChargeType == 6) {
-          setMakingChargeAmount(
-            (
-              parseFloat(metal.making_charge_value) *
-              parseFloat(netWeightAfterWastage || 0)
-            ).toFixed(2)
-          );
+            setMakingChargeAmount(
+                (
+                    parseFloat(metal.making_charge_value) *
+                    parseFloat(netWeightAfterWastage || 0)
+                ).toFixed(2)
+            );
         } else if (makingChargeType == 7 || makingChargeType == 8) {
-          setMakingChargeAmount(
-            parseFloat(metal.making_charge_value || 0).toFixed(2)
-          );
+            setMakingChargeAmount(
+                parseFloat(metal.making_charge_value || 0).toFixed(2)
+            );
         } else if (makingChargeType == 9) {
-          setMakingChargeAmount(
-            parseFloat(
-              isNaN(
-                metal.making_charge_value *
-                (rate / 100) *
-                (netWeightAfterWastage || netWeight || 0)
-              )
-                ? 0
-                : metal.making_charge_value *
-                (rate / 100) *
-                (netWeightAfterWastage || netWeight || 0)
-            ).toFixed(2)
-          );
+            setMakingChargeAmount(
+                parseFloat(
+                    isNaN(
+                        metal.making_charge_value *
+                        (rate / 100) *
+                        (netWeightAfterWastage || netWeight || 0)
+                    )
+                        ? 0
+                        : metal.making_charge_value *
+                        (rate / 100) *
+                        (netWeightAfterWastage || netWeight || 0)
+                ).toFixed(2)
+            );
         }
-    
+
         // Calculate GST for metal
         const metalGst = metalBaseAmount * (parseFloat(metal.gst_perc) / 100);
         const metalNetAmount = metalBaseAmount + metalGst;
-    
+
         // Stone calculations (already correct)
         const stoneWeight =
-          parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
+            parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
         const stoneBaseAmount = parseFloat(stone.stone_rate) * stone.carat;
         const stoneGst = isNaN(stoneBaseAmount * (parseFloat(stone.gst_perc) / 100))
-          ? 0
-          : stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
+            ? 0
+            : stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
         const stoneNetAmount = stoneBaseAmount + stoneGst;
-    
-        console.log("stoneNetAmount", stoneNetAmount);
+
         // Total price
         const totalPrice = (amount || 0) + (stoneNetAmount || 0);
-        console.log("totalPrice", totalPrice);
-    
+
         const priceDetails = {
-          total_price: totalPrice.toFixed(2),
-          metal_calculation: {
-            net_weight: netWeight,
-            wastage_weight: wastageWeight,
-            net_weight_after_wastage: netWeightAfterWastage,
-            base_amount: metalBaseAmount,
-            gst_amount: metalGst,
-            net_amount: metalNetAmount,
-            mc: makingChargeAmount,
-            total_amount: metalNetAmount + stoneNetAmount,
-            gst_perc: gstPercent
-          },
-          stone_calculation: {
-            stone_weight: stoneWeight,
-            base_amount: stoneBaseAmount,
-            gst_amount: stoneGst,
-            net_amount: stoneNetAmount,
-            gst_perc: stoneGSTPercent,
-            mc: makingChargeAmount,
-            total_amount: stoneNetAmount + makingChargeAmount,
-            wastage_weight: wastageWeight,
-            wastage_prec: wastagePercent,
-            net_weight_after_wastage: netWeightAfterWastage,
-            net_weight: netWeight
-          },
+            total_price: totalPrice.toFixed(2),
+            metal_calculation: {
+                net_weight: netWeight,
+                wastage_weight: wastageWeight,
+                net_weight_after_wastage: netWeightAfterWastage,
+                base_amount: metalBaseAmount,
+                gst_amount: metalGst,
+                net_amount: metalNetAmount,
+                mc: makingChargeAmount,
+                total_amount: metalNetAmount + stoneNetAmount,
+                gst_perc: gstPercent
+            },
+            stone_calculation: {
+                stone_weight: stoneWeight,
+                base_amount: stoneBaseAmount,
+                gst_amount: stoneGst,
+                net_amount: stoneNetAmount,
+                gst_perc: stoneGSTPercent,
+                mc: makingChargeAmount,
+                total_amount: stoneNetAmount + makingChargeAmount,
+                wastage_weight: wastageWeight,
+                wastage_prec: wastagePercent,
+                net_weight_after_wastage: netWeightAfterWastage,
+                net_weight: netWeight
+            },
         };
         setProductAmountData(priceDetails);
         return priceDetails;
-      };
+    };
 
     useEffect(() => {
         let selectedOption;
@@ -173,41 +170,41 @@ const AddVariant = (props) => {
 
     useEffect(() => {
         const metalInfo = {
-          gross_wt: grossWeight,
-          stone_wt: stoneWeight,
-          wastage_prec: wastagePercent,
-          making_charge_type: makingChargeType,
-          making_charge_value: makingChargeValue,
-          stone_amount: stoneAmount,
-          hallmark_charge: hallmarkCharge,
-          rodium_charge: rodiumCharge,
-          gst_perc: gstPercent,
-          quality: purity,
-          quality_name: qualityName,
-          making_charge_amount: makingChargeAmount,
+            gross_wt: grossWeight,
+            stone_wt: stoneWeight,
+            wastage_prec: wastagePercent,
+            making_charge_type: makingChargeType,
+            making_charge_value: makingChargeValue,
+            stone_amount: stoneAmount,
+            hallmark_charge: hallmarkCharge,
+            rodium_charge: rodiumCharge,
+            gst_perc: gstPercent,
+            quality: purity,
+            quality_name: qualityName,
+            making_charge_amount: makingChargeAmount,
         };
-    
+
         const stoneInfo = {
-          pieces: stonePieces,
-          carat: stoneCarat,
-          stone_rate: stoneRate,
-          gst_perc: stoneGSTPercent,
+            pieces: stonePieces,
+            carat: stoneCarat,
+            stone_rate: stoneRate,
+            gst_perc: stoneGSTPercent,
         };
-    
+
         setMakingChargeAmount(makingChargeAmount);
-    
+
         const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
         setStoneTotalAmount(
-          parseFloat(
-            isNaN(priceDetails.stone_calculation.net_amount)
-              ? 0
-              : priceDetails.stone_calculation.net_amount
-          )
+            parseFloat(
+                isNaN(priceDetails.stone_calculation.net_amount)
+                    ? 0
+                    : priceDetails.stone_calculation.net_amount
+            )
         );
         setTotalAmount(
-          parseFloat(isNaN(priceDetails.total_price) ? 0 : priceDetails.total_price)
+            parseFloat(isNaN(priceDetails.total_price) ? 0 : priceDetails.total_price)
         );
-      }, [
+    }, [
         grossWeight,
         stoneWeight,
         wastagePercent,
@@ -225,39 +222,39 @@ const AddVariant = (props) => {
         netWeightAfterWastage,
         rate,
         makingChargeAmount,
-      ]);
+    ]);
 
     useEffect(() => {
         let baseAmount = 0;
-    
+
         if (makingChargeType == 8) {
-          setAmount(parseFloat(makingChargeAmount || 0));
-          return;
+            setAmount(parseFloat(makingChargeAmount || 0));
+            return;
         }
-    
+
         // Calculate base amount based on weight
         if (netWeightAfterWastage) {
-          baseAmount = netWeightAfterWastage * rate;
+            baseAmount = netWeightAfterWastage * rate;
         } else if (netWeight) {
-          baseAmount = netWeight * rate;
+            baseAmount = netWeight * rate;
         } else if (grossWeight) {
-          baseAmount = grossWeight * rate;
+            baseAmount = grossWeight * rate;
         }
-    
+
         // Add additional charges
         let totalAmount = baseAmount;
         if (makingChargeAmount) totalAmount += parseFloat(makingChargeAmount);
         if (hallmarkCharge) totalAmount += parseFloat(hallmarkCharge);
         if (rodiumCharge) totalAmount += parseFloat(rodiumCharge);
         if (stoneAmount) totalAmount += parseFloat(stoneAmount);
-    
+
         // Add GST if present
         if (gstPercent) {
-          totalAmount += (totalAmount * parseFloat(gstPercent)) / 100;
+            totalAmount += (totalAmount * parseFloat(gstPercent)) / 100;
         }
-    
+
         setAmount(totalAmount);
-      }, [
+    }, [
         netWeightAfterWastage,
         netWeight,
         grossWeight,
@@ -268,7 +265,7 @@ const AddVariant = (props) => {
         stoneAmount,
         gstPercent,
         makingChargeType,
-      ]);
+    ]);
 
     const handlePurityChange = (e) => {
         setPurity(e.target.value);
@@ -277,7 +274,6 @@ const AddVariant = (props) => {
     const handleMakingChargeValueChange = (e) => {
         const value = e.target.value;
         setMakingChargeValue(value);
-        console.log("handleMakingChargeValueChange", makingChargeType)
         if (makingChargeType === 6) {
             setMakingChargeAmount(
                 (parseFloat(value) * parseFloat(netWeightAfterWastage || 0)).toFixed(2)
@@ -285,7 +281,6 @@ const AddVariant = (props) => {
         } else if (makingChargeType === 7 || makingChargeType === 8) {
             setMakingChargeAmount(parseFloat(value || 0).toFixed(2));
         } else if (makingChargeType === 9) {
-            console.log(rate, netWeightAfterWastage, netWeight)
             setMakingChargeAmount(
                 parseFloat(
                     value * (rate / 100) * (netWeightAfterWastage || netWeight || 0)
@@ -296,13 +291,147 @@ const AddVariant = (props) => {
 
     const handleSettlementAmountChange = (value) => {
         setSettlementAmount(value);
-      };
+    };
+
+    const handleVariantChange = (updatedVariant) => {
+        const variantData = {
+            product_id: props.productId,
+            action: "variant",
+            name: updatedVariant.variantName,
+            size: updatedVariant.size,
+            hsn: updatedVariant.hsnCode || "",
+            quantity: updatedVariant.quantity,
+            tags: updatedVariant.tag,
+            discount_perc: updatedVariant.discount_perc,
+            metal: {
+                metal: updatedVariant.metalType || "",
+                quantity: updatedVariant.metalQuantity || 1,
+                quality: updatedVariant.purity || "",
+                gross_wt: updatedVariant.grossWeight || "",
+                stone_wt: updatedVariant.stoneWeight || "",
+                net_wt: updatedVariant.netWeight || "0",
+                wastage_prec: updatedVariant.wastagePercent || "",
+                wastage_wt: updatedVariant.wastageWeight || "0",
+                net_wt_after_wastage: updatedVariant.netWeightAfterWastage || "",
+                making_charge_type: updatedVariant.makingChargeType || 9,
+                making_charge_value: updatedVariant.makingChargeValue || "0",
+                making_charge_amount: updatedVariant.makingChargeAmount || "0.00",
+                stone_amount: updatedVariant.stoneAmount || "0",
+                hallmark_charge: updatedVariant.hallmarkCharge || "0",
+                rodium_charge: updatedVariant.rodiumCharge || "0",
+                gst_perc: updatedVariant.gstPercent || 0,
+            },
+            stone: {
+                stone_type: updatedVariant.stoneType || "",
+                color: updatedVariant.stoneColor || "",
+                clarity: updatedVariant.stoneClarity || "",
+                cut: updatedVariant.stoneCut || "0",
+                pieces: updatedVariant.stonePieces || "0",
+                carat: updatedVariant.stoneCarat || "0",
+                stone_wt: updatedVariant.stoneWeight || "0",
+                stone_rate: updatedVariant.stoneRate || "0",
+                gst_perc: updatedVariant.stoneGSTPercent || "0",
+            },
+        };
+
+        props.setVariants((prevVariants) => {
+            return prevVariants.map((variant, index) =>
+                index === props.variantIndex ? { ...variant, ...variantData } : variant
+            );
+        });
+    };
+
+    useEffect(() => {
+        handleVariantChange({
+            variantName,
+            metalType,
+            purity,
+            quantity,
+            tag,
+            grossWeight,
+            stoneWeight,
+            netWeight,
+            wastagePercent,
+            wastageWeight,
+            netWeightAfterWastage,
+            makingChargeType,
+            makingChargeValue,
+            makingChargeAmount,
+            stoneAmount,
+            hallmarkCharge,
+            rodiumCharge,
+            gstPercent,
+            stoneType,
+            stoneColor,
+            stoneClarity,
+            stoneCut,
+            stonePieces,
+            stoneCarat,
+            stoneInternalWeight,
+            stoneRate,
+            stoneGSTPercent,
+            rates,
+            rate,
+            dropdownValues,
+            amount,
+            stoneTotalAmount,
+            totalAmount,
+            productAmountData,
+            qualityName,
+            settlementAmount,
+        });
+        console.log("useeffect add var", props.variants)
+    }, [
+        variantName,
+        metalType,
+        purity,
+        quantity,
+        tag,
+        grossWeight,
+        stoneWeight,
+        netWeight,
+        wastagePercent,
+        wastageWeight,
+        netWeightAfterWastage,
+        makingChargeType,
+        makingChargeValue,
+        makingChargeAmount,
+        stoneAmount,
+        hallmarkCharge,
+        rodiumCharge,
+        gstPercent,
+        stoneType,
+        stoneColor,
+        stoneClarity,
+        stoneCut,
+        stonePieces,
+        stoneCarat,
+        stoneInternalWeight,
+        stoneRate,
+        stoneGSTPercent,
+        rates,
+        rate,
+        dropdownValues,
+        amount,
+        stoneTotalAmount,
+        totalAmount,
+        productAmountData,
+        qualityName,
+        settlementAmount,
+    ]);
+
     return (<>
-      <PriceBreakout handleSettlementAmountChange={handleSettlementAmountChange} open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
+        <PriceBreakout handleSettlementAmountChange={handleSettlementAmountChange} open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
 
         <Grid container spacing={2}>
             <Grid item xs={12}>
                 <div className="label">Variant Details {props.variantIndex + 1}</div>
+                <IconButton
+                    onClick={() => props.removeVariant(props.variantIndex)}
+                    sx={{ position: 'absolute', right: 8, top: 8, color: 'black' }}
+                >
+                    <CloseIcon />
+                </IconButton>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
                         <div className="label">Variant Name</div>
@@ -389,7 +518,7 @@ const AddVariant = (props) => {
                                     cursor: "pointer",
                                     textDecoration: "underline",
                                 }}
-                              onClick={() => setShowPriceBreakout(true)}
+                                onClick={() => setShowPriceBreakout(true)}
                             >
                                 Price Breakout
                             </Typography>
@@ -828,7 +957,6 @@ const AddVariant = (props) => {
                         name="gstPercent"
                         value={gstPercent}
                         onChange={(e) => {
-                            console.log("GST Percent changed:", e.target.value);
                             setGstPercent(e.target.value);
                         }}
                         fullWidth

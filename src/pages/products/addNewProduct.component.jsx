@@ -2236,10 +2236,39 @@ const AddNewProduct = () => {
           </Grid>
           <Divider />
           {variants.map((_, index) => (
-            <AddVariant key={index} variantIndex={index} />
+            <AddVariant
+              variantIndex={index}
+              key={index}
+              metalType={metalType}
+              purity={purity}
+              dropdownValues={dropdownValues}
+              quantity={quantity}
+              grossWeight={grossWeight}
+              stoneWeight={stoneWeight}
+              netWeight={netWeight}
+              wastagePercent={wastagePercent}
+              wastageWeight={wastageWeight}
+              netWeightAfterWastage={netWeightAfterWastage}
+              makingChargeType={makingChargeType}
+              makingChargeValue={makingChargeValue}
+              makingChargeAmount={makingChargeAmount}
+              stoneAmount={stoneAmount}
+              hallmarkCharge={hallmarkCharge}
+              gstPercent={gstPercent}
+              rodiumCharge={rodiumCharge}
+              stoneType={stoneType}
+              stoneColor={stoneColor}
+              stoneClarity={stoneClarity}
+              stoneCut={stoneCut}
+              stonePieces={stonePieces}
+              stoneCarat={stoneCarat}
+              stoneRate={stoneRate}
+              stoneInternalWeight={stoneInternalWeight}
+              stoneGSTPercent={stoneGSTPercent}
+              rates={rates} />
           ))}
         </Paper>
-        <Grid container spacing={2} style={{ display: "flex", justifyContent: "start", paddingLeft: "3rem", paddingBottom: "2rem"}}>
+        <Grid container spacing={2} style={{ display: "flex", justifyContent: "start", paddingLeft: "3rem", paddingBottom: "2rem" }}>
           <Grid item xs={1.33}>
             <div className="btns">
               <Button

@@ -1,22 +1,401 @@
 import Grid from "@mui/system/Unstable_Grid";
-import { FormControl, Select, MenuItem, TextField, InputAdornment } from "@mui/material";
+import { FormControl, Select, MenuItem, TextField, InputAdornment, Typography } from "@mui/material";
 import { useState } from "react";
+import { useEffect } from "react";
+import PriceBreakout from "./priceBreakout.component";
 
-const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quantity, grossWeight, stoneWeight, netWeight, wastagePercent, wastageWeight, netWeightAfterWastage, makingChargeType, makingChargeValue, makingChargeAmount, stoneAmount, hallmarkCharge, gstPercent, rodiumCharge, stoneType, stoneColor, stoneClarity, stoneCut, stonePieces, stoneCarat, stoneRate, stoneInternalWeight, stoneGSTPercent }) => {
+const AddVariant = (props) => {
+    // Initialize state for each prop
     const [variantName, setVariantName] = useState("");
+    const [metalType, setMetalType] = useState(props.metalType);
+    const [purity, setPurity] = useState(props.purity);
+    const [quantity, setQuantity] = useState(props.quantity);
+    const [tag, setTag] = useState("");
+    const [grossWeight, setGrossWeight] = useState(props.grossWeight);
+    const [stoneWeight, setStoneWeight] = useState(props.stoneWeight);
+    const [netWeight, setNetWeight] = useState(props.netWeight);
+    const [wastagePercent, setWastagePercent] = useState(props.wastagePercent);
+    const [wastageWeight, setWastageWeight] = useState(props.wastageWeight);
+    const [netWeightAfterWastage, setNetWeightAfterWastage] = useState(props.netWeightAfterWastage || 0);
+    const [makingChargeType, setMakingChargeType] = useState(props.makingChargeType);
+    const [makingChargeValue, setMakingChargeValue] = useState(props.makingChargeValue);
+    const [makingChargeAmount, setMakingChargeAmount] = useState(props.makingChargeAmount);
+    const [stoneAmount, setStoneAmount] = useState(props.stoneAmount);
+    const [hallmarkCharge, setHallmarkCharge] = useState(props.hallmarkCharge);
+    const [rodiumCharge, setRodiumCharge] = useState(props.rodiumCharge);
+    const [gstPercent, setGstPercent] = useState(props.gstPercent);
+    const [stoneType, setStoneType] = useState(props.stoneType);
+    const [stoneColor, setStoneColor] = useState(props.stoneColor);
+    const [stoneClarity, setStoneClarity] = useState(props.stoneClarity);
+    const [stoneCut, setStoneCut] = useState(props.stoneCut);
+    const [stonePieces, setStonePieces] = useState(props.stonePieces);
+    const [stoneCarat, setStoneCarat] = useState(props.stoneCarat);
+    const [stoneInternalWeight, setStoneInternalWeight] = useState(props.stoneInternalWeight);
+    const [stoneRate, setStoneRate] = useState(props.stoneRate);
+    const [stoneGSTPercent, setStoneGSTPercent] = useState(props.stoneGSTPercent);
+    const [rates, setRates] = useState(props.rates);
+    const [rate, setRate] = useState(0)
+    const [dropdownValues, setDropdownValues] = useState(props.dropdownValues);
+    const [amount, setAmount] = useState(0);
+    const [stoneTotalAmount, setStoneTotalAmount] = useState(0);
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [productAmountData, setProductAmountData] = useState({});
+    const [qualityName, setQualityName] = useState();
+    const [showPriceBreakout, setShowPriceBreakout] = useState(false);
+    const [settlementAmount, setSettlementAmount] = useState(0);
+
+
+    console.log("Dropdown Values:", props);
+
+    const calculateTotalPrice = (metalInfo, stoneInfo) => {
+        const metal =
+          typeof metalInfo === "string" ? JSON.parse(metalInfo) : metalInfo;
+        const stone =
+          typeof stoneInfo === "string" ? JSON.parse(stoneInfo) : stoneInfo;
+    
+        const metalRate = rates[metal.quality_name] || 0;
+        // Calculate net weight
+        const netWeight = parseFloat(metal.gross_wt) - parseFloat(metal.stone_wt);
+        const wastageWeight = netWeight * (parseFloat(metal.wastage_prec) / 100);
+    
+        const netWeightAfterWastage = netWeight + wastageWeight;
+    
+        // Calculate metal base amount
+        let metalBaseAmount = 0;
+    
+        if (metal.making_charge_type === "8") {
+          metalBaseAmount = parseFloat(metal.making_charge_amount || 0);
+        } else {
+          metalBaseAmount = parseFloat(netWeightAfterWastage * metalRate);
+          metalBaseAmount +=
+            parseFloat(metal.making_charge_amount || 0) +
+            parseFloat(metal.stone_amount || 0) +
+            parseFloat(metal.hallmark_charge || 0) +
+            parseFloat(metal.rodium_charge || 0);
+        }
+    
+        // set making charge amount
+        if (makingChargeType == 6) {
+          setMakingChargeAmount(
+            (
+              parseFloat(metal.making_charge_value) *
+              parseFloat(netWeightAfterWastage || 0)
+            ).toFixed(2)
+          );
+        } else if (makingChargeType == 7 || makingChargeType == 8) {
+          setMakingChargeAmount(
+            parseFloat(metal.making_charge_value || 0).toFixed(2)
+          );
+        } else if (makingChargeType == 9) {
+          setMakingChargeAmount(
+            parseFloat(
+              isNaN(
+                metal.making_charge_value *
+                (rate / 100) *
+                (netWeightAfterWastage || netWeight || 0)
+              )
+                ? 0
+                : metal.making_charge_value *
+                (rate / 100) *
+                (netWeightAfterWastage || netWeight || 0)
+            ).toFixed(2)
+          );
+        }
+    
+        // Calculate GST for metal
+        const metalGst = metalBaseAmount * (parseFloat(metal.gst_perc) / 100);
+        const metalNetAmount = metalBaseAmount + metalGst;
+    
+        // Stone calculations (already correct)
+        const stoneWeight =
+          parseFloat(stone.pieces) * parseFloat(stone.carat) * 0.2;
+        const stoneBaseAmount = parseFloat(stone.stone_rate) * stone.carat;
+        const stoneGst = isNaN(stoneBaseAmount * (parseFloat(stone.gst_perc) / 100))
+          ? 0
+          : stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
+        const stoneNetAmount = stoneBaseAmount + stoneGst;
+    
+        console.log("stoneNetAmount", stoneNetAmount);
+        // Total price
+        const totalPrice = (amount || 0) + (stoneNetAmount || 0);
+        console.log("totalPrice", totalPrice);
+    
+        const priceDetails = {
+          total_price: totalPrice.toFixed(2),
+          metal_calculation: {
+            net_weight: netWeight,
+            wastage_weight: wastageWeight,
+            net_weight_after_wastage: netWeightAfterWastage,
+            base_amount: metalBaseAmount,
+            gst_amount: metalGst,
+            net_amount: metalNetAmount,
+            mc: makingChargeAmount,
+            total_amount: metalNetAmount + stoneNetAmount,
+            gst_perc: gstPercent
+          },
+          stone_calculation: {
+            stone_weight: stoneWeight,
+            base_amount: stoneBaseAmount,
+            gst_amount: stoneGst,
+            net_amount: stoneNetAmount,
+            gst_perc: stoneGSTPercent,
+            mc: makingChargeAmount,
+            total_amount: stoneNetAmount + makingChargeAmount,
+            wastage_weight: wastageWeight,
+            wastage_prec: wastagePercent,
+            net_weight_after_wastage: netWeightAfterWastage,
+            net_weight: netWeight
+          },
+        };
+        setProductAmountData(priceDetails);
+        return priceDetails;
+      };
+
+    useEffect(() => {
+        let selectedOption;
+        if (metalType === "gold") {
+            selectedOption = dropdownValues?.[0]?.customization_fields
+                .find((field) => field.name === "gold_quality")
+                ?.property_value.find((opt) => opt.name === purity)?.name;
+        } else if (metalType === "silver") {
+            selectedOption = dropdownValues?.[1]?.customization_fields
+                .find((field) => field.name === "silver_quality")
+                ?.property_value.find((opt) => opt.name === purity)?.name;
+        }
+
+        setPurity(selectedOption);
+
+        if (selectedOption) {
+            const rateKey = selectedOption === "silver22" ? "silver" : selectedOption;
+            setRate(rates[rateKey] || 0);
+        }
+    }, [metalType, purity]);
+
+    useEffect(() => {
+        const metalInfo = {
+          gross_wt: grossWeight,
+          stone_wt: stoneWeight,
+          wastage_prec: wastagePercent,
+          making_charge_type: makingChargeType,
+          making_charge_value: makingChargeValue,
+          stone_amount: stoneAmount,
+          hallmark_charge: hallmarkCharge,
+          rodium_charge: rodiumCharge,
+          gst_perc: gstPercent,
+          quality: purity,
+          quality_name: qualityName,
+          making_charge_amount: makingChargeAmount,
+        };
+    
+        const stoneInfo = {
+          pieces: stonePieces,
+          carat: stoneCarat,
+          stone_rate: stoneRate,
+          gst_perc: stoneGSTPercent,
+        };
+    
+        setMakingChargeAmount(makingChargeAmount);
+    
+        const priceDetails = calculateTotalPrice(metalInfo, stoneInfo);
+        setStoneTotalAmount(
+          parseFloat(
+            isNaN(priceDetails.stone_calculation.net_amount)
+              ? 0
+              : priceDetails.stone_calculation.net_amount
+          )
+        );
+        setTotalAmount(
+          parseFloat(isNaN(priceDetails.total_price) ? 0 : priceDetails.total_price)
+        );
+      }, [
+        grossWeight,
+        stoneWeight,
+        wastagePercent,
+        makingChargeType,
+        makingChargeValue,
+        stoneAmount,
+        hallmarkCharge,
+        rodiumCharge,
+        gstPercent,
+        purity,
+        stonePieces,
+        stoneCarat,
+        stoneRate,
+        stoneGSTPercent,
+        netWeightAfterWastage,
+        rate,
+        makingChargeAmount,
+      ]);
+
+    useEffect(() => {
+        let baseAmount = 0;
+    
+        if (makingChargeType == 8) {
+          setAmount(parseFloat(makingChargeAmount || 0));
+          return;
+        }
+    
+        // Calculate base amount based on weight
+        if (netWeightAfterWastage) {
+          baseAmount = netWeightAfterWastage * rate;
+        } else if (netWeight) {
+          baseAmount = netWeight * rate;
+        } else if (grossWeight) {
+          baseAmount = grossWeight * rate;
+        }
+    
+        // Add additional charges
+        let totalAmount = baseAmount;
+        if (makingChargeAmount) totalAmount += parseFloat(makingChargeAmount);
+        if (hallmarkCharge) totalAmount += parseFloat(hallmarkCharge);
+        if (rodiumCharge) totalAmount += parseFloat(rodiumCharge);
+        if (stoneAmount) totalAmount += parseFloat(stoneAmount);
+    
+        // Add GST if present
+        if (gstPercent) {
+          totalAmount += (totalAmount * parseFloat(gstPercent)) / 100;
+        }
+    
+        setAmount(totalAmount);
+      }, [
+        netWeightAfterWastage,
+        netWeight,
+        grossWeight,
+        rate,
+        makingChargeAmount,
+        hallmarkCharge,
+        rodiumCharge,
+        stoneAmount,
+        gstPercent,
+        makingChargeType,
+      ]);
+
+    const handlePurityChange = (e) => {
+        setPurity(e.target.value);
+    };
+
+    const handleMakingChargeValueChange = (e) => {
+        const value = e.target.value;
+        setMakingChargeValue(value);
+        console.log("handleMakingChargeValueChange", makingChargeType)
+        if (makingChargeType === 6) {
+            setMakingChargeAmount(
+                (parseFloat(value) * parseFloat(netWeightAfterWastage || 0)).toFixed(2)
+            );
+        } else if (makingChargeType === 7 || makingChargeType === 8) {
+            setMakingChargeAmount(parseFloat(value || 0).toFixed(2));
+        } else if (makingChargeType === 9) {
+            console.log(rate, netWeightAfterWastage, netWeight)
+            setMakingChargeAmount(
+                parseFloat(
+                    value * (rate / 100) * (netWeightAfterWastage || netWeight || 0)
+                ).toFixed(2)
+            );
+        }
+    };
+
+    const handleSettlementAmountChange = (value) => {
+        setSettlementAmount(value);
+      };
     return (<>
+      <PriceBreakout handleSettlementAmountChange={handleSettlementAmountChange} open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
+
         <Grid container spacing={2}>
             <Grid item xs={12}>
-                <div className="label">Variant Details {variantIndex + 1}</div>
-                <FormControl >
-                    <TextField
-                        name="variantName"
-                        value={variantName}
-                        onChange={(e) => setVariantName(e.target.value)}
-                        fullWidth
-                        placeholder="Enter Variant Name"
-                    />
-                </FormControl>
+                <div className="label">Variant Details {props.variantIndex + 1}</div>
+                <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                        <div className="label">Variant Name</div>
+                        <TextField
+                            name="variantName"
+                            value={variantName}
+                            onChange={(e) => setVariantName(e.target.value)}
+                            fullWidth
+                            placeholder="Enter Variant Name"
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <div className="label">Tags</div>
+                        <TextField
+                            name="tag"
+                            value={tag}
+                            onChange={(e) => setTag(e.target.value)}
+                            fullWidth
+                            placeholder="Enter Tag Name"
+                        />
+                    </Grid>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            alignItems: "center",
+                            marginLeft: "20rem"
+                        }}
+                    >
+
+
+                        <div style={{ marginRight: "20px" }}>
+                            <div>Metal Rate</div>
+                            <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                                {rate.toFixed(2)}
+                            </div>
+                        </div>
+                        <div style={{ marginRight: "20px" }}>
+                            <div>Metal Amount</div>
+                            <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                                {amount.toFixed(2)}
+                            </div>
+                        </div>
+                        <div style={{ marginRight: "20px" }}>
+                            <div>Stone Amount</div>
+                            <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                                {parseFloat(stoneTotalAmount).toFixed(2)}
+                            </div>
+                        </div>
+                        <div style={{ marginRight: "20px" }}>
+                            <div>Total Amount</div>
+                            <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                                {parseFloat(totalAmount).toFixed(2)}
+                            </div>
+                        </div>
+                        <div style={{ marginRight: "20px" }}>
+                            <div>Discount %</div>
+                            <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                                <TextField
+                                    type="number"
+                                    // value={discount}
+                                    // onChange={(e) => setDiscount(e.target.value)}
+                                    fullWidth
+                                    placeholder="Enter discount"
+                                    style={{ width: "100px" }}
+                                    InputProps={{
+                                        style: {
+                                            padding: "4px",
+                                        },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div style={{ marginRight: "20px" }}>
+                            <div>Settlement Amount</div>
+                            <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                                {/* {parseFloat(settlementAmount).toFixed(2)} */}
+                            </div>
+                            <Typography
+                                style={{
+                                    fontFamily: '"Roboto", sans-serif',
+                                    fontSize: "0.9rem",
+                                    color: "grey",
+                                    cursor: "pointer",
+                                    textDecoration: "underline",
+                                }}
+                              onClick={() => setShowPriceBreakout(true)}
+                            >
+                                Price Breakout
+                            </Typography>
+                        </div>
+                    </div>
+                </Grid>
             </Grid>
             <Grid item xs={12}>
                 <div className="label">Metal Details</div>
@@ -28,7 +407,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         name="metalType"
                         value={metalType}
                         onChange={(e) => {
-                            // setMetalType(e.target.value);
+                            setMetalType(e.target.value);
                             // setMakingChargeType(9);
                         }}
                         onKeyDown={(e) => {
@@ -49,7 +428,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                     <Select
                         name="purity"
                         value={purity}
-                        // onChange={handlePurityChange}
+                        onChange={handlePurityChange}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 e.preventDefault();
@@ -58,7 +437,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         }}
                     >
                         {metalType === "gold" &&
-                            dropdownValues?.[0]?.customization_fields
+                            props.dropdownValues?.[0]?.customization_fields
                                 .find((field) => field.name === "gold_quality")
                                 ?.property_value.map((option) => (
                                     <MenuItem key={option.name} value={option.name}>
@@ -66,7 +445,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                                     </MenuItem>
                                 ))}
                         {metalType === "silver" &&
-                            dropdownValues?.[1]?.customization_fields
+                            props.dropdownValues?.[1]?.customization_fields
                                 .find((field) => field.name === "silver_quality")
                                 ?.property_value.map((option) => (
                                     <MenuItem key={option.name} value={option.name}>
@@ -105,11 +484,11 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         type="number"
                         value={grossWeight}
                         onChange={(e) => {
-                            // setGrossWeight(e.target.value);
-                            // setNetWeight(e.target.value - stoneWeight);
-                            // setNetWeightAfterWastage(
-                            //     e.target.value - stoneWeight + wastageWeight
-                            // );
+                            setGrossWeight(e.target.value);
+                            setNetWeight(e.target.value - stoneWeight);
+                            setNetWeightAfterWastage(
+                                e.target.value - stoneWeight + wastageWeight
+                            );
                         }}
                         fullWidth
                         placeholder="Enter gross weight"
@@ -137,11 +516,11 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         type="number"
                         value={stoneWeight}
                         onChange={(e) => {
-                            // setStoneWeight(e.target.value);
-                            // setNetWeight(grossWeight - e.target.value);
-                            // setNetWeightAfterWastage(
-                            //     grossWeight - e.target.value + wastageWeight
-                            // );
+                            setStoneWeight(e.target.value);
+                            setNetWeight(grossWeight - e.target.value);
+                            setNetWeightAfterWastage(
+                                grossWeight - e.target.value + wastageWeight
+                            );
                         }}
                         fullWidth
                         placeholder="Enter stone weight"
@@ -194,13 +573,13 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         type="number"
                         value={wastagePercent}
                         onChange={(e) => {
-                            // setWastagePercent(e.target.value);
-                            // setWastageWeight(
-                            //     (grossWeight - stoneWeight) * (e.target.value / 100)
-                            // );
-                            // setNetWeightAfterWastage(
-                            //     (grossWeight - stoneWeight) * (1 + e.target.value / 100)
-                            // );
+                            setWastagePercent(e.target.value);
+                            setWastageWeight(
+                                (grossWeight - stoneWeight) * (e.target.value / 100)
+                            );
+                            setNetWeightAfterWastage(
+                                (grossWeight - stoneWeight) * (1 + e.target.value / 100)
+                            );
                         }}
                         fullWidth
                         placeholder="Enter wastage percentage"
@@ -251,7 +630,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                     <TextField
                         name="netWeightAfterWastage"
                         type="number"
-                        value={netWeightAfterWastage}
+                        value={netWeightAfterWastage.toFixed(2)}
                         disabled
                         fullWidth
                         InputProps={{
@@ -278,8 +657,8 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         value={makingChargeType}
                         onChange={(e) => {
                             // console.log(e.target.value);
-                            // setMakingChargeType(e.target.value);
-                            // setMakingChargeValue();
+                            setMakingChargeType(e.target.value);
+                            setMakingChargeValue();
                         }}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
@@ -291,7 +670,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         }}
                     >
                         {metalType === "gold" &&
-                            dropdownValues?.[0]?.customization_fields
+                            props.dropdownValues?.[0]?.customization_fields
                                 .find((field) => field.name === "making_charge_type")
                                 ?.property_value.map((option) => (
                                     <MenuItem key={option.id} value={option.id}>
@@ -299,7 +678,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                                     </MenuItem>
                                 ))}
                         {metalType === "silver" &&
-                            dropdownValues?.[1]?.customization_fields
+                            props.dropdownValues?.[1]?.customization_fields
                                 .find((field) => field.name === "making_charge_type")
                                 ?.property_value.map((option) => (
                                     <MenuItem key={option.id} value={option.id}>
@@ -316,7 +695,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         name="makingChargeValue"
                         type="number"
                         value={makingChargeValue}
-                        // onChange={handleMakingChargeValueChange}
+                        onChange={handleMakingChargeValueChange}
                         fullWidth
                         placeholder="Enter making charge value"
                         InputProps={{
@@ -344,7 +723,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         name="makingChargeAmount"
                         type="number"
                         value={makingChargeAmount}
-                        // onChange={(e) => setMakingChargeAmount(e.target.value)}
+                        onChange={(e) => setMakingChargeAmount(e.target.value)}
                         fullWidth
                         placeholder="Enter making charge amount"
                         disabled
@@ -371,7 +750,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         name="stoneAmount"
                         type="number"
                         value={stoneAmount}
-                        // onChange={(e) => setStoneAmount(e.target.value)}
+                        onChange={(e) => setStoneAmount(e.target.value)}
                         fullWidth
                         placeholder="Enter stone amount"
                         InputProps={{
@@ -397,7 +776,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         name="hallmarkCharge"
                         type="number"
                         value={hallmarkCharge}
-                        // onChange={(e) => setHallmarkCharge(e.target.value)}
+                        onChange={(e) => setHallmarkCharge(e.target.value)}
                         fullWidth
                         placeholder="Enter hallmark charge"
                         InputProps={{
@@ -423,7 +802,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         name="rodiumCharge"
                         type="number"
                         value={rodiumCharge}
-                        // onChange={(e) => setRodiumCharge(e.target.value)}
+                        onChange={(e) => setRodiumCharge(e.target.value)}
                         fullWidth
                         placeholder="Enter rodium charge"
                         InputProps={{
@@ -450,11 +829,11 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         value={gstPercent}
                         onChange={(e) => {
                             console.log("GST Percent changed:", e.target.value);
-                            // setGstPercent(e.target.value);
+                            setGstPercent(e.target.value);
                         }}
                         fullWidth
                     >
-                        {dropdownValues?.[0]?.customization_fields
+                        {props.dropdownValues?.[0]?.customization_fields
                             .find((field) => field.name === "gst")
                             ?.property_value.map((option) => (
                                 <MenuItem key={option.name} value={option.name}>
@@ -473,7 +852,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                     <Select
                         name="stoneType"
                         value={stoneType}
-                        // onChange={(e) => setStoneType(e.target.value)}
+                        onChange={(e) => setStoneType(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 e.preventDefault();
@@ -483,7 +862,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                             }
                         }}
                     >
-                        {dropdownValues?.[0]?.customization_fields
+                        {props.dropdownValues?.[0]?.customization_fields
                             .find((field) => field.name === "stone_type")
                             ?.property_value.map((option) => (
                                 <MenuItem key={option.id} value={option.id}>
@@ -499,9 +878,9 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                     <Select
                         name="stoneColor"
                         value={stoneColor}
-                    // onChange={(e) => setStoneColor(e.target.value)}
+                        onChange={(e) => setStoneColor(e.target.value)}
                     >
-                        {dropdownValues?.[0]?.customization_fields
+                        {props.dropdownValues?.[0]?.customization_fields
                             .find((field) => field.name === "color")
                             ?.property_value.map((option) => (
                                 <MenuItem key={option.id} value={option.name}>
@@ -517,7 +896,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                     <Select
                         name="stoneClarity"
                         value={stoneClarity}
-                        // onChange={(e) => setStoneClarity(e.target.value)}
+                        onChange={(e) => setStoneClarity(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 e.preventDefault();
@@ -525,7 +904,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                             }
                         }}
                     >
-                        {dropdownValues?.[0]?.customization_fields
+                        {props.dropdownValues?.[0]?.customization_fields
                             .find((field) => field.name === "clarity")
                             ?.property_value.map((option) => (
                                 <MenuItem key={option.id} value={option.id}>
@@ -541,7 +920,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                     <Select
                         name="stoneCut"
                         value={stoneCut}
-                        // onChange={(e) => setStoneCut(e.target.value)}
+                        onChange={(e) => setStoneCut(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 e.preventDefault();
@@ -551,7 +930,7 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                             }
                         }}
                     >
-                        {dropdownValues?.[0]?.customization_fields
+                        {props.dropdownValues?.[0]?.customization_fields
                             .find((field) => field.name === "cut")
                             ?.property_value.map((option) => (
                                 <MenuItem key={option.id} value={option.id}>
@@ -569,12 +948,12 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         type="number"
                         value={stonePieces}
                         onChange={(e) => {
-                            // setStonePieces(e.target.value);
-                            // const weight =
-                            //     e.target.value && stoneCarat
-                            //         ? (stoneCarat * 0.2 * e.target.value).toFixed(2)
-                            //         : "";
-                            // setStoneInternalWeight(weight);
+                            setStonePieces(e.target.value);
+                            const weight =
+                                e.target.value && stoneCarat
+                                    ? (stoneCarat * 0.2 * e.target.value).toFixed(2)
+                                    : "";
+                            setStoneInternalWeight(weight);
                         }}
                         fullWidth
                         placeholder="Enter number of pieces"
@@ -597,12 +976,12 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         type="number"
                         value={stoneCarat}
                         onChange={(e) => {
-                            // setStoneCarat(e.target.value);
-                            // const weight =
-                            //     e.target.value && stonePieces
-                            //         ? (e.target.value * 0.2 * stonePieces).toFixed(2)
-                            //         : "";
-                            // setStoneInternalWeight(weight);
+                            setStoneCarat(e.target.value);
+                            const weight =
+                                e.target.value && stonePieces
+                                    ? (e.target.value * 0.2 * stonePieces).toFixed(2)
+                                    : "";
+                            setStoneInternalWeight(weight);
                         }}
                         fullWidth
                         placeholder="Enter carat"
@@ -641,15 +1020,15 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                         type="number"
                         value={stoneRate}
                         onChange={(e) => {
-                            // setStoneRate(e.target.value);
-                            // const total =
-                            //     stoneInternalWeight && e.target.value
-                            //         ? (
-                            //             parseFloat(stoneCarat) *
-                            //             parseFloat(e.target.value)
-                            //         ).toFixed(2)
-                            //         : 0;
-                            // setStoneTotalAmount(total);
+                            setStoneRate(e.target.value);
+                            const total =
+                                stoneInternalWeight && e.target.value
+                                    ? (
+                                        parseFloat(stoneCarat) *
+                                        parseFloat(e.target.value)
+                                    ).toFixed(2)
+                                    : 0;
+                            setStoneTotalAmount(total);
                         }}
                         fullWidth
                         placeholder="Enter rate"
@@ -667,20 +1046,20 @@ const AddVariant = ({ variantIndex, key, metalType, purity, dropdownValues, quan
                     <Select
                         value={stoneGSTPercent}
                         onChange={(e) => {
-                            // setStoneGSTPercent(e.target.value);
-                            // const baseAmount =
-                            //     stoneInternalWeight && stoneRate
-                            //         ? parseFloat(stoneInternalWeight) *
-                            //         parseFloat(stoneRate)
-                            //         : 0;
-                            // const gstAmount =
-                            //     baseAmount * (parseFloat(e.target.value) / 100);
-                            // const total = (baseAmount + gstAmount).toFixed(2);
-                            // setStoneTotalAmount(total);
+                            setStoneGSTPercent(e.target.value);
+                            const baseAmount =
+                                stoneInternalWeight && stoneRate
+                                    ? parseFloat(stoneInternalWeight) *
+                                    parseFloat(stoneRate)
+                                    : 0;
+                            const gstAmount =
+                                baseAmount * (parseFloat(e.target.value) / 100);
+                            const total = (baseAmount + gstAmount).toFixed(2);
+                            setStoneTotalAmount(total);
                         }}
                         fullWidth
                     >
-                        {dropdownValues?.[0]?.customization_fields
+                        {props.dropdownValues?.[0]?.customization_fields
                             .find((field) => field.name === "gst")
                             ?.property_value.map((option) => (
                                 <MenuItem key={option.name} value={option.name}>

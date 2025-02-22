@@ -692,7 +692,6 @@ const AddNewProduct = () => {
 
       const productId = productResponse.data.response.id;
 
-      console.log("all variants", variants)
       // Upload variants after the product has been added
       for (const variant of variants) {
         const variantData = {
@@ -734,7 +733,7 @@ const AddNewProduct = () => {
             gst_perc: variant.stone.gst_perc || "0", // Use actual stone GST percentage from state
           },
         };
-        
+
         await axios.post(
             `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/addVariants.php`,
             variantData,

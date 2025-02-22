@@ -3,7 +3,12 @@ import { FormControl, Select, MenuItem, TextField, InputAdornment, Typography, I
 import { useState } from "react";
 import { useEffect } from "react";
 import PriceBreakout from "./priceBreakout.component";
-import CloseIcon from "@mui/icons-material/Close";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
 
 const AddVariant = (props) => {
     // Initialize state for each prop
@@ -44,7 +49,8 @@ const AddVariant = (props) => {
     const [qualityName, setQualityName] = useState();
     const [showPriceBreakout, setShowPriceBreakout] = useState(false);
     const [settlementAmount, setSettlementAmount] = useState(0);
-
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+    const [variantToRemove, setVariantToRemove] = useState(null);
 
     const calculateTotalPrice = (metalInfo, stoneInfo) => {
         const metal =
@@ -420,18 +426,89 @@ const AddVariant = (props) => {
         settlementAmount,
     ]);
 
+    const handleRemoveVariant = () => {
+        setConfirmDialogOpen(true);
+    };
+
+    const confirmRemoveVariant = () => {
+        props.removeVariant(variantToRemove);
+        setConfirmDialogOpen(false);
+    };
+
     return (<>
         <PriceBreakout handleSettlementAmountChange={handleSettlementAmountChange} open={showPriceBreakout} data={productAmountData} rates={rates} onClose={() => setShowPriceBreakout(false)} />
 
+        {/* Confirmation Dialog */}
+        <Dialog
+            open={confirmDialogOpen}
+            onClose={() => setConfirmDialogOpen(false)}
+            maxWidth="sm"
+            fullWidth
+            PaperProps={{
+                style: {
+                    backgroundColor: "#fff",
+                    fontFamily: '"Roboto", sans-serif',
+                },
+            }}
+        >
+            <DialogTitle
+                sx={{
+                    color: "#a36e29",
+                    fontFamily: '"Roboto", sans-serif"',
+                }}
+            >
+                Are you sure you want to remove
+            </DialogTitle>
+            <DialogContent>
+                <Typography
+                    sx={{
+                        color: "#333",
+                        fontFamily: '"Roboto", sans-serif"',
+                    }}
+                >
+                    Are you sure you want to remove this variant?
+                </Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    onClick={() => setConfirmDialogOpen(false)}
+                    sx={{
+                        color: "#666",
+                        fontFamily: '"Roboto", sans-serif"',
+                    }}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    onClick={confirmRemoveVariant}
+                    variant="contained"
+                    sx={{
+                        backgroundColor: "#a36e29",
+                        fontFamily: '"Roboto", sans-serif"',
+                        "&:hover": {
+                            backgroundColor: "#8b5d23",
+                        },
+                    }}
+                >
+                    Remove
+                </Button>
+            </DialogActions>
+        </Dialog>
+
         <Grid container spacing={2}>
             <Grid item xs={12}>
-                <div className="label">Variant Details {props.variantIndex + 1}</div>
-                <IconButton
-                    onClick={() => props.removeVariant(props.variantIndex)}
-                    sx={{ position: 'absolute', right: 8, top: 8, color: 'black' }}
-                >
-                    <CloseIcon />
-                </IconButton>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <div className="label">Variant Details {props.variantIndex + 1}</div>
+                    <IconButton
+                        onClick={() => {
+                            setVariantToRemove(props.variantIndex);
+                            handleRemoveVariant();
+                        }}
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                </div>
+
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
                         <div className="label">Variant Name</div>
@@ -458,7 +535,7 @@ const AddVariant = (props) => {
                             display: "flex",
                             justifyContent: "flex-end",
                             alignItems: "center",
-                            marginLeft: "20rem"
+                            flexGrow: 1
                         }}
                     >
 

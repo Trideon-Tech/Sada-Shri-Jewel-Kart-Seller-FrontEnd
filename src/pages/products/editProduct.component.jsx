@@ -30,6 +30,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { generalToastStyle } from "../../utils/toast.styles";
 import "./addNewProduct.styles.scss";
 import PriceBreakout from "./priceBreakout.component";
+import AddVariant from "./addVariant.component";
 
 const theme = createTheme({
   palette: {
@@ -165,10 +166,15 @@ const EditProduct = () => {
   const [useNewPromptProductName, setUseNewPromptProductName] = useState(false);
   const [productNameFromPrompt, setProductNameFromPrompt] = useState("");
   const [sellerAIAssist, setSellerAIAssist] = useState(0);
+  const [variants, setVariants] = useState([]);
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
+
+  const removeVariant = (index) => {
+    setVariants((prevVariants) => prevVariants.filter((_, i) => i !== index));
+  };
 
   const startCropImage = (index) => {
     const reader = new FileReader();
@@ -231,6 +237,61 @@ const EditProduct = () => {
     }
   };
 
+  const mapProductVariants = (productVariants) => {
+    return productVariants.map((variant) => {
+      console.log("Metal Info:", variant); // Debugging
+
+      // Decode HTML entities and parse JSON
+      const metalInfo = variant.customization.metal_info
+        ? JSON.parse(variant.customization.metal_info.replace(/\\&quot;/g, '"').replace(/\\(["{}:,[\]])/g, '$1'))
+        : {};
+
+      const stoneInfo = variant.customization.stone_info
+        ? JSON.parse(variant.customization.stone_info.replace(/\\&quot;/g, '"').replace(/\\(["{}:,[\]])/g, '$1'))
+        : {};
+
+      // Map to your state structure
+      return {
+        id: variant.id,
+        productId: variant.product_id,
+        name: variant.name,
+        tag: variant.tag,
+        size: variant.size,
+        weight: variant.weight,
+        type: variant.type,
+        price: variant.price,
+        stock: variant.stock,
+        metalType: metalInfo.metal,
+        quantity: metalInfo.quantity,
+        purity: metalInfo.quality,
+        grossWeight: metalInfo.gross_wt,
+        stoneWeight: metalInfo.stone_wt,
+        netWeight: metalInfo.net_wt,
+        wastagePercent: metalInfo.wastage_prec,
+        wastageWeight: metalInfo.wastage_wt,
+        netWeightAfterWastage: metalInfo.net_wt_after_wastage,
+        makingChargeType: metalInfo.making_charge_type,
+        makingChargeValue: metalInfo.making_charge_value,
+        makingChargeAmount: metalInfo.making_charge_amount,
+        stoneAmount: metalInfo.stone_amount,
+        hallmarkCharge: metalInfo.hallmark_charge,
+        rodiumCharge: metalInfo.rodium_charge,
+        gstPercent: metalInfo.gst_perc,
+        stoneType: stoneInfo.stone_type,
+        stoneColor: stoneInfo.color,
+        stoneClarity: stoneInfo.clarity,
+        stoneCut: stoneInfo.cut,
+        stonePieces: stoneInfo.pieces,
+        stoneCarat: stoneInfo.carat,
+        stoneRate: stoneInfo.stone_rate,
+        stoneInternalWeight: stoneInfo.stone_wt,
+        stoneGSTPercent: stoneInfo.gst_perc,
+      };
+    });
+  };
+
+
+
   const fetchProduct = async () => {
     try {
       const response = await axios.get(
@@ -245,12 +306,12 @@ const EditProduct = () => {
       const productData = response.data.response;
       setProduct(productData);
 
-      const sortedImages = productData.images.sort((a, b) =>
+      const sortedImages = productData?.images?.sort((a, b) =>
         a.file.localeCompare(b.file)
       );
       setOrigImages(sortedImages);
       setCurrentImageUrl(
-        sortedImages.map(
+        sortedImages?.map(
           (image) =>
             `${process.env.REACT_APP_API_BASE_URL}/assets/${image.file}`
         )
@@ -267,7 +328,6 @@ const EditProduct = () => {
       const subcategory = category?.sub_categories.find(
         (subcat) => subcat.name === productData.sub_category
       );
-      console.log("subcategory", subcategory);
       setSelectedSubcategory(
         subcategory ? `${subcategory.id}_${subcategory.admin_comm_perc}` : ""
       );
@@ -288,7 +348,6 @@ const EditProduct = () => {
         ? productData.description.replace(/<\/?[^>]+(>|$)/g, "").trim()
         : "";
 
-      console.log("Cleaned Description:", cleanedDesc); // Debugging log
       setDesc(cleanedDesc);
       setFinalDescription(cleanedDesc); // Ensure input field updates correctly
 
@@ -344,8 +403,13 @@ const EditProduct = () => {
       );
       setDiscount(productData.discount_perc);
       setStoneGSTPercent(productData.customizations[0]?.stone_info?.gst_perc);
-      setVideoIndex(productData.video.id);
-      setVideo(productData.video.file);
+      setVideoIndex(productData?.video?.id);
+      setVideo(productData?.video?.file);
+
+      // Set the variants from the product data
+      const mappedVariants = mapProductVariants(productData.product_variants || []);
+      console.log("mappedVariants", mappedVariants);
+      setVariants(mappedVariants);
     } catch (error) {
       console.error("Error fetching product data:", error);
     }
@@ -402,7 +466,6 @@ const EditProduct = () => {
       (!selectedImage || selectedImage.length === 0) &&
       origImages?.length === 0
     ) {
-      console.log("No images selected");
       alert("Please select at least one image");
       return;
     }
@@ -551,7 +614,6 @@ const EditProduct = () => {
         category: selectedCategory || "",
         sub_category: selectedSubcategory.split("_")[0] || "",
         name: productName || "",
-        // desc: desc || "",
         desc: (finalDescription || "").replace(/^\d+\.\s*/, ""),
         customization_option: [quantity, makingChargeType, stoneType]
           .filter((val) => val !== null && val !== 0)
@@ -592,8 +654,6 @@ const EditProduct = () => {
         },
       };
 
-      console.log("formData", formData);
-
       const productResponse = await axios.put(
         `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/update.php`,
         formData,
@@ -604,6 +664,9 @@ const EditProduct = () => {
           },
         }
       );
+
+      // Update variants after product save
+      await updateVariants();
 
       // Then upload all images and video
       const uploadPromises = [];
@@ -658,12 +721,58 @@ const EditProduct = () => {
       // Wait for all uploads to complete
       await Promise.all(uploadPromises);
       toast.success("Product saved successfully!");
-      navigate("/products");
+      // navigate("/products");
     } catch (error) {
       console.error("Error saving product:", error);
       setLoading(false);
       toast.error("Error saving product. " + error.response.data.message);
     }
+  };
+
+  const updateVariants = async () => {
+    const variantPromises = variants.map(async (variant) => {
+      const variantData = {
+        id: variant.id, // Check if this exists to determine the endpoint
+        product_id: productId,
+        type: "update_item",
+        action: "variant",
+        name: variant.name,
+        quantity: variant.quantity,
+        tags: variant.tags,
+        metal: variant.metal,
+        stone: variant.stone,
+      };
+      console.log("variantData", variantData);
+
+      // Check if variant.id exists to determine the correct endpoint
+      if (variant.id) {
+        return axios.put(
+          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/updateVariant.php`,
+          variantData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+      } else {
+        // console.log("add variant data", variantData);
+        return axios.post(
+          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/addVariants.php`,
+          variantData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+      }
+    });
+
+    await Promise.all(variantPromises);
+    toast.success("Variants updated successfully!");
   };
 
   useEffect(() => {
@@ -818,9 +927,7 @@ const EditProduct = () => {
       .request(config)
       .then((response) => {
         const aiAssistValue = response?.data?.response?.organization?.ai_assist;
-        console.log("AI Assist Value from API:", aiAssistValue);
         setSellerAIAssist(Number(aiAssistValue)); // Convert to number explicitly
-        console.log("Setting sellerAIAssist to:", aiAssistValue);
       })
       .catch((error) => {
         console.log(error);
@@ -828,7 +935,6 @@ const EditProduct = () => {
   };
 
   const calculateMakingChargeAmount = () => {
-    console.log("makingchargetype", makingChargeType);
     if (makingChargeType === 6) {
       setMakingChargeAmount(
         (
@@ -841,8 +947,8 @@ const EditProduct = () => {
       setMakingChargeAmount(
         parseFloat(
           makingChargeValue *
-            (rate / 100) *
-            (netWeightAfterWastage || netWeight || 0)
+          (rate / 100) *
+          (netWeightAfterWastage || netWeight || 0)
         ).toFixed(2)
       );
     }
@@ -895,7 +1001,6 @@ const EditProduct = () => {
   };
 
   const handleMakingChargeValueChange = (e) => {
-    console.log("making charge value changed");
     setMakingChargeValue(e.target.value);
     calculateMakingChargeAmount();
   };
@@ -1024,7 +1129,6 @@ const EditProduct = () => {
   }, []);
 
   const handleSettlementAmountChange = (value) => {
-    console.log("Settlement Amount:", value);
     setSettlementAmount(value);
   };
 
@@ -1406,7 +1510,7 @@ const EditProduct = () => {
                             video instanceof File
                               ? URL.createObjectURL(video)
                               : `${process.env.REACT_APP_API_BASE_URL}/assets/` +
-                                video
+                              video
                           }
                           type="video/mp4"
                         />
@@ -1630,7 +1734,6 @@ const EditProduct = () => {
                   name="subcategory"
                   value={selectedSubcategory}
                   onChange={(e) => {
-                    console.log(e.target.value);
                     setSelectedSubcategory(e.target.value);
                     setAdminCommissionPerc(e.target.value.split("_")[1]);
                   }}
@@ -2349,9 +2452,9 @@ const EditProduct = () => {
                     const total =
                       stoneInternalWeight && e.target.value
                         ? (
-                            parseFloat(stoneInternalWeight) *
-                            parseFloat(e.target.value)
-                          ).toFixed(2)
+                          parseFloat(stoneInternalWeight) *
+                          parseFloat(e.target.value)
+                        ).toFixed(2)
                         : 0;
                     setStoneTotalAmount(total);
                   }}
@@ -2375,7 +2478,7 @@ const EditProduct = () => {
                     const baseAmount =
                       stoneInternalWeight && stoneRate
                         ? parseFloat(stoneInternalWeight) *
-                          parseFloat(stoneRate)
+                        parseFloat(stoneRate)
                         : 0;
                     const gstAmount =
                       baseAmount * (parseFloat(e.target.value) / 100);
@@ -2395,7 +2498,66 @@ const EditProduct = () => {
               </FormControl>
             </Grid>
           </Grid>
+          <Divider />
+          {variants.map((currentVariant, index) => (
+            <AddVariant
+              variantIndex={index}
+              key={index}
+              metalType={currentVariant.metalType || metalType}
+              purity={currentVariant.purity || purity}
+              dropdownValues={dropdownValues}
+              quantity={currentVariant.quantity || quantity}
+              grossWeight={currentVariant.grossWeight || grossWeight}
+              stoneWeight={currentVariant.stoneWeight || stoneWeight}
+              netWeight={currentVariant.netWeight || netWeight}
+              wastagePercent={currentVariant.wastagePercent || wastagePercent}
+              wastageWeight={currentVariant.wastageWeight || wastageWeight}
+              netWeightAfterWastage={currentVariant.netWeightAfterWastage || netWeightAfterWastage}
+              makingChargeType={currentVariant.makingChargeType || makingChargeType}
+              makingChargeValue={currentVariant.makingChargeValue || makingChargeValue}
+              makingChargeAmount={currentVariant.makingChargeAmount || makingChargeAmount}
+              stoneAmount={currentVariant.stoneAmount || stoneAmount}
+              hallmarkCharge={currentVariant.hallmarkCharge || hallmarkCharge}
+              gstPercent={currentVariant.gstPercent || gstPercent}
+              rodiumCharge={currentVariant.rodiumCharge || rodiumCharge}
+              stoneType={currentVariant.stoneType || stoneType}
+              stoneColor={currentVariant.stoneColor || stoneColor}
+              stoneClarity={currentVariant.stoneClarity || stoneClarity}
+              stoneCut={currentVariant.stoneCut || stoneCut}
+              stonePieces={currentVariant.stonePieces || stonePieces}
+              stoneCarat={currentVariant.stoneCarat || stoneCarat}
+              stoneRate={currentVariant.stoneRate || stoneRate}
+              stoneInternalWeight={currentVariant.stoneInternalWeight || stoneInternalWeight}
+              stoneGSTPercent={currentVariant.stoneGSTPercent || stoneGSTPercent}
+              rates={rates}
+              removeVariant={removeVariant}
+              setVariants={setVariants}
+              name={currentVariant.name}
+              tag={currentVariant.tag}
+              variants={variants}
+            />
+          ))}
         </Paper>
+        <Grid container spacing={2} style={{ display: "flex", justifyContent: "start", paddingLeft: "3rem", paddingBottom: "2rem" }}>
+          <Grid item xs={1.33}>
+            <div className="btns">
+              <Button
+                className="button2"
+                variant="contained"
+                sx={{
+                  backgroundColor: "#a36e29",
+                  fontFamily: '"Roboto", sans-serif',
+                  "&:hover": {
+                    backgroundColor: "#8b5d23",
+                  },
+                }}
+                onClick={() => setVariants((prev) => [...prev, {}])}
+              >
+                Add Variant
+              </Button>
+            </div>
+          </Grid>
+        </Grid>
       </ThemeProvider>
       <Dialog
         open={openDescriptionModal}
@@ -2466,9 +2628,9 @@ const EditProduct = () => {
                         },
                       },
                       "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                        {
-                          backgroundColor: "#a36e29",
-                        },
+                      {
+                        backgroundColor: "#a36e29",
+                      },
                     }}
                   />
                 </div>

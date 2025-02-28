@@ -11,12 +11,13 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 
 const AddVariant = (props) => {
+    console.log("props", props);
     // Initialize state for each prop
-    const [variantName, setVariantName] = useState("");
+    const [variantName, setVariantName] = useState(props.name || "");
     const [metalType, setMetalType] = useState(props.metalType);
     const [purity, setPurity] = useState(props.purity);
     const [quantity, setQuantity] = useState(props.quantity);
-    const [tag, setTag] = useState("");
+    const [tag, setTag] = useState(props.tag || "");
     const [grossWeight, setGrossWeight] = useState(props.grossWeight);
     const [stoneWeight, setStoneWeight] = useState(props.stoneWeight);
     const [netWeight, setNetWeight] = useState(props.netWeight);
@@ -31,7 +32,7 @@ const AddVariant = (props) => {
     const [rodiumCharge, setRodiumCharge] = useState(props.rodiumCharge);
     const [gstPercent, setGstPercent] = useState(props.gstPercent);
     const [stoneType, setStoneType] = useState(props.stoneType);
-    const [stoneColor, setStoneColor] = useState(props.stoneColor);
+    const [stoneColor, setStoneColor] = useState(props.stoneColor.replace(/\\\\u2013/g, '\u2013'));
     const [stoneClarity, setStoneClarity] = useState(props.stoneClarity);
     const [stoneCut, setStoneCut] = useState(props.stoneCut);
     const [stonePieces, setStonePieces] = useState(props.stonePieces);
@@ -339,7 +340,7 @@ const AddVariant = (props) => {
                 gst_perc: updatedVariant.stoneGSTPercent || "0",
             },
         };
-
+        console.log(variantData);
         props.setVariants((prevVariants) => {
             return prevVariants.map((variant, index) =>
                 index === props.variantIndex ? { ...variant, ...variantData } : variant
@@ -514,7 +515,7 @@ const AddVariant = (props) => {
                         <div className="label">Variant Name</div>
                         <TextField
                             name="variantName"
-                            value={variantName}
+                            defaultValue={variantName}
                             onChange={(e) => setVariantName(e.target.value)}
                             fullWidth
                             placeholder="Enter Variant Name"

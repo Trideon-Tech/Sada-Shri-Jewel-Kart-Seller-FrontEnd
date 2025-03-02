@@ -589,7 +589,7 @@ const AddNewProduct = () => {
       console.log("Response Data:", response.data);
 
       let productName = response.data?.productName ?? "";
-      productName = productName.replace(/^"(.*)"$/, "$1");
+      productName = productName?.replace(/^"(.*)"$/, "$1");
       const descriptions = response.data?.descriptions ?? [];
 
       if (response.data.error) {
@@ -638,7 +638,7 @@ const AddNewProduct = () => {
         category: selectedCategory || "",
         sub_category: selectedSubcategory || "",
         name: productName || "",
-        desc: (finalDescription || "").replace(/^\d+\.\s*/, ""),
+        desc: (finalDescription || "")?.replace(/^\d+\.\s*/, ""),
         customization_option: [quantity, makingChargeType, stoneType]
           .filter((val) => val !== null && val !== 0)
           .join(","),
@@ -1547,8 +1547,8 @@ const AddNewProduct = () => {
                       <MenuItem
                         key={option.name}
                         value={option.name
-                          .replace(/\n/g, "")
-                          .replace(/&NoBreak;/g, "")}
+                          ?.replace(/\n/g, "")
+                          ?.replace(/&NoBreak;/g, "")}
                       >
                         {option.display_name}
                       </MenuItem>
@@ -1601,7 +1601,7 @@ const AddNewProduct = () => {
                 rows={1}
                 fullWidth
                 placeholder="Product Description"
-                value={finalDescription.replace(/^\d+\.\s*/, "")}
+                value={finalDescription?.replace(/^\d+\.\s*/, "")}
                 onChange={(e) => {
                   setFinalDescription(e.target.value);
                 }}

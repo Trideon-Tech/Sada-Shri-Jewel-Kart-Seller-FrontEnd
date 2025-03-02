@@ -32,7 +32,7 @@ const AddVariant = (props) => {
     const [rodiumCharge, setRodiumCharge] = useState(props.rodiumCharge);
     const [gstPercent, setGstPercent] = useState(props.gstPercent);
     const [stoneType, setStoneType] = useState(props.stoneType);
-    const [stoneColor, setStoneColor] = useState(props.stoneColor.replace(/\\\\u2013/g, '\u2013'));
+    const [stoneColor, setStoneColor] = useState(props.stoneColor?.replace(/\\\\u2013/g, '\u2013'));
     const [stoneClarity, setStoneClarity] = useState(props.stoneClarity);
     const [stoneCut, setStoneCut] = useState(props.stoneCut);
     const [stonePieces, setStonePieces] = useState(props.stonePieces);

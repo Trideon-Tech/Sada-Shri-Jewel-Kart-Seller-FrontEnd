@@ -147,6 +147,8 @@ const RegistrationUserDetails = () => {
           } else if (response?.data?.response?.seller_details?.seller_exists) {
             return toast("Seller Already Exists | Login", generalToastStyle);
           }
+        }else{
+          return toast("Invalid OTP", generalToastStyle);
         }
       })
       .catch((error) => {

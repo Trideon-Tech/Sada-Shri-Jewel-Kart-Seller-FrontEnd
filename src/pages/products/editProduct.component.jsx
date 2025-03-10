@@ -172,7 +172,27 @@ const EditProduct = () => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
-  const removeVariant = (index) => {
+  const removeVariant = async (index) => {
+    // api call to remove variant
+    console.log("variants[index]", variants[index]);
+    if (variants[index].id) {
+      const response = await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/deleteVariant.php`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: { id: variants[index].id, key: "variant" }
+        }
+      );
+      
+      if (response.data.status === 1) {
+        toast.success(response.data.message);
+        window.location.reload();
+      } else {
+        toast.error(response.data.message);
+      }
+    }
     setVariants((prevVariants) => prevVariants.filter((_, i) => i !== index));
   };
 
@@ -239,7 +259,6 @@ const EditProduct = () => {
 
   const mapProductVariants = (productVariants) => {
     return productVariants.map((variant) => {
-      console.log("Metal Info:", variant); // Debugging
 
       // Decode HTML entities and parse JSON
       const metalInfo = variant.customization.metal_info
@@ -408,7 +427,6 @@ const EditProduct = () => {
 
       // Set the variants from the product data
       const mappedVariants = mapProductVariants(productData.product_variants || []);
-      console.log("mappedVariants", mappedVariants);
       setVariants(mappedVariants);
     } catch (error) {
       console.error("Error fetching product data:", error);
@@ -742,7 +760,6 @@ const EditProduct = () => {
         metal: variant.metal,
         stone: variant.stone,
       };
-      console.log("variantData", variantData);
 
       // Check if variant.id exists to determine the correct endpoint
       if (variant.id) {

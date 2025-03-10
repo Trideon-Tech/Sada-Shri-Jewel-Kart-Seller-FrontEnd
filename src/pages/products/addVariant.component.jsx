@@ -11,7 +11,6 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 
 const AddVariant = (props) => {
-    console.log("props", props);
     // Initialize state for each prop
     const [variantName, setVariantName] = useState(props.name || "");
     const [metalType, setMetalType] = useState(props.metalType);
@@ -32,7 +31,7 @@ const AddVariant = (props) => {
     const [rodiumCharge, setRodiumCharge] = useState(props.rodiumCharge);
     const [gstPercent, setGstPercent] = useState(props.gstPercent);
     const [stoneType, setStoneType] = useState(props.stoneType);
-    const [stoneColor, setStoneColor] = useState(props.stoneColor?.replace(/\\\\u2013/g, '\u2013'));
+    const [stoneColor, setStoneColor] = useState("");
     const [stoneClarity, setStoneClarity] = useState(props.stoneClarity);
     const [stoneCut, setStoneCut] = useState(props.stoneCut);
     const [stonePieces, setStonePieces] = useState(props.stonePieces);
@@ -52,6 +51,12 @@ const AddVariant = (props) => {
     const [settlementAmount, setSettlementAmount] = useState(0);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [variantToRemove, setVariantToRemove] = useState(null);
+
+    console.log("props", props);
+
+    useEffect(() => {
+        setStoneColor(props.stoneColor?.replace(/\u2013/g, '-'));
+      }, [props.stoneColor]);
 
     const calculateTotalPrice = (metalInfo, stoneInfo) => {
         const metal =
@@ -340,7 +345,6 @@ const AddVariant = (props) => {
                 gst_perc: updatedVariant.stoneGSTPercent || "0",
             },
         };
-        console.log(variantData);
         props.setVariants((prevVariants) => {
             return prevVariants.map((variant, index) =>
                 index === props.variantIndex ? { ...variant, ...variantData } : variant
@@ -387,7 +391,6 @@ const AddVariant = (props) => {
             qualityName,
             settlementAmount,
         });
-        console.log("useeffect add var", props.variants)
     }, [
         variantName,
         metalType,
@@ -863,7 +866,6 @@ const AddVariant = (props) => {
                         name="makingChargeType"
                         value={makingChargeType}
                         onChange={(e) => {
-                            // console.log(e.target.value);
                             setMakingChargeType(e.target.value);
                             setMakingChargeValue();
                         }}

@@ -31,7 +31,7 @@ const AddVariant = (props) => {
     const [rodiumCharge, setRodiumCharge] = useState(props.rodiumCharge);
     const [gstPercent, setGstPercent] = useState(props.gstPercent);
     const [stoneType, setStoneType] = useState(props.stoneType);
-    const [stoneColor, setStoneColor] = useState("");
+    const [stoneColor, setStoneColor] = useState(cleanUnicodeEscapes(props.stoneColor));
     const [stoneClarity, setStoneClarity] = useState(props.stoneClarity);
     const [stoneCut, setStoneCut] = useState(props.stoneCut);
     const [stonePieces, setStonePieces] = useState(props.stonePieces);
@@ -52,10 +52,14 @@ const AddVariant = (props) => {
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [variantToRemove, setVariantToRemove] = useState(null);
 
-    console.log("props", props);
+    function cleanUnicodeEscapes(text) {
+        return text.replace(/\\\\u[\da-fA-F]{4}/g, "–");
+    }
+      
+    console.log("props", stoneColor);
 
     useEffect(() => {
-        setStoneColor(props.stoneColor?.replace(/\u2013/g, '-'));
+        setStoneColor(cleanUnicodeEscapes(props.stoneColor));
       }, [props.stoneColor]);
 
     const calculateTotalPrice = (metalInfo, stoneInfo) => {
@@ -1085,7 +1089,7 @@ const AddVariant = (props) => {
                 <FormControl fullWidth>
                     <Select
                         name="stoneColor"
-                        value={stoneColor}
+                        value={cleanUnicodeEscapes(stoneColor)}
                         onChange={(e) => setStoneColor(e.target.value)}
                     >
                         {props.dropdownValues?.[0]?.customization_fields

@@ -60,7 +60,7 @@ const OrdersComponent = ({ row }) => {
       if (!token) return;
 
       const { data } = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/seller/orders/all.php?type=seller_orders&seller_id=1`,
+        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/orders/all.php?type=seller_orders&seller_id=1`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

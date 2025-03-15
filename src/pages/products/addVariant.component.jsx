@@ -15,7 +15,7 @@ const AddVariant = (props) => {
     const [variantName, setVariantName] = useState(props.name || "");
     const [metalType, setMetalType] = useState(props.metalType);
     const [purity, setPurity] = useState(props.purity);
-    const [quantity, setQuantity] = useState(props.quantity);
+    const [quantity, setQuantity] = useState(props.quantity || 0);
     const [tag, setTag] = useState(props.tag || "");
     const [grossWeight, setGrossWeight] = useState(props.grossWeight);
     const [stoneWeight, setStoneWeight] = useState(props.stoneWeight);
@@ -55,8 +55,6 @@ const AddVariant = (props) => {
     function cleanUnicodeEscapes(text) {
         return text.replace(/\\\\u[\da-fA-F]{4}/g, "–");
     }
-      
-    console.log("props", stoneColor);
 
     useEffect(() => {
         setStoneColor(cleanUnicodeEscapes(props.stoneColor));
@@ -431,7 +429,7 @@ const AddVariant = (props) => {
         totalAmount,
         productAmountData,
         qualityName,
-        settlementAmount,
+        settlementAmount
     ]);
 
     const handleRemoveVariant = () => {
@@ -517,8 +515,8 @@ const AddVariant = (props) => {
                     </IconButton>
                 </div>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={6}>
+                <Grid container spacing={1}>
+                    <Grid item xs={3}>
                         <div className="label">Variant Name</div>
                         <TextField
                             name="variantName"
@@ -528,12 +526,22 @@ const AddVariant = (props) => {
                             placeholder="Enter Variant Name"
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={3}>
                         <div className="label">Tags</div>
                         <TextField
                             name="tag"
                             value={tag}
                             onChange={(e) => setTag(e.target.value)}
+                            fullWidth
+                            placeholder="Enter Tag Name"
+                        />
+                    </Grid>
+                    <Grid item xs={3}>
+                        <div className="label">Quantity</div>
+                        <TextField
+                            name="quantity"  
+                            value={quantity}
+                            onChange={(e) => setQuantity(e.target.value)}
                             fullWidth
                             placeholder="Enter Tag Name"
                         />

@@ -24,56 +24,55 @@ const PriceBreakout = ({ open, onClose, data, handleSettlementAmountChange }) =>
 
     const calculatePaymentDetails = (data) => {
         const metalBaseAmount = isNaN(parseFloat((parseFloat(data.metal_calculation?.base_amount, 2) - parseFloat(data.metal_calculation?.mc, 2)).toFixed(2))) ? 0 : parseFloat((parseFloat(data.metal_calculation?.base_amount, 2) - parseFloat(data.metal_calculation?.mc, 2)).toFixed(2));
-        console.log('metalBaseAmount:', metalBaseAmount);
+       
         
         const stoneBaseAmount = isNaN(parseFloat(data.stone_calculation?.base_amount, 2)) ? 0 : parseFloat(data.stone_calculation?.base_amount, 2);
-        console.log('stoneBaseAmount:', stoneBaseAmount);
+
         
         const metalMakingChargeAmount = isNaN(parseFloat(data.metal_calculation?.mc, 2)) ? 0 : parseFloat(data.metal_calculation?.mc, 2);
-        console.log('metalMakingChargeAmount:', metalMakingChargeAmount);
+        
         
         const metalTotalAmount = isNaN(parseFloat(metalBaseAmount, 2) + parseFloat(metalMakingChargeAmount, 2)) ? 0 : parseFloat(metalBaseAmount, 2) + parseFloat(metalMakingChargeAmount, 2);
-        console.log('metalTotalAmount:', metalTotalAmount);
+
         
         const metalGst = isNaN(parseFloat((metalTotalAmount * (parseFloat(data.metal_calculation?.gst_perc) / 100)).toFixed(2))) ? 0 : parseFloat((metalTotalAmount * (parseFloat(data.metal_calculation?.gst_perc) / 100)).toFixed(2));
-        console.log('metalGst:', metalGst);
+
         
         const metalNetAmount = isNaN(parseFloat((metalTotalAmount + metalGst).toFixed(2))) ? 0 : parseFloat((metalTotalAmount + metalGst).toFixed(2));
-        console.log('metalNetAmount:', metalNetAmount);
+
 
         const stoneGst = isNaN(parseFloat((stoneBaseAmount * (parseFloat(data.stone_calculation?.gst_perc) / 100)).toFixed(2))) ? 0 : parseFloat((stoneBaseAmount * (parseFloat(data.stone_calculation?.gst_perc) / 100)).toFixed(2));
-        console.log('stoneGst:', stoneGst);
+
         
         const stoneNetAmount = isNaN(parseFloat((stoneBaseAmount + stoneGst).toFixed(2))) ? 0 : parseFloat((stoneBaseAmount + stoneGst).toFixed(2));
-        console.log('stoneNetAmount:', stoneNetAmount);
+
 
         const adminCommission = isNaN(parseFloat(data.admin_commission_perc)) ? 0 : parseFloat(data.admin_commission_perc);
-        console.log('adminCommission:', adminCommission);
+
 
         const subTotal = isNaN(parseFloat((metalNetAmount + stoneNetAmount).toFixed(2))) ? 0 : parseFloat((metalNetAmount + stoneNetAmount).toFixed(2));
-        console.log('subTotal:', subTotal);
+
 
         let totalAmount = subTotal;
-        console.log('totalAmount:', totalAmount);
 
         const taxRate = 5;
         const taxAmount = isNaN(parseFloat((totalAmount * 0.05).toFixed(2))) ? 0 : parseFloat((totalAmount * 0.05).toFixed(2));
-        console.log('taxAmount:', taxAmount);
+
         
         const tdsAmount = isNaN(parseFloat((totalAmount * 0.01).toFixed(2))) ? 0 : parseFloat((totalAmount * 0.01).toFixed(2));
-        console.log('tdsAmount:', tdsAmount);
+
         
         const commission = isNaN(parseFloat((totalAmount * adminCommission * 0.01).toFixed(2))) ? 0 : parseFloat((totalAmount * adminCommission * 0.01).toFixed(2));
-        console.log('commission:', commission);
+
 
         const tcs = isNaN(parseFloat((totalAmount - commission - tdsAmount) * 0.01).toFixed(2)) ? 0 : parseFloat((totalAmount - commission - tdsAmount) * 0.01).toFixed(2);
-        console.log('tcs:', tcs);
+
 
         const pgCharge = isNaN(parseFloat((totalAmount * 0.02).toFixed(2))) ? 0 : parseFloat((totalAmount * 0.02).toFixed(2));
-        console.log('pgCharge:', pgCharge);
+
 
         const totalAmountAfterDeduction = isNaN(parseFloat((totalAmount - commission - tdsAmount - tcs - taxAmount - pgCharge).toFixed(2))) ? 0 : parseFloat((totalAmount - commission - tdsAmount - tcs - taxAmount - pgCharge).toFixed(2));
-        console.log('totalAmountAfterDeduction:', totalAmountAfterDeduction);
+
         
         return {
             taxRate: taxRate,

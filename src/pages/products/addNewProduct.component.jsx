@@ -237,10 +237,8 @@ const AddNewProduct = () => {
       : stoneBaseAmount * (parseFloat(stone.gst_perc) / 100);
     const stoneNetAmount = stoneBaseAmount + stoneGst;
 
-    console.log("stoneNetAmount", stoneNetAmount);
     // Total price
     const totalPrice = (amount || 0) + (stoneNetAmount || 0);
-    console.log("totalPrice", totalPrice);
 
     const priceDetails = {
       total_price: totalPrice.toFixed(2),
@@ -290,9 +288,7 @@ const AddNewProduct = () => {
       .then((response) => {
 
         const aiAssistValue = response?.data?.response?.organization?.ai_assist;
-        console.log("AI Assist Value from API:", aiAssistValue);
         setSellerAIAssist(Number(aiAssistValue)); // Convert to number explicitly
-        console.log("Setting sellerAIAssist to:", aiAssistValue);
       })
       .catch((error) => {
         console.log(error);
@@ -428,10 +424,6 @@ const AddNewProduct = () => {
     ])
       .then(([dropdownResponse, categoriesResponse, ratesResponse]) => {
         setDropdownValues(dropdownResponse.data.response);
-        console.log(
-          "dropdownResponse.data.response",
-          dropdownResponse.data.response
-        );
         const categories = categoriesResponse.data.response || [];
         setCategoriesData(categories);
         setRates(ratesResponse.data.response.jewelry_prices);
@@ -585,8 +577,6 @@ const AddNewProduct = () => {
           }
         }
       );
-
-      console.log("Response Data:", response.data);
 
       let productName = response.data?.productName ?? "";
       productName = productName?.replace(/^"(.*)"$/, "$1");
@@ -816,12 +806,10 @@ const AddNewProduct = () => {
 
     if (selectedCategory) {
       const hsn = hsnMapping[selectedCategory.name];
-      console.log("hsn", hsn);
       setHsnCode(hsn || "");
       setMetalType(typeMapping[selectedCategory.name] || "");
       setMakingChargeType(mcTypeMapping[selectedCategory.name] || "")
       setPurity(purityMapping[selectedCategory.name] || "")
-      console.log(selectedCategory.name);
       if (selectedCategory.name === "GEMSTONE") {
         setStoneGSTPercent(3);
       } else {
@@ -1878,7 +1866,6 @@ const AddNewProduct = () => {
                   name="makingChargeType"
                   value={makingChargeType}
                   onChange={(e) => {
-                    console.log(e.target.value);
                     setMakingChargeType(e.target.value);
                     setMakingChargeValue();
                   }}
@@ -2050,7 +2037,6 @@ const AddNewProduct = () => {
                   name="gstPercent"
                   value={gstPercent}
                   onChange={(e) => {
-                    console.log("GST Percent changed:", e.target.value);
                     setGstPercent(e.target.value);
                   }}
                   fullWidth

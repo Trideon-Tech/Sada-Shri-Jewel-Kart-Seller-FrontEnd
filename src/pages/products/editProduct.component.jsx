@@ -174,7 +174,6 @@ const EditProduct = () => {
 
   const removeVariant = async (index) => {
     // api call to remove variant
-    console.log("variants[index]", variants[index]);
     if (variants[index].id) {
       const response = await axios.delete(
         `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/deleteVariant.php`,
@@ -280,8 +279,8 @@ const EditProduct = () => {
         type: variant.type,
         price: variant.price,
         stock: variant.stock,
-        metalType: metalInfo.metal,
-        quantity: metalInfo.quantity,
+        metalType: metalInfo?.metal,
+        quantity: variant.stock,
         purity: metalInfo.quality,
         grossWeight: metalInfo.gross_wt,
         stoneWeight: metalInfo.stone_wt,
@@ -749,6 +748,7 @@ const EditProduct = () => {
 
   const updateVariants = async () => {
     const variantPromises = variants.map(async (variant) => {
+      console.log("update variant",variant)
       const variantData = {
         id: variant.id, // Check if this exists to determine the endpoint
         product_id: productId,
@@ -757,8 +757,35 @@ const EditProduct = () => {
         name: variant.name,
         quantity: variant.quantity,
         tags: variant.tags,
-        metal: variant.metal,
-        stone: variant.stone,
+        metal: {
+          metal: variant.metalType || "",
+          quantity: variant.quantity || 1,
+          quality: variant.purity || "",
+          gross_wt: variant.grossWeight || "",
+          stone_wt: variant.stoneWeight || "",
+          net_wt: variant.netWeight || "0",
+          wastage_prec: variant.wastagePercent || "",
+          wastage_wt: variant.wastageWeight || "0",
+          net_wt_after_wastage: variant.netWeightAfterWastage || "",
+          making_charge_type: variant.makingChargeType || 9,
+          making_charge_value: variant.makingChargeValue || "0",
+          making_charge_amount: variant.makingChargeAmount || "0.00",
+          stone_amount: variant.stoneAmount || "0",
+          hallmark_charge: variant.hallmarkCharge || "0",
+          rodium_charge: variant.rodiumCharge || "0",
+          gst_perc: variant.gstPercent || 0,
+      },
+      stone: {
+          stone_type: variant.stoneType || "",
+          color: variant.stoneColor || "",
+          clarity: variant.stoneClarity || "",
+          cut: variant.stoneCut || "0",
+          pieces: variant.stonePieces || "0",
+          carat: variant.stoneCarat || "0",
+          stone_wt: variant.stoneWeight || "0",
+          stone_rate: variant.stoneRate || "0",
+          gst_perc: variant.stoneGSTPercent || "0",
+      },
       };
 
       // Check if variant.id exists to determine the correct endpoint

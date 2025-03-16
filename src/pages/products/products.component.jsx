@@ -416,10 +416,10 @@ const Products = () => {
                               className="block"
                               onClick={() => openDeleteDialog(row.id)}
                             />
-                            <Add
+                            {/* <Add
                               className="allow"
                               onClick={() => setVariantsOpen(true)}
-                            />
+                            /> */}
                           </TableCell>
                         </TableRow>
                       );

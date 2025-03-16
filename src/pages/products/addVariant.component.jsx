@@ -601,7 +601,7 @@ const AddVariant = (props) => {
                         <div style={{ marginRight: "20px" }}>
                             <div>Settlement Amount</div>
                             <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
-                                {/* {parseFloat(settlementAmount).toFixed(2)} */}
+                                {parseFloat(settlementAmount).toFixed(2)}
                             </div>
                             <Typography
                                 style={{

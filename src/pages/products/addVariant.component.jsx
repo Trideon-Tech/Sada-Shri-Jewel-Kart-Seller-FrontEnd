@@ -1,14 +1,29 @@
-import Grid from "@mui/system/Unstable_Grid";
-import { FormControl, Select, MenuItem, TextField, InputAdornment, Typography, IconButton } from "@mui/material";
 import { useState } from "react";
 import { useEffect } from "react";
 import PriceBreakout from "./priceBreakout.component";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
+import {
+    Button,
+    CircularProgress,
+    createTheme,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    FormControl,
+    Grid,
+    IconButton,
+    InputAdornment,
+    MenuItem,
+    Paper,
+    Select,
+    TextField,
+    ThemeProvider,
+    Typography,
+    Switch
+  } from "@mui/material";
+import { fontSize } from "@mui/system";
 
 const AddVariant = (props) => {
     // Initialize state for each prop
@@ -58,7 +73,7 @@ const AddVariant = (props) => {
 
     useEffect(() => {
         setStoneColor(cleanUnicodeEscapes(props.stoneColor));
-      }, [props.stoneColor]);
+    }, [props.stoneColor]);
 
     const calculateTotalPrice = (metalInfo, stoneInfo) => {
         const metal =
@@ -501,10 +516,10 @@ const AddVariant = (props) => {
             </DialogActions>
         </Dialog>
 
-        <Grid container spacing={2}>
+        <Grid container spacing={2} style={{"marginTop": "1rem"}}>
             <Grid item xs={12}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div className="label">Variant Details {props.variantIndex + 1}</div>
+                    <div className="heading"><h1>Variant Details {props.variantIndex + 1}</h1></div>
                     <IconButton
                         onClick={() => {
                             setVariantToRemove(props.variantIndex);
@@ -516,7 +531,7 @@ const AddVariant = (props) => {
                 </div>
 
                 <Grid container spacing={1}>
-                    <Grid item xs={3}>
+                    <Grid item xs={1}>
                         <div className="label">Variant Name</div>
                         <TextField
                             name="variantName"
@@ -526,7 +541,7 @@ const AddVariant = (props) => {
                             placeholder="Enter Variant Name"
                         />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={1}>
                         <div className="label">Tags</div>
                         <TextField
                             name="tag"
@@ -536,10 +551,10 @@ const AddVariant = (props) => {
                             placeholder="Enter Tag Name"
                         />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={1}>
                         <div className="label">Quantity</div>
                         <TextField
-                            name="quantity"  
+                            name="quantity"
                             value={quantity}
                             onChange={(e) => setQuantity(e.target.value)}
                             fullWidth
@@ -1290,6 +1305,8 @@ const AddVariant = (props) => {
                 </FormControl>
             </Grid>
         </Grid>
+
+        <Divider />
     </>)
 }
 

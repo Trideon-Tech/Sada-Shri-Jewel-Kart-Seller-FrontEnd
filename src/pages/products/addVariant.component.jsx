@@ -67,7 +67,7 @@ const AddVariant = (props) => {
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [variantToRemove, setVariantToRemove] = useState(null);
 
-    function cleanUnicodeEscapes(text) {
+    function cleanUnicodeEscapes(text = "") {
         return text.replace(/\\\\u[\da-fA-F]{4}/g, "–");
     }
 

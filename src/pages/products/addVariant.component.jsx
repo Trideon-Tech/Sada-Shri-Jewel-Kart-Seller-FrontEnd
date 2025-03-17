@@ -22,7 +22,7 @@ import {
     ThemeProvider,
     Typography,
     Switch
-  } from "@mui/material";
+} from "@mui/material";
 import { fontSize } from "@mui/system";
 
 const AddVariant = (props) => {
@@ -68,7 +68,12 @@ const AddVariant = (props) => {
     const [variantToRemove, setVariantToRemove] = useState(null);
 
     function cleanUnicodeEscapes(text = "") {
-        return text.replace(/\\\\u[\da-fA-F]{4}/g, "–");
+        // Step 1: Replace \\u2060 with a zero-width non-joiner (⁠)
+    text = text.replace(/\\\\u2060/g, "\u2060");
+    // Step 2: Replace \\u2013 with an en dash (–)
+    text = text.replace(/\\\\u2013/g, "–");
+    console.log(text); // Log the cleaned text
+    return text;
     }
 
     useEffect(() => {
@@ -516,7 +521,7 @@ const AddVariant = (props) => {
             </DialogActions>
         </Dialog>
 
-        <Grid container spacing={2} style={{"marginTop": "1rem"}}>
+        <Grid container spacing={2} style={{ "marginTop": "1rem" }}>
             <Grid item xs={12}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div className="heading"><h1>Variant Details {props.variantIndex + 1}</h1></div>

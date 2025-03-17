@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 import {
   Add,
@@ -60,7 +61,7 @@ const Products = () => {
   const [productToDelete, setProductToDelete] = useState(null);
   const [editingId, setEditingId] = useState();
   const [editQuantity, setEditQuantity] = useState();
-
+  const [openVariant, setOpenVariant] = useState();
   const [searchResults, setSearchResults] = useState([]);
   const [variantsOpen, setVariantsOpen] = useState(false);
 
@@ -234,6 +235,7 @@ const Products = () => {
                     <TableCell>Admin Verified</TableCell>
                     <TableCell>View in Store</TableCell>
                     <TableCell>Actions</TableCell>
+                    <TableCell>Variants</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -244,184 +246,390 @@ const Products = () => {
                     )
                     .map((row, index) => {
                       return (
-                        <TableRow
-                          hover
-                          role="checkbox"
-                          tabIndex={-1}
-                          key={row.id}
-                        >
-                          <TableCell>
-                            {row.display_number + 1}
-                          </TableCell>
-                          <TableCell>{row.created_at}</TableCell>
-                          <TableCell className="name-content">
-                            <img
-                              className="company-img"
-                              alt="org"
-                              src={
-                                row.images
-                                  ? `${process.env.REACT_APP_API_BASE_URL}/assets/${row.images[0]["file"]}`
-                                  : process.env.PUBLIC_URL + "/assets/fav.png"
-                              }
-                            />
-                            {row.name}
-                          </TableCell>
-                          <TableCell>
-                            ₹{row.customizations.variants.options[0]?.price}
-                          </TableCell>
-                          <TableCell>{row.tags}</TableCell>
-                          <TableCell
-                            style={{
-                              fontWeight: "bold",
-                            }}
+                        <>
+                          <TableRow
+                            hover
+                            role="checkbox"
+                            tabIndex={-1}
+                            key={row.id}
                           >
-                            {row.hash}
-                          </TableCell>
-                          <TableCell>
-                            {`${row.customizations.variants.options[0]?.metal_info.gross_wt} gm`}
-                          </TableCell>
-                          <TableCell style={{ position: "relative" }}>
-                            {editingId === row.id ? (
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "8px",
-                                }}
-                              >
-                                <TextField
-                                  value={editQuantity}
-                                  onChange={(e) =>
-                                    setEditQuantity(e.target.value)
-                                  }
-                                  size="small"
-                                  type="number"
-                                  inputProps={{ min: 0 }}
-                                  style={{ width: "100px" }}
-                                />
-                                <Done
-                                  sx={{
-                                    color: "green",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={async () => {
-                                    try {
-                                      await axios.put(
-                                        `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/inventory/inventory.php`,
-                                        JSON.stringify({
-                                          product_id: row.id,
-                                          quantity: editQuantity,
-                                        }),
-                                        {
-                                          headers: {
-                                            Authorization: `Bearer ${localStorage.getItem(
-                                              "token"
-                                            )}`,
-                                            "Content-Type": "application/json",
-                                          },
-                                        }
-                                      );
-                                      row.quantity = editQuantity;
-                                      setEditingId(null);
-                                    } catch (err) {
-                                      console.error(err);
-                                    }
-                                  }}
-                                />
-                                <Close
-                                  sx={{
-                                    color: "red",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() => setEditingId(null)}
-                                />
-                              </div>
-                            ) : (
-                              <>
-                                <span
+                            <TableCell>
+                              {row.display_number + 1}
+                            </TableCell>
+                            <TableCell>{row.created_at}</TableCell>
+                            <TableCell className="name-content">
+                              <img
+                                className="company-img"
+                                alt="org"
+                                src={
+                                  row.images
+                                    ? `${process.env.REACT_APP_API_BASE_URL}/assets/${row.images[0]["file"]}`
+                                    : process.env.PUBLIC_URL + "/assets/fav.png"
+                                }
+                              />
+                              {row.name}
+                            </TableCell>
+                            <TableCell>
+                              ₹{row.customizations.variants.options[0]?.price}
+                            </TableCell>
+                            <TableCell>{row.tags}</TableCell>
+                            <TableCell
+                              style={{
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {row.hash}
+                            </TableCell>
+                            <TableCell>
+                              {`${row.customizations.variants.options[0]?.metal_info.gross_wt} gm`}
+                            </TableCell>
+                            <TableCell style={{ position: "relative" }}>
+                              {editingId === row.id ? (
+                                <div
                                   style={{
                                     display: "flex",
                                     alignItems: "center",
+                                    gap: "8px",
                                   }}
                                 >
-                                  {row.quantity} pieces
-                                  <Edit
+                                  <TextField
+                                    value={editQuantity}
+                                    onChange={(e) =>
+                                      setEditQuantity(e.target.value)
+                                    }
+                                    size="small"
+                                    type="number"
+                                    inputProps={{ min: 0 }}
+                                    style={{ width: "100px" }}
+                                  />
+                                  <Done
                                     sx={{
-                                      marginLeft: "10px",
-                                      opacity: 0,
-                                      transition: "opacity 0.2s",
-                                      ".MuiTableRow-hover &": {
-                                        opacity: 1,
-                                      },
+                                      color: "green",
                                       cursor: "pointer",
-                                      color: "grey",
                                     }}
-                                    onClick={() => {
-                                      setEditingId(row.id);
-                                      setEditQuantity(row.quantity);
+                                    onClick={async () => {
+                                      try {
+                                        await axios.put(
+                                          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/inventory/inventory.php`,
+                                          JSON.stringify({
+                                            product_id: row.id,
+                                            quantity: editQuantity,
+                                          }),
+                                          {
+                                            headers: {
+                                              Authorization: `Bearer ${localStorage.getItem(
+                                                "token"
+                                              )}`,
+                                              "Content-Type": "application/json",
+                                            },
+                                          }
+                                        );
+                                        row.quantity = editQuantity;
+                                        setEditingId(null);
+                                      } catch (err) {
+                                        console.error(err);
+                                      }
                                     }}
                                   />
-                                </span>
-                              </>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                padding: "5px 15px",
-                                backgroundColor:
-                                  row.admin_verified === "1"
-                                    ? "#cffbcf"
-                                    : "#ffcfcf",
-                                borderRadius: "5px",
-                                color:
-                                  row.admin_verified === "1"
-                                    ? "#008000"
-                                    : "#ff0000",
-                                height: "24px",
-                                width: "fit-content",
-                              }}
-                            >
-                              {row.admin_verified === "1" ? "Yes" : "No"}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <a
-                              href={`https://sadashrijewelkart.com/item/${row.category}/${row.name}-${row.hash}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{
-                                color: "#a36e29",
-                                textDecoration: "none",
-                              }}
-                            >
-                              View
-                            </a>
-                          </TableCell>
+                                  <Close
+                                    sx={{
+                                      color: "red",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() => setEditingId(null)}
+                                  />
+                                </div>
+                              ) : (
+                                <>
+                                  <span
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    {row.quantity} pieces
+                                    <Edit
+                                      sx={{
+                                        marginLeft: "10px",
+                                        opacity: 0,
+                                        transition: "opacity 0.2s",
+                                        ".MuiTableRow-hover &": {
+                                          opacity: 1,
+                                        },
+                                        cursor: "pointer",
+                                        color: "grey",
+                                      }}
+                                      onClick={() => {
+                                        setEditingId(row.id);
+                                        setEditQuantity(row.quantity);
+                                      }}
+                                    />
+                                  </span>
+                                </>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  padding: "5px 15px",
+                                  backgroundColor:
+                                    row.admin_verified === "1"
+                                      ? "#cffbcf"
+                                      : "#ffcfcf",
+                                  borderRadius: "5px",
+                                  color:
+                                    row.admin_verified === "1"
+                                      ? "#008000"
+                                      : "#ff0000",
+                                  height: "24px",
+                                  width: "fit-content",
+                                }}
+                              >
+                                {row.admin_verified === "1" ? "Yes" : "No"}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <a
+                                href={`https://sadashrijewelkart.com/item/${row.category}/${row.name}-${row.hash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  color: "#a36e29",
+                                  textDecoration: "none",
+                                }}
+                              >
+                                View
+                              </a>
+                            </TableCell>
 
-                          <TableCell className="actions-content">
-                            <Edit
-                              className="allow"
-                              onClick={() =>
-                                navigate(
-                                  `/products/edit?id=${row.id}&name=${row.name}&hash=${row.hash}`
-                                )
-                              }
-                              style={{ marginRight: "8px" }}
-                            />
-                            <Close
-                              className="block"
-                              onClick={() => openDeleteDialog(row.id)}
-                            />
-                            {/* <Add
+                            <TableCell className="actions-content">
+                              <Edit
+                                className="allow"
+                                onClick={() =>
+                                  navigate(
+                                    `/products/edit?id=${row.id}&name=${row.name}&hash=${row.hash}`
+                                  )
+                                }
+                                style={{ marginRight: "8px" }}
+                              />
+                              <Close
+                                className="block"
+                                onClick={() => openDeleteDialog(row.id)}
+                              />
+                              {/* <Add
                               className="allow"
                               onClick={() => setVariantsOpen(true)}
                             /> */}
-                          </TableCell>
-                        </TableRow>
+                            </TableCell>
+                            <TableCell>
+                              <IconButton onClick={() => setOpenVariant((prev) => prev === row.id ? null : row.id)}>
+                                {openVariant === row.id ? <ExpandLess /> : <ExpandMore />}
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                          {openVariant === row.id && row.product_variants.map((variant, variantIndex) => (
+                            <>
+                              {row.product_variants.length > 0 && variantIndex === 0 && (<h2 style={{ paddingLeft: "2rem" }}>Variants</h2>)}
+                              <TableRow
+                                hover
+                                role="checkbox"
+                                tabIndex={-1}
+                                key={variant.id}
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                              >
+                                <TableCell style={{ paddingLeft: "2rem" }}>
+                                  {variantIndex + 1}
+                                </TableCell>
+                                <TableCell>{variant.name}</TableCell>
+                                <TableCell>{row.company.name}</TableCell>
+                                <TableCell>₹{variant.price}</TableCell>
+                                <TableCell>{variant.tag}</TableCell>
+                                <TableCell>
+                                  <strong>{variant?.master_product_details?.hash}</strong>
+                                </TableCell>
+                                <TableCell>
+                                  {`${variant.metal_info?.gross_wt ?? 0} gm`}
+                                </TableCell>
+                                <TableCell>
+                                  {editingId === `variant-${variant.id}` ? (
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "8px",
+                                      }}
+                                    >
+                                      <TextField
+                                        value={editQuantity}
+                                        onChange={(e) =>
+                                          setEditQuantity(e.target.value)
+                                        }
+                                        size="small"
+                                        type="number"
+                                        inputProps={{ min: 0 }}
+                                        style={{ width: "100px" }}
+                                      />
+                                      <Done
+                                        sx={{
+                                          color: "green",
+                                          cursor: "pointer",
+                                        }}
+                                        onClick={async () => {
+                                          try {
+                                            await axios.put(
+                                              `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/inventory/inventory.php`,
+                                              JSON.stringify({
+                                                product_id: row.id,
+                                                quantity: editQuantity,
+                                              }),
+                                              {
+                                                headers: {
+                                                  Authorization: `Bearer ${localStorage.getItem(
+                                                    "token"
+                                                  )}`,
+                                                  "Content-Type": "application/json",
+                                                },
+                                              }
+                                            );
+                                            row.quantity = editQuantity;
+                                            setEditingId(null);
+                                          } catch (err) {
+                                            console.error(err);
+                                          }
+                                        }}
+                                      />
+                                      <Close
+                                        sx={{
+                                          color: "red",
+                                          cursor: "pointer",
+                                        }}
+                                        onClick={() => setEditingId(null)}
+                                      />
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <span
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        {row.quantity} pieces
+                                        <Edit
+                                          sx={{
+                                            marginLeft: "10px",
+                                            opacity: 0,
+                                            transition: "opacity 0.2s",
+                                            ".MuiTableRow-hover &": {
+                                              opacity: 1,
+                                            },
+                                            cursor: "pointer",
+                                            color: "grey",
+                                          }}
+                                          onClick={() => {
+                                            setEditingId(`variant-${variant.id}`);
+                                            setEditQuantity(variant?.master_product_details?.quantity);
+                                          }}
+                                        />
+                                      </span>
+                                    </>
+                                  )}
+                                </TableCell>
+                                <TableCell>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      padding: "5px 15px",
+                                      backgroundColor:
+                                        variant.admin_verified === "1"
+                                          ? "#cffbcf"
+                                          : "#ffcfcf",
+                                      borderRadius: "5px",
+                                      color:
+                                        variant.admin_verified === "1"
+                                          ? "#008000"
+                                          : "#ff0000",
+                                      height: "24px",
+                                      width: "fit-content",
+                                    }}
+                                  >
+                                    {variant.admin_verified === "1" ? "Yes" : "No"}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <a
+                                    href={`https://sadashrijewelkart.com/item/${variant?.master_product_details?.category}/${variant?.master_product_details?.name}-${variant?.master_product_details?.hash}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      color: "#a36e29",
+                                      textDecoration: "none",
+                                    }}
+                                  >
+                                    View
+                                  </a>
+                                </TableCell>
+                                {variant.admin_verified === "0" && <TableCell className="actions-content">
+                                  {variant.admin_verified === "0" ? (
+                                    <div>
+                                      {
+                                        <Done
+                                          className="allow"
+                                        // onClick={() => allowProductVariant(variant.id)}
+                                        />
+                                      }
+                                      <Close
+                                        className="block"
+                                        onClick={() => {
+                                          // setDeleteRowId(row.id);
+                                          setDeleteDialogOpen(true);
+                                          // blockProduct(variant.id);
+                                        }}
+                                      />
+                                    </div>
+                                  ) : variant.admin_verified === "1" ? (
+                                    <Close
+                                      className="block"
+                                      onClick={() => {
+                                        // setDeleteRowId(variant.id);
+                                        // setVariantDeleteDialogOpen(true);
+                                        // blockProduct(variant.id);
+                                      }}
+                                    />
+                                  ) : variant.admin_verified === "2" ? (
+                                    <div className="rejected">Blocked</div>
+                                  ) : (
+                                    <div>
+                                      {(
+                                        <Done
+                                          className="allow"
+                                        // onClick={() => allowProductVariant(variant.id)}
+                                        />
+                                      )}
+                                      <Close
+                                        className="block"
+                                        onClick={() => {
+                                          // setDeleteRowId(variant.id);
+                                          // setVariantDeleteDialogOpen(true);
+                                          // blockProduct(variant.id, true);
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                </TableCell>
+                                }
+                              </TableRow>
+                            </>
+                          ))}
+                        </>
+
                       );
                     })}
                 </TableBody>

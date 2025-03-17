@@ -8,6 +8,7 @@ import Divider from "@mui/material/Divider";
 import CloseIcon from "@mui/icons-material/Close";
 
 const PriceBreakout = ({ open, onClose, data, handleSettlementAmountChange }) => {
+    console.log('data', data)
     const [priceDetails, setPriceDetails] = useState(null);
 
     // Calculate whenever data changes, regardless of dialog state

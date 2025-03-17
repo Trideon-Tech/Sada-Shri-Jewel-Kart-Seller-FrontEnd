@@ -24,12 +24,14 @@ import {
     Switch
 } from "@mui/material";
 import { fontSize } from "@mui/system";
+import { type } from "@testing-library/user-event/dist/type";
 
 const AddVariant = (props) => {
+    console.log(props);
     // Initialize state for each prop
     const [variantName, setVariantName] = useState(props.name || "");
-    const [metalType, setMetalType] = useState(props.metalType);
-    const [purity, setPurity] = useState(props.purity);
+    const [metalType, setMetalType] = useState(props.metalType || "");
+    const [purity, setPurity] = useState(props.purity || "");
     const [quantity, setQuantity] = useState(props.quantity || 0);
     const [tag, setTag] = useState(props.tag || "");
     const [grossWeight, setGrossWeight] = useState(props.grossWeight);
@@ -40,11 +42,11 @@ const AddVariant = (props) => {
     const [netWeightAfterWastage, setNetWeightAfterWastage] = useState(props.netWeightAfterWastage || 0);
     const [makingChargeType, setMakingChargeType] = useState(props.makingChargeType);
     const [makingChargeValue, setMakingChargeValue] = useState(props.makingChargeValue);
-    const [makingChargeAmount, setMakingChargeAmount] = useState(props.makingChargeAmount);
-    const [stoneAmount, setStoneAmount] = useState(props.stoneAmount);
-    const [hallmarkCharge, setHallmarkCharge] = useState(props.hallmarkCharge);
-    const [rodiumCharge, setRodiumCharge] = useState(props.rodiumCharge);
-    const [gstPercent, setGstPercent] = useState(props.gstPercent);
+    const [makingChargeAmount, setMakingChargeAmount] = useState(props.makingChargeAmount || 0);
+    const [stoneAmount, setStoneAmount] = useState(props.stoneAmount || 0);
+    const [hallmarkCharge, setHallmarkCharge] = useState(props.hallmarkCharge || 0);
+    const [rodiumCharge, setRodiumCharge] = useState(props.rodiumCharge || 0);
+    const [gstPercent, setGstPercent] = useState(props.gstPercent || 0);
     const [stoneType, setStoneType] = useState(props.stoneType);
     const [stoneColor, setStoneColor] = useState(cleanUnicodeEscapes(props.stoneColor));
     const [stoneClarity, setStoneClarity] = useState(props.stoneClarity);
@@ -69,11 +71,11 @@ const AddVariant = (props) => {
 
     function cleanUnicodeEscapes(text = "") {
         // Step 1: Replace \\u2060 with a zero-width non-joiner (⁠)
-    text = text.replace(/\\\\u2060/g, "\u2060");
-    // Step 2: Replace \\u2013 with an en dash (–)
-    text = text.replace(/\\\\u2013/g, "–");
-    console.log(text); // Log the cleaned text
-    return text;
+        text = text.replace(/\\\\u2060/g, "\u2060");
+        // Step 2: Replace \\u2013 with an en dash (–)
+        text = text.replace(/\\\\u2013/g, "–");
+        console.log(text); // Log the cleaned text
+        return text;
     }
 
     useEffect(() => {
@@ -149,7 +151,8 @@ const AddVariant = (props) => {
         const stoneNetAmount = stoneBaseAmount + stoneGst;
 
         // Total price
-        const totalPrice = (amount || 0) + (stoneNetAmount || 0);
+        const totalPrice = (parseFloat(amount) || 0) + (parseFloat(stoneNetAmount) || 0);
+        setTotalAmount(totalPrice);
 
         const priceDetails = {
             total_price: totalPrice.toFixed(2),
@@ -179,8 +182,33 @@ const AddVariant = (props) => {
             },
         };
         setProductAmountData(priceDetails);
+        calculateMakingChargeAmount();
+        setStoneTotalAmount(
+            parseFloat(priceDetails.stone_calculation.net_amount)
+          );
         return priceDetails;
     };
+
+    const calculateMakingChargeAmount = () => {
+        if (makingChargeType === 6) {
+          setMakingChargeAmount(
+            (
+              parseFloat(makingChargeValue) * parseFloat(netWeightAfterWastage || 0)
+            ).toFixed(2)
+          );
+        } else if (makingChargeType === 7 || makingChargeType === 8) {
+          setMakingChargeAmount(parseFloat(makingChargeValue || 0).toFixed(2));
+        } else if (makingChargeType === 9) {
+          setMakingChargeAmount(
+            parseFloat(
+              makingChargeValue *
+              (rate / 100) *
+              (netWeightAfterWastage || netWeight || 0)
+            ).toFixed(2)
+          );
+        }
+      };
+    
 
     useEffect(() => {
         let selectedOption;
@@ -597,7 +625,7 @@ const AddVariant = (props) => {
                         <div style={{ marginRight: "20px" }}>
                             <div>Total Amount</div>
                             <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
-                                {parseFloat(totalAmount).toFixed(2)}
+                                {parseFloat(amount + stoneTotalAmount).toFixed(2)}
                             </div>
                         </div>
                         <div style={{ marginRight: "20px" }}>
@@ -650,7 +678,7 @@ const AddVariant = (props) => {
                         value={metalType}
                         onChange={(e) => {
                             setMetalType(e.target.value);
-                            // setMakingChargeType(9);
+                            setMakingChargeType(9);
                         }}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {

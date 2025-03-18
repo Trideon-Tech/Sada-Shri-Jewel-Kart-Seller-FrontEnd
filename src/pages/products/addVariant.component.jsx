@@ -74,6 +74,9 @@ const AddVariant = (props) => {
         text = text.replace(/\\\\u2060/g, "\u2060");
         // Step 2: Replace \\u2013 with an en dash (–)
         text = text.replace(/\\\\u2013/g, "–");
+        // Step 3: Remove any additional backslashes
+        text = text.replace(/\\/g, ""); // Changed to remove all backslashes
+        
         console.log(text); // Log the cleaned text
         return text;
     }

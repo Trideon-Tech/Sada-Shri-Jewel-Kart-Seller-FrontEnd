@@ -432,7 +432,7 @@ const Products = () => {
                           </TableRow>
                           {openVariant === row.id && row.product_variants.map((variant, variantIndex) => (
                             <>
-                              {row.product_variants.length > 0 && variantIndex === 0 && (<h2 style={{ paddingLeft: "2rem" }}>Variants</h2>)}
+                              {variantIndex === 0 && row.product_variants.length > 0 && variantIndex === 0 && (<h2 style={{ padding: "1rem", fontWeight: "600" }}>Variants</h2>)}
                               <TableRow
                                 hover
                                 role="checkbox"
@@ -576,55 +576,6 @@ const Products = () => {
                                     View
                                   </a>
                                 </TableCell>
-                                {variant.admin_verified === "0" && <TableCell className="actions-content">
-                                  {variant.admin_verified === "0" ? (
-                                    <div>
-                                      {
-                                        <Done
-                                          className="allow"
-                                        // onClick={() => allowProductVariant(variant.id)}
-                                        />
-                                      }
-                                      <Close
-                                        className="block"
-                                        onClick={() => {
-                                          // setDeleteRowId(row.id);
-                                          setDeleteDialogOpen(true);
-                                          // blockProduct(variant.id);
-                                        }}
-                                      />
-                                    </div>
-                                  ) : variant.admin_verified === "1" ? (
-                                    <Close
-                                      className="block"
-                                      onClick={() => {
-                                        // setDeleteRowId(variant.id);
-                                        // setVariantDeleteDialogOpen(true);
-                                        // blockProduct(variant.id);
-                                      }}
-                                    />
-                                  ) : variant.admin_verified === "2" ? (
-                                    <div className="rejected">Blocked</div>
-                                  ) : (
-                                    <div>
-                                      {(
-                                        <Done
-                                          className="allow"
-                                        // onClick={() => allowProductVariant(variant.id)}
-                                        />
-                                      )}
-                                      <Close
-                                        className="block"
-                                        onClick={() => {
-                                          // setDeleteRowId(variant.id);
-                                          // setVariantDeleteDialogOpen(true);
-                                          // blockProduct(variant.id, true);
-                                        }}
-                                      />
-                                    </div>
-                                  )}
-                                </TableCell>
-                                }
                               </TableRow>
                             </>
                           ))}

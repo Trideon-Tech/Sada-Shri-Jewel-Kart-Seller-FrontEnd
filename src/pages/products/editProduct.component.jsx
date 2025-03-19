@@ -2543,7 +2543,7 @@ const EditProduct = () => {
             </Grid>
           </Grid>
           <Divider />
-          {variants.map((currentVariant, index) => (
+          {variants.map((currentVariant, index) => {return dropdownValues !== undefined && (
             <AddVariant
               variantIndex={index}
               key={index}
@@ -2580,7 +2580,7 @@ const EditProduct = () => {
               tag={currentVariant.tag}
               variants={variants}
             />
-          ))}
+          )})}
         </Paper>
         <Grid container spacing={2} style={{ display: "flex", justifyContent: "start", paddingLeft: "3rem", paddingBottom: "2rem" }}>
           <Grid item xs={1.33}>

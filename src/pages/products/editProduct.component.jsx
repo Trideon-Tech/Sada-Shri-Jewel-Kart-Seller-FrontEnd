@@ -2543,7 +2543,7 @@ const EditProduct = () => {
             </Grid>
           </Grid>
           <Divider />
-          {variants.map((currentVariant, index) => {return dropdownValues !== undefined && (
+          {variants.map((currentVariant, index) => {return dropdownValues !== undefined && adminCommissionPerc !== undefined && adminCommissionPerc !== 0 && (
             <AddVariant
               variantIndex={index}
               key={index}
@@ -2579,6 +2579,7 @@ const EditProduct = () => {
               name={currentVariant.name}
               tag={currentVariant.tag}
               variants={variants}
+              adminCommissionPerc={adminCommissionPerc}
             />
           )})}
         </Paper>

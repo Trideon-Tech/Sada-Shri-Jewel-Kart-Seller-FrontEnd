@@ -16,7 +16,7 @@ const PriceBreakout = ({ open, onClose, data, handleSettlementAmountChange }) =>
         if (data) {
             const result = calculatePaymentDetails(data);
             setPriceDetails(result);
-            
+            console.log(handleSettlementAmountChange);
             if (handleSettlementAmountChange) {
                 handleSettlementAmountChange(result.totalAmountAfterDeduction);
             }
@@ -24,6 +24,7 @@ const PriceBreakout = ({ open, onClose, data, handleSettlementAmountChange }) =>
     }, [data, handleSettlementAmountChange]); // Removed 'open' from dependencies
 
     const calculatePaymentDetails = (data) => {
+        console.log("data", data);
         const metalBaseAmount = isNaN(parseFloat((parseFloat(data.metal_calculation?.base_amount, 2) - parseFloat(data.metal_calculation?.mc, 2)).toFixed(2))) ? 0 : parseFloat((parseFloat(data.metal_calculation?.base_amount, 2) - parseFloat(data.metal_calculation?.mc, 2)).toFixed(2));
        
         

@@ -27,7 +27,7 @@ import { fontSize } from "@mui/system";
 import { type } from "@testing-library/user-event/dist/type";
 
 const AddVariant = (props) => {
-    console.log(props);
+    console.log("props",props);
     // Initialize state for each prop
     const [variantName, setVariantName] = useState(props.name || "");
     const [metalType, setMetalType] = useState(props.metalType || "");
@@ -68,6 +68,7 @@ const AddVariant = (props) => {
     const [settlementAmount, setSettlementAmount] = useState(0);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [variantToRemove, setVariantToRemove] = useState(null);
+    const [adminCommissionPer, setAdminCommissionPerc] = useState(props.adminCommissionPerc);
 
     function cleanUnicodeEscapes(text = "") {
         text = text.replace(/\\/g, ""); // Changed to remove all backslashes
@@ -90,6 +91,8 @@ const AddVariant = (props) => {
             typeof metalInfo === "string" ? JSON.parse(metalInfo) : metalInfo;
         const stone =
             typeof stoneInfo === "string" ? JSON.parse(stoneInfo) : stoneInfo;
+
+            console.log("metal stone",metal, stone)
 
         const metalRate = rates[metal.quality_name] || 0;
         // Calculate net weight
@@ -159,6 +162,7 @@ const AddVariant = (props) => {
 
         const priceDetails = {
             total_price: totalPrice.toFixed(2),
+            admin_commission_perc: adminCommissionPer,
             metal_calculation: {
                 net_weight: netWeight,
                 wastage_weight: wastageWeight,
@@ -168,7 +172,8 @@ const AddVariant = (props) => {
                 net_amount: metalNetAmount,
                 mc: makingChargeAmount,
                 total_amount: metalNetAmount + stoneNetAmount,
-                gst_perc: gstPercent
+                gst_perc: gstPercent,
+                admin_commission_perc: adminCommissionPer
             },
             stone_calculation: {
                 stone_weight: stoneWeight,
@@ -184,6 +189,7 @@ const AddVariant = (props) => {
                 net_weight: netWeight
             },
         };
+        console.log("product amount data", priceDetails );
         setProductAmountData(priceDetails);
         calculateMakingChargeAmount();
         setStoneTotalAmount(
@@ -231,6 +237,10 @@ const AddVariant = (props) => {
             const rateKey = selectedOption === "silver22" ? "silver" : selectedOption;
             setRate(rates[rateKey] || 0);
         }
+    }, [metalType, purity]);
+
+    useEffect(() => {
+        setQualityNameValue();
     }, [metalType, purity]);
 
     useEffect(() => {
@@ -287,6 +297,7 @@ const AddVariant = (props) => {
         netWeightAfterWastage,
         rate,
         makingChargeAmount,
+        adminCommissionPer
     ]);
 
     useEffect(() => {
@@ -334,7 +345,45 @@ const AddVariant = (props) => {
 
     const handlePurityChange = (e) => {
         setPurity(e.target.value);
+    
+        let selectedOption;
+        if (metalType === "gold") {
+          selectedOption = dropdownValues?.[0]?.customization_fields
+            .find((field) => field.name === "gold_quality")
+            ?.property_value.find((opt) => opt.name === e.target.value)?.name;
+        } else if (metalType === "silver") {
+          selectedOption = dropdownValues?.[1]?.customization_fields
+            .find((field) => field.name === "silver_quality")
+            ?.property_value.find((opt) => opt.name === e.target.value)?.name;
+        }
+    
+        setQualityName(selectedOption);
+    
+        if (selectedOption) {
+          const rateKey = selectedOption === "silver22" ? "silver" : selectedOption;
+          setRate(rates[rateKey] || 0);
+        }
     };
+
+    const setQualityNameValue = () => {
+        let selectedOption;
+        if (metalType === "gold") {
+          selectedOption = dropdownValues?.[0]?.customization_fields
+            .find((field) => field.name === "gold_quality")
+            ?.property_value.find((opt) => opt.name === purity)?.name;
+        } else if (metalType === "silver") {
+          selectedOption = dropdownValues?.[1]?.customization_fields
+            .find((field) => field.name === "silver_quality")
+            ?.property_value.find((opt) => opt.name === purity)?.name;
+        }
+    
+        setQualityName(selectedOption);
+    
+        if (selectedOption) {
+          const rateKey = selectedOption === "silver22" ? "silver" : selectedOption;
+          setRate(rates[rateKey] || 0);
+        }
+    }
 
     const handleMakingChargeValueChange = (e) => {
         const value = e.target.value;
@@ -355,6 +404,7 @@ const AddVariant = (props) => {
     };
 
     const handleSettlementAmountChange = (value) => {
+        console.log("setSettlementAmount changed", value)
         setSettlementAmount(value);
     };
 

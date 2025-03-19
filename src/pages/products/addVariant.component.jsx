@@ -70,12 +70,12 @@ const AddVariant = (props) => {
     const [variantToRemove, setVariantToRemove] = useState(null);
 
     function cleanUnicodeEscapes(text = "") {
-        // Step 1: Replace \\u2060 with a zero-width non-joiner (⁠)
-        text = text.replace(/\\\\u2060/g, "\u2060");
-        // Step 2: Replace \\u2013 with an en dash (–)
-        text = text.replace(/\\\\u2013/g, "–");
-        // Step 3: Remove any additional backslashes
         text = text.replace(/\\/g, ""); // Changed to remove all backslashes
+        // Step 1: Replace \\u2060 with a zero-width non-joiner (⁠)
+        text = text.replace(/u2060/g, "\u2060");
+        // Step 2: Replace \\u2013 with an en dash (–)
+        text = text.replace(/u2013/g, "–");
+        // Step 3: Remove any additional backslashes
         
         console.log(text); // Log the cleaned text
         return text;
@@ -368,6 +368,29 @@ const AddVariant = (props) => {
             quantity: updatedVariant.quantity,
             tags: updatedVariant.tag,
             discount_perc: updatedVariant.discount_perc,
+            metalType: updatedVariant.metalType || "",
+            purity: updatedVariant.purity || "",
+            grossWeight: updatedVariant.grossWeight || "",
+            stoneWeight: updatedVariant.stoneWeight || "",
+            netWeight: updatedVariant.netWeight || "0",
+            wastagePercent: updatedVariant.wastagePercent || "",
+            wastageWeight: updatedVariant.wastageWeight || "0",
+            netWeightAfterWastage: updatedVariant.netWeightAfterWastage || "",
+            makingChargeType: updatedVariant.makingChargeType || 9,
+            makingChargeValue: updatedVariant.makingChargeValue || "0",
+            makingChargeAmount: updatedVariant.makingChargeAmount || "0.00",
+            stoneAmount: updatedVariant.stoneAmount || "0",
+            hallmarkCharge: updatedVariant.hallmarkCharge || "0",
+            rodiumCharge: updatedVariant.rodiumCharge || "0",
+            gstPercent: updatedVariant.gstPercent || 0,
+            stoneType: updatedVariant.stoneType || "",
+            stoneColor: updatedVariant.stoneColor || "",
+            stoneClarity: updatedVariant.stoneClarity || "",
+            stoneCut: updatedVariant.stoneCut || "0",
+            stonePieces: updatedVariant.stonePieces || "0",
+            stoneCarat: updatedVariant.stoneCarat || "0",
+            stoneRate: updatedVariant.stoneRate || "0",
+            stoneGSTPercent: updatedVariant.stoneGSTPercent || "0",
             metal: {
                 metal: updatedVariant.metalType || "",
                 quantity: updatedVariant.metalQuantity || 1,
@@ -399,9 +422,11 @@ const AddVariant = (props) => {
             },
         };
         props.setVariants((prevVariants) => {
-            return prevVariants.map((variant, index) =>
+            const updatedVariants = prevVariants.map((variant, index) =>
                 index === props.variantIndex ? { ...variant, ...variantData } : variant
             );
+            console.log("Updated Variant:", updatedVariants[props.variantIndex]);
+            return updatedVariants;
         });
     };
 
@@ -735,7 +760,7 @@ const AddVariant = (props) => {
                         name="quantity"
                         type="number"
                         value={quantity}
-                        // onChange={(e) => setQuantity(e.target.value)}
+                        onChange={(e) => setQuantity(e.target.value)}
                         fullWidth
                         placeholder="Enter quantity"
                         onKeyDown={(e) => {

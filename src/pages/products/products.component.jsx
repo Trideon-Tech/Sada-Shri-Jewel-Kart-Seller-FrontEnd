@@ -61,6 +61,7 @@ const Products = () => {
   const [productToDelete, setProductToDelete] = useState(null);
   const [editingId, setEditingId] = useState();
   const [editQuantity, setEditQuantity] = useState();
+  const [editVarQuantity, setEditVarQuantity] = useState();
   const [openVariant, setOpenVariant] = useState();
   const [searchResults, setSearchResults] = useState([]);
   const [variantsOpen, setVariantsOpen] = useState(false);
@@ -453,7 +454,7 @@ const Products = () => {
                                   <strong>{variant?.master_product_details?.hash}</strong>
                                 </TableCell>
                                 <TableCell>
-                                  {`${variant.metal_info?.gross_wt ?? 0} gm`}
+                                  {`${variant.metal_info?.gross_wt} gm`}
                                 </TableCell>
                                 <TableCell>
                                   {editingId === `variant-${variant.id}` ? (
@@ -465,9 +466,9 @@ const Products = () => {
                                       }}
                                     >
                                       <TextField
-                                        value={editQuantity}
+                                        value={editVarQuantity}
                                         onChange={(e) =>
-                                          setEditQuantity(e.target.value)
+                                          setEditVarQuantity(e.target.value)
                                         }
                                         size="small"
                                         type="number"
@@ -484,8 +485,8 @@ const Products = () => {
                                             await axios.put(
                                               `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/inventory/inventory.php`,
                                               JSON.stringify({
-                                                product_id: row.id,
-                                                quantity: editQuantity,
+                                                product_id: variant?.master_product_details?.id,
+                                                quantity: editVarQuantity,
                                               }),
                                               {
                                                 headers: {
@@ -496,7 +497,7 @@ const Products = () => {
                                                 },
                                               }
                                             );
-                                            row.quantity = editQuantity;
+                                            variant.master_product_details.quantity = editVarQuantity;
                                             setEditingId(null);
                                           } catch (err) {
                                             console.error(err);
@@ -519,7 +520,7 @@ const Products = () => {
                                           alignItems: "center",
                                         }}
                                       >
-                                        {row.quantity} pieces
+                                        {variant?.master_product_details?.quantity} pieces
                                         <Edit
                                           sx={{
                                             marginLeft: "10px",
@@ -533,7 +534,7 @@ const Products = () => {
                                           }}
                                           onClick={() => {
                                             setEditingId(`variant-${variant.id}`);
-                                            setEditQuantity(variant?.master_product_details?.quantity);
+                                            setEditVarQuantity(variant?.master_product_details?.quantity);
                                           }}
                                         />
                                       </span>

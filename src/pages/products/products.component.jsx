@@ -446,6 +446,7 @@ const Products = () => {
                                 <TableCell style={{ paddingLeft: "2rem" }}>
                                   {variantIndex + 1}
                                 </TableCell>
+                                <TableCell>{variant.created_at}</TableCell>
                                 <TableCell>{variant.name}</TableCell>
                                 <TableCell>{row.company.name}</TableCell>
                                 <TableCell>₹{variant.price}</TableCell>

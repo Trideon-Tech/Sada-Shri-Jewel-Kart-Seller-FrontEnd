@@ -95,6 +95,9 @@ const AddNewProduct = () => {
   const [grossWeight, setGrossWeight] = useState();
   const [tags, setTags] = useState();
   const [stoneWeight, setStoneWeight] = useState(0);
+  const [giaLink, setgiaLink] = useState("");
+  const [igiLink, setIgiLink] = useState("");
+  const [bisCareLink, setBisCareLink] = useState("");
   const [netWeight, setNetWeight] = useState();
   const [wastagePercent, setWastagePercent] = useState(0);
   const [wastageWeight, setWastageWeight] = useState(0);
@@ -666,6 +669,9 @@ const AddNewProduct = () => {
           stone_rate: stoneRate || "0",
           gst_perc: stoneGSTPercent || "0",
         },
+        igiLink: igiLink || "",
+        bisCareLink: bisCareLink || "",
+        giaLink: giaLink || ""
       };
 
       // Call the addProduct endpoint
@@ -722,6 +728,9 @@ const AddNewProduct = () => {
             stone_rate: variant.stone.stone_rate || "0", // Use actual stone rate from state
             gst_perc: variant.stone.gst_perc || "0", // Use actual stone GST percentage from state
           },
+          igiLink: variant.igiLink || "",
+          bisCareLink: variant.bisCareLink || "",
+          giaLink: variant.giaLink || ""
         };
 
         await axios.post(
@@ -2277,6 +2286,45 @@ const AddNewProduct = () => {
                 </Select>
               </FormControl>
             </Grid>
+            <Grid item xs={12}>
+              <div className="label">Verify Product Credentials</div>
+            </Grid>
+            <Grid item xs={4}>
+              <div className="label">IGI Certificate Link</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={igiLink}
+                  onChange={(e) => setIgiLink(e.target.value)}
+                  
+                  fullWidth
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <div className="label">GIA Certificate Link</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={giaLink}
+                  onChange={(e) => setgiaLink(e.target.value)}
+                  
+                  fullWidth
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <div className="label">BIS Link</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={bisCareLink}
+                  onChange={(e) => setBisCareLink(e.target.value)}
+                  
+                  fullWidth
+                />
+              </FormControl>
+            </Grid>
           </Grid>
           <Divider />
           {variants.map((_, index) => (
@@ -2313,6 +2361,9 @@ const AddNewProduct = () => {
               removeVariant={removeVariant}
               setVariants={setVariants} 
               variants={variants}
+              giaLink={giaLink}
+              bisCareLink={bisCareLink}
+              igiLink={igiLink}
             />
           ))}
         </Paper>

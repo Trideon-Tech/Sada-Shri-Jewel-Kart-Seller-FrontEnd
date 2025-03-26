@@ -69,6 +69,9 @@ const AddVariant = (props) => {
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [variantToRemove, setVariantToRemove] = useState(null);
     const [adminCommissionPer, setAdminCommissionPerc] = useState(props.adminCommissionPerc);
+    const [giaLink, setgiaLink] = useState(props.giaLink);
+    const [igiLink, setIgiLink] = useState(props.igiLink);
+    const [bisCareLink, setBisCareLink] = useState(props.bisCareLink);
 
     function cleanUnicodeEscapes(text = "") {
         text = text.replace(/\\/g, ""); // Changed to remove all backslashes
@@ -470,6 +473,9 @@ const AddVariant = (props) => {
                 stone_rate: updatedVariant.stoneRate || "0",
                 gst_perc: updatedVariant.stoneGSTPercent || "0",
             },
+            igiLink: updatedVariant.igiLink || "",
+            bisCareLink: updatedVariant.bisCareLink || "",
+            giaLink: updatedVariant.giaLink || ""
         };
         props.setVariants((prevVariants) => {
             const updatedVariants = prevVariants.map((variant, index) =>
@@ -518,6 +524,9 @@ const AddVariant = (props) => {
             productAmountData,
             qualityName,
             settlementAmount,
+            giaLink,
+            igiLink,
+            bisCareLink
         });
     }, [
         variantName,
@@ -1414,6 +1423,42 @@ const AddVariant = (props) => {
                             ))}
                     </Select>
                 </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <div className="label">Verify Product Credentials</div>
+            </Grid>
+            <Grid item xs={4}>
+              <div className="label">IGI Certificate Link</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={igiLink}
+                  onChange={(e) => setIgiLink(e.target.value)}
+                  fullWidth
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <div className="label">GIA Certificate Link</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={giaLink}
+                  onChange={(e) => setgiaLink(e.target.value)}
+                  fullWidth
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <div className="label">BIS Link</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={bisCareLink}
+                  onChange={(e) => setBisCareLink(e.target.value)}
+                  fullWidth
+                />
+              </FormControl>
             </Grid>
         </Grid>
 

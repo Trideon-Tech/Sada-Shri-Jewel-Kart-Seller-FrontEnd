@@ -136,6 +136,9 @@ const EditProduct = () => {
   const [video, setVideo] = useState(null);
   const [videoIndex, setVideoIndex] = useState(null);
   const [currentImageUrl, setCurrentImageUrl] = useState([]);
+  const [igiLink, setIgiLink] = useState(null);
+  const [bisCareLink, setBisCareLink] = useState(null);
+  const [giaLink, setgiaLink] = useState(null);
 
   const [product, setProduct] = useState(null);
 
@@ -337,7 +340,9 @@ const EditProduct = () => {
       if (typeof productData.video !== "string") {
         setOrigVideo(productData.video);
       }
-
+      setBisCareLink(productData.BIS || "")
+      setIgiLink(productData.IGI || "")
+      setgiaLink(productData.GIA|| "")
       const category = categoriesData.find(
         (cat) => cat.name === productData.category
       );
@@ -669,6 +674,9 @@ const EditProduct = () => {
           stone_rate: stoneRate || "0",
           gst_perc: stoneGSTPercent || "0",
         },
+        igiLink: igiLink || "",
+        bisCareLink: bisCareLink || "",
+        giaLink: giaLink || ""
       };
 
       const productResponse = await axios.put(
@@ -2539,6 +2547,44 @@ const EditProduct = () => {
                       </MenuItem>
                     ))}
                 </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <div className="label">Verify Product Credentials</div>
+            </Grid>
+            <Grid item xs={4}>
+              <div className="label">IGI Certificate Link</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={igiLink}
+                  onChange={(e) => setIgiLink(e.target.value)}
+                  
+                  fullWidth
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <div className="label">GIA Certificate Link</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={giaLink}
+                  onChange={(e) => setgiaLink(e.target.value)}
+                  fullWidth
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <div className="label">BIS Link</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={bisCareLink}
+                  onChange={(e) => setBisCareLink(e.target.value)}
+                  
+                  fullWidth
+                />
               </FormControl>
             </Grid>
           </Grid>

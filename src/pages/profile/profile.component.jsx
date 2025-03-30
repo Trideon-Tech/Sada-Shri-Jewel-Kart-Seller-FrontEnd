@@ -24,6 +24,7 @@ const Profile = () => {
   const [details, setDetails] = useState();
   const [newProfileImage, setNewProfileImage] = useState(null);
   const [newCoverImage, setNewCoverImage] = useState(null);
+  const [isImageValid, setIsImageValid] = useState(true);
 
   const getProfileDetails = () => {
     let data = new FormData();
@@ -50,7 +51,7 @@ const Profile = () => {
         setCompanyTradeName(
           response?.data?.response?.organization?.name?.length > 20
             ? response?.data?.response?.organization?.name.substring(0, 20) +
-                "..."
+            "..."
             : response?.data?.response?.organization?.name
         );
         setCoverImage(response?.data?.response?.organization?.cover_image);
@@ -82,7 +83,7 @@ const Profile = () => {
   const updateProfileDetails = () => {
     console.log(
       firstName !== details?.name?.split(" ")[0] ||
-        lastName !== details?.name?.split(" ")[1]
+      lastName !== details?.name?.split(" ")[1]
     );
     if (newProfileImage || newCoverImage || emailId) {
       const FormData = require("form-data");
@@ -298,19 +299,24 @@ const Profile = () => {
                     onChange={handleProfileImageChange}
                     disabled={editProfile}
                   />
-                  <img
-                    src={
-                      newProfileImage
-                        ? URL.createObjectURL(newProfileImage)
-                        : `${process.env.REACT_APP_API_BASE_URL}/assets/${profileImage}`
-                    }
-                    style={{
-                      width: "130px",
-                      height: "130px",
-                      borderRadius: "100px",
-                      backgroundColor: "lightgray",
-                    }}
-                  />
+                  {isImageValid && (
+                    <img
+                      src={
+                        newProfileImage
+                          ? URL.createObjectURL(newProfileImage)
+                          : `${process.env.REACT_APP_API_BASE_URL}/assets/${profileImage}`
+                      }
+                      alt=""
+                      style={{
+                        display: isImageValid ? "block" : "none", width: "130px",
+                        height: "130px",
+                        borderRadius: "100px",
+                        backgroundColor: "lightgray",
+                      }}
+                      onError={() => setIsImageValid(false)} // Hide image if it fails to load
+                    />
+                  )}
+
                 </Box>
                 <Box
                   style={{

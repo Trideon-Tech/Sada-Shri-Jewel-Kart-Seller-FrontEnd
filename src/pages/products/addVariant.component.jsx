@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useEffect } from "react";
 import PriceBreakout from "./priceBreakout.component";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+
 import {
     Button,
     CircularProgress,
@@ -89,6 +91,27 @@ const AddVariant = (props) => {
         setStoneColor(cleanUnicodeEscapes(props.stoneColor));
     }, [props.stoneColor]);
 
+    const handleFileUpload = (e, setLink) => {
+        const file = e.target.files[0];
+        if (file) {
+          const formData = new FormData();
+          formData.append("file", file);
+    
+          fetch(`${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/uploadDoc/uploadDoc.php`, {
+            method: "POST",
+            body: formData,
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success) {
+                setLink(data.file_location);
+              } else {
+                console.error("Upload failed:", data.message);
+              }
+            })
+            .catch((error) => console.error("Error:", error));
+        }
+      };
     const calculateTotalPrice = (metalInfo, stoneInfo) => {
         const metal =
             typeof metalInfo === "string" ? JSON.parse(metalInfo) : metalInfo;
@@ -1436,8 +1459,22 @@ const AddVariant = (props) => {
                   onChange={(e) => setIgiLink(e.target.value)}
                   fullWidth
                 />
+                <Button
+                  variant="contained"
+                  component="label"
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Upload File
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    hidden
+                    onChange={(e) => handleFileUpload(e, setIgiLink)}
+                  />
+                </Button>
               </FormControl>
             </Grid>
+
             <Grid item xs={4}>
               <div className="label">GIA Certificate Link</div>
               <FormControl fullWidth>
@@ -1447,8 +1484,22 @@ const AddVariant = (props) => {
                   onChange={(e) => setgiaLink(e.target.value)}
                   fullWidth
                 />
+                <Button
+                  variant="contained"
+                  component="label"
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Upload File
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    hidden
+                    onChange={(e) => handleFileUpload(e, setgiaLink)}
+                  />
+                </Button>
               </FormControl>
             </Grid>
+
             <Grid item xs={4}>
               <div className="label">BIS Link</div>
               <FormControl fullWidth>
@@ -1458,6 +1509,19 @@ const AddVariant = (props) => {
                   onChange={(e) => setBisCareLink(e.target.value)}
                   fullWidth
                 />
+                <Button
+                  variant="contained"
+                  component="label"
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Upload File
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    hidden
+                    onChange={(e) => handleFileUpload(e, setBisCareLink)}
+                  />
+                </Button>
               </FormControl>
             </Grid>
         </Grid>

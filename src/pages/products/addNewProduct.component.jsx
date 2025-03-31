@@ -31,6 +31,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./addNewProduct.styles.scss";
 import PriceBreakout from "./priceBreakout.component";
 import AddVariant from "./addVariant.component";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 const theme = createTheme({
   palette: {
@@ -171,6 +172,28 @@ const AddNewProduct = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [openDescriptionModal, setOpenDescriptionModal] = useState(false); // Modal open state
   const [sellerAIAssist, setSellerAIAssist] = useState(0);
+
+  const handleFileUpload = (e, setLink) => {
+    const file = e.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      fetch(`${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/uploadDoc/uploadDoc.php`, {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            setLink(data.file_location);
+          } else {
+            console.error("Upload failed:", data.message);
+          }
+        })
+        .catch((error) => console.error("Error:", error));
+    }
+  };
 
   const calculateTotalPrice = (metalInfo, stoneInfo) => {
     const metal =
@@ -713,7 +736,7 @@ const AddNewProduct = () => {
             making_charge_value: variant.metal.making_charge_value || "0", // Use actual making charge value from state
             making_charge_amount: variant.metal.making_charge_amount || "0.00", // Use actual making charge amount from state
             stone_amount: variant.metal.stone_amount || "0", // Use actual stone amount from state
-            hallmark_charge: variant.metal.hallmark_charge|| "0", // Use actual hallmark charge from state
+            hallmark_charge: variant.metal.hallmark_charge || "0", // Use actual hallmark charge from state
             rodium_charge: variant.metal.rodium_charge || "0", // Use actual rodium charge from state
             gst_perc: variant.metal.gst_perc || 0, // Use actual GST percentage from state
           },
@@ -734,14 +757,14 @@ const AddNewProduct = () => {
         };
 
         await axios.post(
-            `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/addVariants.php`,
-            variantData,
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            }
+          `${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/product/addVariants.php`,
+          variantData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
         );
       }
 
@@ -2289,42 +2312,38 @@ const AddNewProduct = () => {
             <Grid item xs={12}>
               <div className="label">Verify Product Credentials</div>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={3.9}>
               <div className="label">IGI Certificate Link</div>
               <FormControl fullWidth>
-                <TextField
-                  type="text"
-                  value={igiLink}
-                  onChange={(e) => setIgiLink(e.target.value)}
-                  
-                  fullWidth
-                />
+                <TextField type="text" value={igiLink} onChange={(e) => setIgiLink(e.target.value)} fullWidth />
+                <Button variant="contained" component="label" startIcon={<CloudUploadIcon />}>
+                  Upload File
+                  <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" hidden onChange={(e) => handleFileUpload(e, setIgiLink)} />
+                </Button>
               </FormControl>
-            </Grid>
-            <Grid item xs={4}>
+            </Grid>;
+
+            <Grid item xs={3.9}>
               <div className="label">GIA Certificate Link</div>
               <FormControl fullWidth>
-                <TextField
-                  type="text"
-                  value={giaLink}
-                  onChange={(e) => setgiaLink(e.target.value)}
-                  
-                  fullWidth
-                />
+                <TextField type="text" value={giaLink} onChange={(e) => setgiaLink(e.target.value)} fullWidth />
+                <Button variant="contained" component="label" startIcon={<CloudUploadIcon />}>
+                  Upload File
+                  <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" hidden onChange={(e) => handleFileUpload(e, setgiaLink)} />
+                </Button>
               </FormControl>
-            </Grid>
-            <Grid item xs={4}>
+            </Grid>;
+
+            <Grid item xs={3.9}>
               <div className="label">BIS Link</div>
               <FormControl fullWidth>
-                <TextField
-                  type="text"
-                  value={bisCareLink}
-                  onChange={(e) => setBisCareLink(e.target.value)}
-                  
-                  fullWidth
-                />
+                <TextField type="text" value={bisCareLink} onChange={(e) => setBisCareLink(e.target.value)} fullWidth />
+                <Button variant="contained" component="label" startIcon={<CloudUploadIcon />}>
+                  Upload File
+                  <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" hidden onChange={(e) => handleFileUpload(e, setBisCareLink)} />
+                </Button>
               </FormControl>
-            </Grid>
+            </Grid>;
           </Grid>
           <Divider />
           {variants.map((_, index) => (
@@ -2359,7 +2378,7 @@ const AddNewProduct = () => {
               stoneGSTPercent={stoneGSTPercent}
               rates={rates}
               removeVariant={removeVariant}
-              setVariants={setVariants} 
+              setVariants={setVariants}
               variants={variants}
               giaLink={giaLink}
               bisCareLink={bisCareLink}

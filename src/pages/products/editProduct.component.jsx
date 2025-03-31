@@ -31,6 +31,7 @@ import { generalToastStyle } from "../../utils/toast.styles";
 import "./addNewProduct.styles.scss";
 import PriceBreakout from "./priceBreakout.component";
 import AddVariant from "./addVariant.component";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 const theme = createTheme({
   palette: {
@@ -175,6 +176,31 @@ const EditProduct = () => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
+  const handleFileUpload = async (event, setLink) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/v1.0.0/seller/uploadDoc/uploadDoc.php`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setLink(data.file_location); // Set uploaded file URL
+      } else {
+        alert('File upload failed: ' + data.message);
+      }
+    } catch (error) {
+      alert('Error uploading file: ' + error.message);
+    }
+  };
+
+
   const removeVariant = async (index) => {
     // api call to remove variant
     if (variants[index].id) {
@@ -187,7 +213,7 @@ const EditProduct = () => {
           data: { id: variants[index].id, key: "variant" }
         }
       );
-      
+
       if (response.data.status === 1) {
         toast.success(response.data.message);
         window.location.reload();
@@ -342,7 +368,7 @@ const EditProduct = () => {
       }
       setBisCareLink(productData.BIS || "")
       setIgiLink(productData.IGI || "")
-      setgiaLink(productData.GIA|| "")
+      setgiaLink(productData.GIA || "")
       const category = categoriesData.find(
         (cat) => cat.name === productData.category
       );
@@ -756,7 +782,7 @@ const EditProduct = () => {
 
   const updateVariants = async () => {
     const variantPromises = variants.map(async (variant) => {
-      console.log("update variant",variant)
+      console.log("update variant", variant)
       const variantData = {
         id: variant.id, // Check if this exists to determine the endpoint
         product_id: productId,
@@ -782,8 +808,8 @@ const EditProduct = () => {
           hallmark_charge: variant.hallmarkCharge || "0",
           rodium_charge: variant.rodiumCharge || "0",
           gst_perc: variant.gstPercent || 0,
-      },
-      stone: {
+        },
+        stone: {
           stone_type: variant.stoneType || "",
           color: variant.stoneColor || "",
           clarity: variant.stoneClarity || "",
@@ -793,7 +819,7 @@ const EditProduct = () => {
           stone_wt: variant.stoneWeight || "0",
           stone_rate: variant.stoneRate || "0",
           gst_perc: variant.stoneGSTPercent || "0",
-      },
+        },
       };
 
       // Check if variant.id exists to determine the correct endpoint
@@ -2559,11 +2585,24 @@ const EditProduct = () => {
                   type="text"
                   value={igiLink}
                   onChange={(e) => setIgiLink(e.target.value)}
-                  
                   fullWidth
                 />
+                <Button
+                  variant="contained"
+                  component="label"
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Upload File
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    hidden
+                    onChange={(e) => handleFileUpload(e, setIgiLink)}
+                  />
+                </Button>
               </FormControl>
             </Grid>
+
             <Grid item xs={4}>
               <div className="label">GIA Certificate Link</div>
               <FormControl fullWidth>
@@ -2573,8 +2612,22 @@ const EditProduct = () => {
                   onChange={(e) => setgiaLink(e.target.value)}
                   fullWidth
                 />
+                <Button
+                  variant="contained"
+                  component="label"
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Upload File
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    hidden
+                    onChange={(e) => handleFileUpload(e, setgiaLink)}
+                  />
+                </Button>
               </FormControl>
             </Grid>
+
             <Grid item xs={4}>
               <div className="label">BIS Link</div>
               <FormControl fullWidth>
@@ -2582,52 +2635,67 @@ const EditProduct = () => {
                   type="text"
                   value={bisCareLink}
                   onChange={(e) => setBisCareLink(e.target.value)}
-                  
                   fullWidth
                 />
+                <Button
+                  variant="contained"
+                  component="label"
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Upload File
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    hidden
+                    onChange={(e) => handleFileUpload(e, setBisCareLink)}
+                  />
+                </Button>
               </FormControl>
             </Grid>
+
           </Grid>
           <Divider />
-          {variants.map((currentVariant, index) => {return dropdownValues !== undefined && adminCommissionPerc !== undefined && adminCommissionPerc !== 0 && (
-            <AddVariant
-              variantIndex={index}
-              key={index}
-              metalType={currentVariant.metalType || metalType}
-              purity={currentVariant.purity || purity}
-              dropdownValues={dropdownValues}
-              quantity={currentVariant.quantity || quantity}
-              grossWeight={currentVariant.grossWeight || grossWeight}
-              stoneWeight={currentVariant.stoneWeight || stoneWeight}
-              netWeight={currentVariant.netWeight || netWeight}
-              wastagePercent={currentVariant.wastagePercent || wastagePercent}
-              wastageWeight={currentVariant.wastageWeight || wastageWeight}
-              netWeightAfterWastage={currentVariant.netWeightAfterWastage || netWeightAfterWastage}
-              makingChargeType={currentVariant.makingChargeType || makingChargeType}
-              makingChargeValue={currentVariant.makingChargeValue || makingChargeValue}
-              makingChargeAmount={currentVariant.makingChargeAmount || makingChargeAmount}
-              stoneAmount={currentVariant.stoneAmount || stoneAmount}
-              hallmarkCharge={currentVariant.hallmarkCharge || hallmarkCharge}
-              gstPercent={currentVariant.gstPercent || gstPercent}
-              rodiumCharge={currentVariant.rodiumCharge || rodiumCharge}
-              stoneType={currentVariant.stoneType || stoneType}
-              stoneColor={currentVariant.stoneColor || stoneColor}
-              stoneClarity={currentVariant.stoneClarity || stoneClarity}
-              stoneCut={currentVariant.stoneCut || stoneCut}
-              stonePieces={currentVariant.stonePieces || stonePieces}
-              stoneCarat={currentVariant.stoneCarat || stoneCarat}
-              stoneRate={currentVariant.stoneRate || stoneRate}
-              stoneInternalWeight={currentVariant.stoneInternalWeight || stoneInternalWeight}
-              stoneGSTPercent={currentVariant.stoneGSTPercent || stoneGSTPercent}
-              rates={rates}
-              removeVariant={removeVariant}
-              setVariants={setVariants}
-              name={currentVariant.name}
-              tag={currentVariant.tag}
-              variants={variants}
-              adminCommissionPerc={adminCommissionPerc}
-            />
-          )})}
+          {variants.map((currentVariant, index) => {
+            return dropdownValues !== undefined && adminCommissionPerc !== undefined && adminCommissionPerc !== 0 && (
+              <AddVariant
+                variantIndex={index}
+                key={index}
+                metalType={currentVariant.metalType || metalType}
+                purity={currentVariant.purity || purity}
+                dropdownValues={dropdownValues}
+                quantity={currentVariant.quantity || quantity}
+                grossWeight={currentVariant.grossWeight || grossWeight}
+                stoneWeight={currentVariant.stoneWeight || stoneWeight}
+                netWeight={currentVariant.netWeight || netWeight}
+                wastagePercent={currentVariant.wastagePercent || wastagePercent}
+                wastageWeight={currentVariant.wastageWeight || wastageWeight}
+                netWeightAfterWastage={currentVariant.netWeightAfterWastage || netWeightAfterWastage}
+                makingChargeType={currentVariant.makingChargeType || makingChargeType}
+                makingChargeValue={currentVariant.makingChargeValue || makingChargeValue}
+                makingChargeAmount={currentVariant.makingChargeAmount || makingChargeAmount}
+                stoneAmount={currentVariant.stoneAmount || stoneAmount}
+                hallmarkCharge={currentVariant.hallmarkCharge || hallmarkCharge}
+                gstPercent={currentVariant.gstPercent || gstPercent}
+                rodiumCharge={currentVariant.rodiumCharge || rodiumCharge}
+                stoneType={currentVariant.stoneType || stoneType}
+                stoneColor={currentVariant.stoneColor || stoneColor}
+                stoneClarity={currentVariant.stoneClarity || stoneClarity}
+                stoneCut={currentVariant.stoneCut || stoneCut}
+                stonePieces={currentVariant.stonePieces || stonePieces}
+                stoneCarat={currentVariant.stoneCarat || stoneCarat}
+                stoneRate={currentVariant.stoneRate || stoneRate}
+                stoneInternalWeight={currentVariant.stoneInternalWeight || stoneInternalWeight}
+                stoneGSTPercent={currentVariant.stoneGSTPercent || stoneGSTPercent}
+                rates={rates}
+                removeVariant={removeVariant}
+                setVariants={setVariants}
+                name={currentVariant.name}
+                tag={currentVariant.tag}
+                variants={variants}
+                adminCommissionPerc={adminCommissionPerc}
+              />
+            )
+          })}
         </Paper>
         <Grid container spacing={2} style={{ display: "flex", justifyContent: "start", paddingLeft: "3rem", paddingBottom: "2rem" }}>
           <Grid item xs={1.33}>

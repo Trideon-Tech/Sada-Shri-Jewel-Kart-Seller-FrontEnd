@@ -264,7 +264,7 @@ const AddNewProduct = () => {
     const stoneNetAmount = stoneBaseAmount + stoneGst;
 
     // Total price
-    const totalPrice = (amount || 0) + (stoneNetAmount || 0);
+    const totalPrice = (metalNetAmount || 0) + (stoneNetAmount || 0);
 
     const priceDetails = {
       total_price: totalPrice.toFixed(2),

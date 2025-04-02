@@ -69,7 +69,7 @@ const mcTypeMapping = {
 const purityMapping = {
   "GOLD JEWELLERY": "gold22",
   "SILVER ARTICLES": "silver22",
-  "SILVER JEWELLERY": "silver22",
+  "SILVER JEWELLERY": "92.5",
 }
 
 const AddNewProduct = () => {
@@ -414,7 +414,7 @@ const AddNewProduct = () => {
     setQualityName(selectedOption);
 
     if (selectedOption) {
-      const rateKey = selectedOption === "silver22" ? "silver" : selectedOption;
+      const rateKey = selectedOption === "silver22" ? "silver22" : selectedOption;
       setRate(rates[rateKey] || 0);
     }
   }, [metalType, purity]);

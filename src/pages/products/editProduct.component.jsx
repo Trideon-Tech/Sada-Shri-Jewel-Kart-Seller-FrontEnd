@@ -63,7 +63,7 @@ const typeMapping = {
 const purityMapping = {
   "GOLD JEWELLERY": "gold22",
   "SILVER ARTICLES": "silver22",
-  "SILVER JEWELLERY": "silver22",
+  "SILVER JEWELLERY": "92.5",
 };
 
 const mcTypeMapping = {
@@ -478,7 +478,7 @@ const EditProduct = () => {
       setPurity(purityMapping[category] || ""); // Set purity based on category
       setMakingChargeType(mcTypeMapping[category] || "");
       if (purityMapping[category] == "silver22") {
-        setRate(rates["silver"] || 0);
+        setRate(rates["silver22"] || 0);
       } else {
         setRate(rates[purityMapping[category]] || 0);
       }
@@ -976,7 +976,7 @@ const EditProduct = () => {
     setQualityName(selectedOption);
 
     if (selectedOption) {
-      const rateKey = selectedOption === "silver22" ? "silver" : selectedOption;
+      const rateKey = selectedOption === "silver22" ? "silver22" : selectedOption;
       setRate(rates[rateKey] || 0);
     }
   };
@@ -1013,15 +1013,13 @@ const EditProduct = () => {
   };
 
   const calculateMakingChargeAmount = () => {
-    if (makingChargeType === 6) {
-      setMakingChargeAmount(
-        (
-          parseFloat(makingChargeValue) * parseFloat(netWeightAfterWastage || 0)
-        ).toFixed(2)
-      );
-    } else if (makingChargeType === 7 || makingChargeType === 8) {
+    console.log("makingChargeType changed", makingChargeType, makingChargeValue, netWeightAfterWastage);
+    if (makingChargeType == 6) {
+      setMakingChargeAmount((parseFloat(makingChargeValue) * parseFloat(netWeightAfterWastage || 0)).toFixed(2));
+      console.log("setMakingChargeAmount", (parseFloat(makingChargeValue) * parseFloat(netWeightAfterWastage || 0)).toFixed(2));
+    } else if (makingChargeType == 7 || makingChargeType == 8) {
       setMakingChargeAmount(parseFloat(makingChargeValue || 0).toFixed(2));
-    } else if (makingChargeType === 9) {
+    } else if (makingChargeType == 9) {
       setMakingChargeAmount(
         parseFloat(
           makingChargeValue *
@@ -1181,6 +1179,7 @@ const EditProduct = () => {
       setStoneTotalAmount(
         parseFloat(priceDetails.stone_calculation.net_amount)
       );
+      console.log("priceDetails",priceDetails);
     }
   }, [
     grossWeight,
@@ -2171,7 +2170,7 @@ const EditProduct = () => {
                   value={makingChargeType}
                   onChange={(e) => {
                     setMakingChargeType(e.target.value);
-                    setMakingChargeValue();
+                    // setMakingChargeValue();
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -2205,7 +2204,7 @@ const EditProduct = () => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        {makingChargeType == 9 ? "%" : "₹"}
+                        {makingChargeType === 9 ? "%" : "₹"}
                       </InputAdornment>
                     ),
                   }}

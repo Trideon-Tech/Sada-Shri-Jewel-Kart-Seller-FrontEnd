@@ -30,8 +30,7 @@ const OrderInfoCard = ({ orderDetail }) => {
           },
         }
       );
-
-      if (response.data.success) {
+      if (response.success) {
         const formData = new FormData();
         formData.append("type", "verify_product");
         formData.append("order_detail_id", orderDetail?.order_detail_id);

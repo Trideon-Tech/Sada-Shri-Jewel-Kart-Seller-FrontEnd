@@ -140,6 +140,8 @@ const EditProduct = () => {
   const [igiLink, setIgiLink] = useState(null);
   const [bisCareLink, setBisCareLink] = useState(null);
   const [giaLink, setgiaLink] = useState(null);
+  const [gsiLink, setGsiLink] = useState(null);
+  const [sglLink, setSglLink] = useState(null);
 
   const [product, setProduct] = useState(null);
 
@@ -369,6 +371,8 @@ const EditProduct = () => {
       setBisCareLink(productData.BIS || "")
       setIgiLink(productData.IGI || "")
       setgiaLink(productData.GIA || "")
+      setSglLink(productData.SGL || "")
+      setGsiLink(productData.GSI || "")
       const category = categoriesData.find(
         (cat) => cat.name === productData.category
       );
@@ -702,7 +706,9 @@ const EditProduct = () => {
         },
         igiLink: igiLink || "",
         bisCareLink: bisCareLink || "",
-        giaLink: giaLink || ""
+        giaLink: giaLink || "",
+        gsiLink: gsiLink || "",
+        sglLink: sglLink || ""
       };
 
       const productResponse = await axios.put(
@@ -2577,7 +2583,7 @@ const EditProduct = () => {
             <Grid item xs={12}>
               <div className="label">Verify Product Credentials</div>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={2.4}>
               <div className="label">IGI Certificate Link</div>
               <FormControl fullWidth>
                 <TextField
@@ -2586,7 +2592,7 @@ const EditProduct = () => {
                   onChange={(e) => setIgiLink(e.target.value)}
                   fullWidth
                 />
-                <Button
+                {/* <Button
                   variant="contained"
                   component="label"
                   startIcon={<CloudUploadIcon />}
@@ -2598,11 +2604,11 @@ const EditProduct = () => {
                     hidden
                     onChange={(e) => handleFileUpload(e, setIgiLink)}
                   />
-                </Button>
+                </Button> */}
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item xs={2.4}>
               <div className="label">GIA Certificate Link</div>
               <FormControl fullWidth>
                 <TextField
@@ -2611,7 +2617,7 @@ const EditProduct = () => {
                   onChange={(e) => setgiaLink(e.target.value)}
                   fullWidth
                 />
-                <Button
+                {/* <Button
                   variant="contained"
                   component="label"
                   startIcon={<CloudUploadIcon />}
@@ -2623,11 +2629,11 @@ const EditProduct = () => {
                     hidden
                     onChange={(e) => handleFileUpload(e, setgiaLink)}
                   />
-                </Button>
+                </Button> */}
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item xs={2.4}>
               <div className="label">BIS Link</div>
               <FormControl fullWidth>
                 <TextField
@@ -2636,7 +2642,7 @@ const EditProduct = () => {
                   onChange={(e) => setBisCareLink(e.target.value)}
                   fullWidth
                 />
-                <Button
+                {/* <Button
                   variant="contained"
                   component="label"
                   startIcon={<CloudUploadIcon />}
@@ -2648,7 +2654,57 @@ const EditProduct = () => {
                     hidden
                     onChange={(e) => handleFileUpload(e, setBisCareLink)}
                   />
-                </Button>
+                </Button> */}
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={2.4}>
+              <div className="label">GSI Link</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={gsiLink}
+                  onChange={(e) => setGsiLink(e.target.value)}
+                  fullWidth
+                />
+                {/* <Button
+                  variant="contained"
+                  component="label"
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Upload File
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    hidden
+                    onChange={(e) => handleFileUpload(e, setgiaLink)}
+                  />
+                </Button> */}
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={2.4}>
+              <div className="label">SGL Link</div>
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  value={sglLink}
+                  onChange={(e) => setSglLink(e.target.value)}
+                  fullWidth
+                />
+                {/* <Button
+                  variant="contained"
+                  component="label"
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Upload File
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    hidden
+                    onChange={(e) => handleFileUpload(e, setBisCareLink)}
+                  />
+                </Button> */}
               </FormControl>
             </Grid>
 

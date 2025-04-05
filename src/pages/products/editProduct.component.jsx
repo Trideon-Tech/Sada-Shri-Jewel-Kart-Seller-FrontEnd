@@ -335,6 +335,11 @@ const EditProduct = () => {
         stoneRate: stoneInfo.stone_rate,
         stoneInternalWeight: stoneInfo.stone_wt,
         stoneGSTPercent: stoneInfo.gst_perc,
+        bisCareLink: variant.current_product_detail.BIS,
+        igiLink: variant.current_product_detail.IGI,
+        sglLink: variant.current_product_detail.SGL,
+        gsiLink: variant.current_product_detail.GSI,
+        giaLink: variant.current_product_detail.GIA,
       };
     });
   };
@@ -797,6 +802,11 @@ const EditProduct = () => {
         name: variant.name,
         quantity: variant.quantity,
         tags: variant.tags,
+        igiLink: variant.igiLink || "",
+        bisCareLink: variant.bisCareLink || "",
+        giaLink: variant.giaLink || "",
+        gsiLink: variant.gsiLink || "",
+        sglLink: variant.sglLink || "",
         metal: {
           metal: variant.metalType || "",
           quantity: variant.quantity || 1,
@@ -2741,6 +2751,11 @@ const EditProduct = () => {
                 stoneRate={currentVariant.stoneRate || stoneRate}
                 stoneInternalWeight={currentVariant.stoneInternalWeight || stoneInternalWeight}
                 stoneGSTPercent={currentVariant.stoneGSTPercent || stoneGSTPercent}
+                bisCareLink={currentVariant.bisCareLink}
+                igiLink={currentVariant.igiLink}
+                giaLink={currentVariant.giaLink}
+                sglLink={currentVariant.sglLink}
+                gsiLink={currentVariant.gsiLink}
                 rates={rates}
                 removeVariant={removeVariant}
                 setVariants={setVariants}

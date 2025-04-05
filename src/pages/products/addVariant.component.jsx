@@ -437,6 +437,7 @@ const AddVariant = (props) => {
     };
 
     const handleVariantChange = (updatedVariant) => {
+        console.log("updatedVariant",updatedVariant)
         const variantData = {
             product_id: props.productId,
             action: "variant",
@@ -500,7 +501,9 @@ const AddVariant = (props) => {
             },
             igiLink: updatedVariant.igiLink || "",
             bisCareLink: updatedVariant.bisCareLink || "",
-            giaLink: updatedVariant.giaLink || ""
+            giaLink: updatedVariant.giaLink || "",
+            gsiLink: updatedVariant.gsiLink || "",
+            sglLink: updatedVariant.sglLink || ""
         };
         props.setVariants((prevVariants) => {
             const updatedVariants = prevVariants.map((variant, index) =>
@@ -551,7 +554,9 @@ const AddVariant = (props) => {
             settlementAmount,
             giaLink,
             igiLink,
-            bisCareLink
+            bisCareLink,
+            gsiLink,
+            sglLink
         });
     }, [
         variantName,
@@ -589,7 +594,12 @@ const AddVariant = (props) => {
         totalAmount,
         productAmountData,
         qualityName,
-        settlementAmount
+        settlementAmount,
+        giaLink,
+        igiLink,
+        bisCareLink,
+        gsiLink,
+        sglLink
     ]);
 
     const handleRemoveVariant = () => {
